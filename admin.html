@@ -1,1 +1,291 @@
+<div id="admin-workspace" class="workspace-hidden flex-1 w-full h-full overflow-y-auto bg-slate-50 pb-20">
+  <div class="max-w-6xl mx-auto mt-10">
+    
+    <!-- 頂部標題與按鈕 -->
+    <div class="flex justify-between items-center bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+      <div class="flex items-center space-x-3">
+        <div class="bg-[#54C061] p-2 rounded-lg shadow-sm">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </div>
+        <h1 class="text-2xl font-black text-slate-800 tracking-wider">帳號管理與權限系統</h1>
+      </div>
+      <button onclick="AdminModule.openModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg shadow transition flex items-center gap-2 text-sm">
+        <span>＋ 新增用戶</span>
+      </button>
+    </div>
 
+    <!-- 用戶資料表格 -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-500 text-xs uppercase tracking-widest border-b border-slate-200">
+              <th class="px-6 py-4 font-black">公司</th>
+              <th class="px-6 py-4 font-black">姓名</th>
+              <th class="px-6 py-4 font-black">帳號</th>
+              <th class="px-6 py-4 font-black">狀態</th>
+              <th class="px-6 py-4 font-black">權限</th>
+              <th class="px-6 py-4 font-black text-center">RM配額</th>
+              <th class="px-6 py-4 font-black text-center">Flex配額</th>
+              <th class="px-6 py-4 font-black">到期日</th>
+              <th class="px-6 py-4 font-black text-right">操作</th>
+            </tr>
+          </thead>
+          <tbody id="admin-user-list" class="text-sm text-slate-700 divide-y divide-slate-100">
+            <!-- 資料將由 JS 動態生成 -->
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- 載入中畫面 -->
+      <div id="admin-loading" class="py-20 flex flex-col items-center justify-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-4 border-[#54C061] border-t-transparent mb-4"></div>
+        <p class="text-xs font-bold text-slate-400 tracking-widest uppercase">讀取資料中...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增/編輯用戶 Modal -->
+  <div id="admin-modal" class="fixed inset-0 z-[800] bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center overflow-y-auto pt-10 pb-10">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all my-auto">
+      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
+        <h3 id="admin-modal-title" class="text-lg font-black text-slate-800">編輯用戶</h3>
+        <button onclick="AdminModule.closeModal()" class="text-slate-400 hover:text-rose-500 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2"></path></svg>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4 overflow-y-auto max-h-[70vh]">
+        <!-- 基本資料 -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">公司名稱</label>
+            <input type="text" id="admin-f-company" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">聯絡人姓名</label>
+            <input type="text" id="admin-f-name" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm">
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">聯絡電話</label>
+            <input type="text" id="admin-f-phone" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm font-mono">
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">狀態</label>
+            <select id="admin-f-status" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm font-bold text-slate-700">
+              <option value="active">啟用 (Active)</option>
+              <option value="inactive">停用 (Inactive)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 帳號密碼 -->
+        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">登入帳號 (不可重複)</label>
+            <input type="text" id="admin-f-account" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm font-bold text-slate-800">
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">登入密碼</label>
+            <input type="text" id="admin-f-password" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm font-mono text-rose-600">
+          </div>
+        </div>
+
+        <!-- 權限與到期日 -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">使用權限 (例: 1234)</label>
+            <input type="text" id="admin-f-permissions" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm font-mono tracking-widest text-[#54C061] font-bold" placeholder="1~4">
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-500 uppercase mb-1">到期日</label>
+            <input type="date" id="admin-f-expire" class="w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-[#54C061] text-sm font-mono">
+          </div>
+        </div>
+
+        <!-- ★ 新增：配額與增購費用計算區塊 ★ -->
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mt-2">
+          <h4 class="text-xs font-black text-blue-800 uppercase mb-3">檔案配額與計費系統</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-black text-blue-600 uppercase mb-1">圖文選單額度 (預設:1)</label>
+              <input type="number" min="1" id="admin-f-rm-quota" class="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm font-bold text-blue-900 bg-white" value="1" oninput="AdminModule.calcFee()">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-blue-600 uppercase mb-1">Flex 額度 (預設:3)</label>
+              <input type="number" min="1" id="admin-f-flex-quota" class="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 text-sm font-bold text-blue-900 bg-white" value="3" oninput="AdminModule.calcFee()">
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-blue-200 flex justify-between items-center">
+            <span class="text-xs font-bold text-blue-700">預估增購費用 (每檔+600)</span>
+            <span id="admin-f-extra-fee" class="text-lg font-black text-rose-600">$ 0</span>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 z-10">
+        <button onclick="AdminModule.closeModal()" class="px-5 py-2 border-2 border-slate-200 text-slate-500 font-bold rounded-lg hover:bg-slate-100 transition">取消</button>
+        <button onclick="AdminModule.saveUser()" id="admin-btn-save" class="px-6 py-2 bg-[#54C061] text-white font-black rounded-lg hover:bg-green-600 transition shadow-md">確認儲存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.AdminModule = (function() {
+    var usersData = [];
+    var isEditMode = false;
+
+    return {
+      loadUsers: function() {
+        document.getElementById('admin-user-list').innerHTML = '';
+        document.getElementById('admin-loading').classList.remove('hidden');
+        
+        google.script.run.withSuccessHandler(function(res) {
+          document.getElementById('admin-loading').classList.add('hidden');
+          if (res.success) {
+            usersData = res.data;
+            window.AdminModule.renderTable();
+          } else {
+            alert('讀取失敗：' + res.msg);
+          }
+        }).getAllUsers();
+      },
+
+      renderTable: function() {
+        var tbody = document.getElementById('admin-user-list');
+        tbody.innerHTML = '';
+
+        if (usersData.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-slate-400 font-bold">目前無客戶資料</td></tr>';
+          return;
+        }
+
+        usersData.forEach(function(user, idx) {
+          if (user.account === 'admin') return;
+
+          var statusBadge = user.status.toLowerCase() === 'active' 
+            ? '<span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-black uppercase">Active</span>'
+            : '<span class="bg-rose-100 text-rose-700 px-2 py-1 rounded text-[10px] font-black uppercase">Inactive</span>';
+            
+          var permsBadge = user.permissions 
+            ? '<span class="bg-slate-100 border border-slate-200 text-slate-600 px-2 py-1 rounded text-[11px] font-mono font-bold tracking-widest">' + user.permissions + '</span>'
+            : '<span class="text-slate-300 text-xs italic">無權限</span>';
+
+          var tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50 transition-colors";
+          tr.innerHTML = `
+            <td class="px-6 py-4 font-bold text-slate-800">${user.company || '-'}</td>
+            <td class="px-6 py-4 text-slate-600">${user.name || '-'}</td>
+            <td class="px-6 py-4 font-bold text-slate-700">${user.account}</td>
+            <td class="px-6 py-4">${statusBadge}</td>
+            <td class="px-6 py-4">${permsBadge}</td>
+            <td class="px-6 py-4 text-center font-black text-sky-600 bg-sky-50/50">${user.rmQuota}</td>
+            <td class="px-6 py-4 text-center font-black text-indigo-600 bg-indigo-50/50">${user.flexQuota}</td>
+            <td class="px-6 py-4 font-mono text-xs text-slate-500">${user.expireDate || '永久'}</td>
+            <td class="px-6 py-4 text-right">
+              <button onclick="AdminModule.openModal(${idx})" class="text-[#54C061] hover:text-white font-bold text-xs border border-[#54C061] hover:bg-[#54C061] px-3 py-1.5 rounded transition">編輯</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      },
+
+      calcFee: function() {
+        var rm = parseInt(document.getElementById('admin-f-rm-quota').value) || 1;
+        var flex = parseInt(document.getElementById('admin-f-flex-quota').value) || 3;
+        var extraRm = Math.max(0, rm - 1);
+        var extraFlex = Math.max(0, flex - 3);
+        var fee = (extraRm + extraFlex) * 600;
+        document.getElementById('admin-f-extra-fee').innerText = '$ ' + fee.toLocaleString();
+      },
+
+      openModal: function(idx) {
+        isEditMode = (idx !== undefined);
+        var title = document.getElementById('admin-modal-title');
+        var accInput = document.getElementById('admin-f-account');
+
+        if (isEditMode) {
+          title.innerText = '編輯客戶資料';
+          var user = usersData[idx];
+          document.getElementById('admin-f-company').value = user.company;
+          document.getElementById('admin-f-name').value = user.name;
+          document.getElementById('admin-f-phone').value = user.phone;
+          accInput.value = user.account;
+          accInput.disabled = true; 
+          accInput.classList.add('bg-slate-100', 'text-slate-400');
+          document.getElementById('admin-f-password').value = user.password;
+          document.getElementById('admin-f-status').value = user.status.toLowerCase() === 'active' ? 'active' : 'inactive';
+          document.getElementById('admin-f-permissions').value = user.permissions;
+          document.getElementById('admin-f-rm-quota').value = user.rmQuota || 1;
+          document.getElementById('admin-f-flex-quota').value = user.flexQuota || 3;
+          
+          var exp = user.expireDate;
+          if (exp && exp.includes('/')) exp = exp.replace(/\//g, '-');
+          document.getElementById('admin-f-expire').value = exp ? exp.substring(0, 10) : '';
+        } else {
+          title.innerText = '新增客戶';
+          document.getElementById('admin-f-company').value = '';
+          document.getElementById('admin-f-name').value = '';
+          document.getElementById('admin-f-phone').value = '';
+          accInput.value = '';
+          accInput.disabled = false;
+          accInput.classList.remove('bg-slate-100', 'text-slate-400');
+          document.getElementById('admin-f-password').value = '';
+          document.getElementById('admin-f-status').value = 'active';
+          document.getElementById('admin-f-permissions').value = '123';
+          document.getElementById('admin-f-rm-quota').value = 1;
+          document.getElementById('admin-f-flex-quota').value = 3;
+          document.getElementById('admin-f-expire').value = '';
+        }
+        
+        this.calcFee(); // 初始計算一次增購金額
+        document.getElementById('admin-modal').classList.remove('hidden');
+      },
+
+      closeModal: function() {
+        document.getElementById('admin-modal').classList.add('hidden');
+      },
+
+      saveUser: function() {
+        var account = document.getElementById('admin-f-account').value.trim();
+        if (!account) { alert('登入帳號為必填！'); return; }
+        
+        var btn = document.getElementById('admin-btn-save');
+        btn.disabled = true;
+        btn.innerText = '儲存中...';
+
+        var userData = {
+          company: document.getElementById('admin-f-company').value.trim(),
+          name: document.getElementById('admin-f-name').value.trim(),
+          phone: document.getElementById('admin-f-phone').value.trim(),
+          account: account,
+          password: document.getElementById('admin-f-password').value.trim(),
+          status: document.getElementById('admin-f-status').value,
+          permissions: document.getElementById('admin-f-permissions').value.trim(),
+          expireDate: document.getElementById('admin-f-expire').value,
+          rmQuota: parseInt(document.getElementById('admin-f-rm-quota').value) || 1,
+          flexQuota: parseInt(document.getElementById('admin-f-flex-quota').value) || 3,
+          regDate: isEditMode ? "" : null 
+        };
+
+        google.script.run.withSuccessHandler(function(res) {
+          btn.disabled = false;
+          btn.innerText = '確認儲存';
+          
+          if (res.success) {
+            window.AdminModule.closeModal();
+            if (typeof showToast === 'function') showToast('儲存成功！');
+            window.AdminModule.loadUsers(); 
+          } else {
+            alert('儲存失敗：' + res.msg);
+          }
+        }).saveUserData(userData);
+      }
+    };
+  })();
+</script>
