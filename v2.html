@@ -1,0 +1,299 @@
+<div id="flex-workspace-v2" class="workspace-hidden flex-1 overflow-hidden w-full h-full bg-white">
+  <div class="flex h-full w-full">
+    
+    <!-- 1. 模擬器預覽區 (左側) -->
+    <div style="width:320px; background:#EBEEF2; border-right:1px solid #e5e7eb; padding:20px; display:flex; flex-direction:column; align-items:center; overflow-y:auto; flex-shrink:0;" class="no-scrollbar">
+      <div style="font-size:10px; font-weight:900; color:#64748b; margin-bottom:20px; letter-spacing:0.1em; text-transform:uppercase; text-align:center;">Live Preview V2</div>
+      
+      <div id="v2-mock-bubble" style="width:100%; background:linear-gradient(88deg, #57142b, #46250c); border-radius:2rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); overflow:hidden; border:4px solid #1e293b; display:flex; flex-direction:column; position:relative; transition:all 0.3s; min-height: 540px;">
+        <div id="v2-mock-full-bg" style="flex:1; display:flex; flex-direction:column; align-items:center; transition:all 0.3s; width: 100%; box-sizing: border-box; padding-top: 20px;">
+          
+          <!-- 頂部圖片區 (改為大頭貼樣式) -->
+          <div id="v2-mock-header-box" style="display:flex; align-items:center; justify-content:center; overflow:hidden; background:#fff; transition:all 0.2s; flex-shrink:0; width:100px; height:100px; border-radius:100px; margin-bottom: 10px;">
+            <img id="v2-mock-logo" src="https://aiwe.cc/wp-content/uploads/2026/02/6e1716a9965b002e6c25ab6f9d383e60.jpg" style="width:100%; height:100%; object-fit:cover;">
+          </div>
+
+          <!-- 文字內容區 -->
+          <div id="v2-mock-text-box" style="display:flex; flex-direction:column; width:100%; padding: 0 20px; align-items: center;">
+            <div id="v2-mock-title" style="font-size:18px; font-weight:bold; color:#FFFFFF; word-break: break-all; text-align: start; width:100%;">請輸入姓名或公司名稱</div>
+            <div id="v2-mock-desc" style="font-size:12px; text-align:start; margin-top:8px; opacity:0.95; line-height:1.5; color:#FFFFFF; white-space:pre-wrap; word-break: break-all; width:100%;">✨ 一行建議16個字...</div>
+          </div>
+
+          <div id="v2-mock-social-container" style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:20px; width: 100%; min-height:36px;"></div>
+          <div id="v2-mock-bars-container" style="width:260px; display:flex; flex-direction:column; margin-top:20px; padding-bottom:10px; align-items:center;"></div>
+          <div style="height:10px; width:100%; flex-shrink:0;"></div>
+        </div>
+      </div>
+      <p style="margin-top:16px; font-size:10px; color:#94a3b8; text-align:center; font-style:italic;">Production v7.4<br>AlignItems Bug Fixed</p>
+    </div>
+    
+    <!-- 2. 編輯表單區 -->
+    <div class="flex-1 overflow-y-auto p-10 bg-white no-scrollbar">
+      <div style="max-width:620px; margin:0 auto;">
+        <h2 style="font-size:24px; font-weight:bold; color:#1e293b; margin-bottom:4px;">Flex 名片範本編輯器 (V2)</h2>
+        <p style="font-size:11px; color:#94a3b8; font-weight:bold; text-transform:uppercase; border-bottom:1px solid #e5e7eb; padding-bottom:16px; margin-bottom:32px;">Production Ready v7.4 - Fixed Format</p>
+        
+        <div style="display:flex; flex-direction:column; gap:40px;">
+          <!-- 1. 樣式與文字設定 -->
+          <section style="background:#f8fafc; padding:24px; border-radius:16px; border:2px solid #e2e8f0;">
+             <h3 style="font-size:12px; font-weight:900; color:#54C061; margin-bottom:20px; text-transform:uppercase;">1. 樣式與文字設定</h3>
+             <div class="grid grid-cols-2 gap-4 mb-4">
+                <input type="text" id="v2-f-title" class="input-field font-bold" placeholder="姓名/公司" oninput="generateFlexJson_v2()">
+                <select id="v2-f-title-align" class="input-field font-bold" onchange="generateFlexJson_v2()">
+                  <option value="start" selected>靠左</option>
+                  <option value="center">置中</option>
+                </select>
+             </div>
+             <textarea id="v2-f-desc" class="input-field h-32 mb-4" placeholder="說明文字..." oninput="generateFlexJson_v2()"></textarea>
+             <input type="text" id="v2-f-logo-url" class="input-field" placeholder="大頭貼/Logo 網址" oninput="generateFlexJson_v2()">
+          </section>
+
+          <!-- 2. 社群圖示 -->
+          <section>
+            <div class="flex justify-between items-center mb-4">
+               <h3 style="font-size:12px; font-weight:900; color:#54C061; text-transform:uppercase;">2. 社群連結圖示</h3>
+               <button onclick="addV2Social()" class="bg-slate-800 text-white px-3 py-1 rounded text-[10px] shadow-sm">＋ 新增</button>
+            </div>
+            <div id="v2-social-list" class="grid grid-cols-2 gap-4"></div>
+          </section>
+
+          <!-- 3. 導購按鈕 -->
+          <section style="padding-bottom:120px;">
+            <div class="flex justify-between items-center mb-4">
+               <h3 style="font-size:12px; font-weight:900; color:#54C061; text-transform:uppercase;">3. 底部連結按鈕</h3>
+               <button onclick="addV2Bar()" class="bg-[#54C061] text-white px-3 py-1 rounded text-[10px] shadow-sm">＋ 新增</button>
+            </div>
+            <div id="v2-bars-list" class="space-y-3"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const V2_DEF_DATA = {
+    logo: "https://aiwe.cc/wp-content/uploads/2026/02/6e1716a9965b002e6c25ab6f9d383e60.jpg",
+    title: "請輸入姓名或公司名稱", 
+    desc: "✨ 一行建議16個字\n✨ 可以簡介公司或是活動內容\n✨ 四到六排的高度較為適中，不建議太長\n✨ 多分享、多收穫"
+  };
+  const V2_ICONS = { 
+    "YT": "https://aiwe.cc/wp-content/uploads/2026/02/87e6f8054bd3672f2885e38bddb112e2.png", 
+    "FB": "https://aiwe.cc/wp-content/uploads/2026/02/3986d1fd62384c8cdaa0e7c82f2740d1.png", 
+    "LINE": "https://aiwe.cc/wp-content/uploads/2026/02/b75a5831fd553c7130aeafbb9783cf79.png", 
+    "TEL": "https://aiwe.cc/wp-content/uploads/2026/02/7254567388850a6b4d77b75208ebd4b8.png" 
+  };
+
+  let v2Bars = [{t:"New Button", u:"https://line.me"}];
+  let v2Socials = [
+    {type:"YT", u:"https://youtube.com"},
+    {type:"FB", u:"https://facebook.com"},
+    {type:"LINE", u:"https://line.me"},
+    {type:"TEL", u:"tel:0912345678"}
+  ];
+
+  function sanitizeUri(u) {
+    let t = (u || "").trim();
+    if(!t) return "https://line.me";
+    if(!t.match(/^(https?|tel|line):/i)) return "https://" + t;
+    return t;
+  }
+
+  function renderV2BarsUI() {
+    const list = document.getElementById('v2-bars-list'); if(!list) return;
+    list.innerHTML = '';
+    v2Bars.forEach((bar, idx) => {
+      const div = document.createElement('div');
+      div.className = "p-4 bg-slate-50 border border-slate-200 rounded-xl flex gap-3 relative group";
+      div.innerHTML = `
+        <input type="text" value="${bar.t}" class="input-field w-1/3" placeholder="按鈕名稱" oninput="v2Bars[${idx}].t=this.value;generateFlexJson_v2()">
+        <input type="text" value="${bar.u}" class="input-field flex-1 font-mono text-[11px]" placeholder="網址或電話" oninput="v2Bars[${idx}].u=this.value;generateFlexJson_v2()">
+        <button onclick="v2Bars.splice(${idx},1); renderV2BarsUI();" class="text-rose-400 font-bold hover:text-rose-600 px-2 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+      `;
+      list.appendChild(div);
+    });
+    generateFlexJson_v2();
+  }
+
+  function addV2Bar() { v2Bars.push({t:"New Button", u:"https://line.me"}); renderV2BarsUI(); }
+
+  function renderV2SocialUI() {
+    const list = document.getElementById('v2-social-list'); if(!list) return;
+    list.innerHTML = '';
+    v2Socials.forEach((s, idx) => {
+      const div = document.createElement('div');
+      div.className = "p-3 bg-white border border-slate-200 rounded-xl relative group shadow-sm";
+      let opts = Object.keys(V2_ICONS).map(k => `<option value="${k}" ${s.type === k ? 'selected' : ''}>${k} 圖示</option>`).join('');
+      div.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <select class="bg-slate-50 border border-slate-200 text-xs font-bold p-1 rounded outline-none" onchange="v2Socials[${idx}].type=this.value;generateFlexJson_v2()">${opts}</select>
+          <button onclick="v2Socials.splice(${idx},1); renderV2SocialUI();" class="text-rose-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+        </div>
+        <input type="text" class="w-full text-xs border-b border-slate-200 py-1 outline-none focus:border-[#54C061] font-mono" placeholder="網址..." value="${s.u}" oninput="v2Socials[${idx}].u=this.value;generateFlexJson_v2()">
+      `;
+      list.appendChild(div);
+    });
+    generateFlexJson_v2();
+  }
+
+  function addV2Social() { v2Socials.push({type:'LINE', u:'https://line.me'}); renderV2SocialUI(); }
+
+  function generateFlexJson_v2() {
+    const getEl = (id) => document.getElementById(id);
+    const title = getEl('v2-f-title')?.value || V2_DEF_DATA.title;
+    const desc = getEl('v2-f-desc')?.value || V2_DEF_DATA.desc;
+    const tAlign = getEl('v2-f-title-align')?.value || 'start';
+    const logo = getEl('v2-f-logo-url')?.value || V2_DEF_DATA.logo;
+
+    // 同步更新左側視覺模擬器
+    const mockTitle = getEl('v2-mock-title');
+    const mockDesc = getEl('v2-mock-desc');
+    const mockLogo = getEl('v2-mock-logo');
+    if(mockTitle) { mockTitle.innerText = title; mockTitle.style.textAlign = (tAlign === 'start' ? 'start' : 'center'); }
+    if(mockDesc) { mockDesc.innerText = desc; mockDesc.style.textAlign = (tAlign === 'start' ? 'start' : 'center'); }
+    if(mockLogo) mockLogo.src = logo;
+
+    const socialCont = getEl('v2-mock-social-container');
+    if(socialCont) socialCont.innerHTML = v2Socials.map(s => `<img src="${V2_ICONS[s.type]}" style="width:40px; height:40px; border-radius:50%;">`).join('');
+    
+    const barsCont = getEl('v2-mock-bars-container');
+    if(barsCont) barsCont.innerHTML = v2Bars.map(b => `<div style="background:#fff; color:#333; width:100%; text-align:center; padding:10px; border-radius:50px; font-weight:bold; font-size:12px; margin-bottom:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">${b.t}</div>`).join('');
+
+    // ★ 構建 100% 吻合您提供的無錯誤 JSON 結構 ★
+    let bodyContents = [
+      {
+        "type": "box",
+        "layout": "vertical",
+        "width": "100px",
+        "height": "100px",
+        "cornerRadius": "100px",
+        "margin": "lg",
+        "contents": [
+          {
+            "type": "image",
+            "url": logo,
+            "size": "full",
+            "aspectMode": "cover",
+            "aspectRatio": "1:1"
+          }
+        ]
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        // 核心修復：Box 層級使用 valid property (center), 文字對齊交給內部 text
+        "alignItems": "center", 
+        "margin": "sm",
+        "contents": [
+          {
+            "type": "text",
+            "text": title,
+            "weight": "bold",
+            "size": "lg",
+            "color": "#ffffff",
+            "align": tAlign,
+            "adjustMode": "shrink-to-fit"
+          },
+          {
+            "type": "text",
+            "text": desc,
+            "size": "sm",
+            "color": "#ffffff",
+            "align": tAlign,
+            "wrap": true,
+            "margin": "sm"
+          }
+        ],
+        "paddingAll": "0px"
+      }
+    ];
+
+    if (v2Socials.length > 0) {
+      bodyContents.push({
+        "type": "box",
+        "layout": "horizontal",
+        "justifyContent": "center",
+        "spacing": "xl",
+        "paddingTop": "xs",
+        "paddingBottom": "xs",
+        "margin": "lg",
+        "contents": v2Socials.map(s => ({
+          "type": "image",
+          "url": V2_ICONS[s.type] || s.type,
+          "size": "70px",
+          "aspectRatio": "1:1",
+          "animated": true,
+          "action": { "type": "uri", "uri": sanitizeUri(s.u) }
+        }))
+      });
+    }
+
+    if (v2Bars.length > 0) {
+      bodyContents.push({
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "none",
+        "margin": "lg",
+        "alignItems": "center",
+        "contents": v2Bars.map(b => ({
+          "type": "box",
+          "layout": "vertical",
+          "backgroundColor": "#ffffff",
+          "cornerRadius": "100px",
+          "paddingAll": "md",
+          "width": "260px",
+          "margin": "lg",
+          "alignItems": "center",
+          "contents": [
+            {
+              "type": "text",
+              "text": b.t,
+              "color": "#333333",
+              "align": "center",
+              "weight": "bold",
+              "size": "sm",
+              "adjustMode": "shrink-to-fit"
+            }
+          ],
+          "action": { "type": "uri", "uri": sanitizeUri(b.u) }
+        }))
+      });
+    }
+
+    bodyContents.push({
+      "type": "box",
+      "layout": "vertical",
+      "height": "10px",
+      "contents": []
+    });
+
+    const flex = {
+      "type": "bubble",
+      "size": "mega",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "paddingAll": "0px",
+        "contents": bodyContents,
+        "alignItems": "center",
+        "background": {
+          "type": "linearGradient",
+          "angle": "88deg",
+          "startColor": "#57142b",
+          "endColor": "#46250c"
+        }
+      }
+    };
+    
+    const out = document.getElementById('json-output'); 
+    if(out) out.value = JSON.stringify(flex, null, 2);
+  }
+
+  // 確保載入時初次渲染一次
+  setTimeout(() => { 
+    const descField = document.getElementById('v2-f-desc');
+    if(descField && !descField.value) descField.value = V2_DEF_DATA.desc;
+    renderV2BarsUI(); 
+    renderV2SocialUI(); 
+  }, 500);
+</script>
