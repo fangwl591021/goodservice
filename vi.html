@@ -1,0 +1,478 @@
+<div id="flex-workspace-v1" class="workspace-hidden flex-1 overflow-hidden w-full h-full bg-white">
+  <div class="flex h-full w-full">
+    
+    <!-- 1. 模擬器預覽區 (左側) -->
+    <div style="width:320px; background:#EBEEF2; border-right:1px solid #e5e7eb; padding:24px; display:flex; flex-direction:column; align-items:center; overflow-y:auto; flex-shrink:0;" class="no-scrollbar">
+      <div style="font-size:10px; font-weight:900; color:#64748b; margin-bottom:20px; letter-spacing:0.1em; text-transform:uppercase; text-align:center;">Live Preview V1</div>
+      
+      <!-- 手機泡泡外殼 -->
+      <div id="v1-mock-bubble" style="width:100%; background:#fff; border-radius:2.2rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); overflow:hidden; border:5px solid #1e293b; display:flex; flex-direction:column; position:relative; transition:all 0.3s;">
+        
+        <!-- 影片/圖片區 (Hero) -->
+        <div id="v1-mock-hero" style="width:100%; background:#000; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; transition:all 0.3s; aspect-ratio:1040/748; min-height:160px;">
+          <img id="v1-mock-preview-img" src="" alt="preview" style="display:none; width:100%; height:100%; object-fit:cover;">
+          <video id="v1-mock-video-player" muted loop playsinline style="display:none; width:100%; height:100%; object-fit:cover;"></video>
+          <div id="v1-mock-empty" style="font-size:12px; color:#9ca3af; font-style:italic; font-weight:bold;">No Media Content</div>
+          <div id="v1-play-icon" style="position:absolute; z-index:20; color:rgba(255,255,255,0.7); display:none;">
+            <svg style="width:48px; height:48px;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+          </div>
+        </div>
+        
+        <!-- 文字與 Icon 按鈕區 (Body) -->
+        <div id="v1-mock-body-container" style="display:flex; flex-direction:column; padding:16px; transition:background 0.3s; background:#fff;">
+          <div id="v1-mock-title" style="font-size:14px; font-weight:bold; margin-bottom:4px; word-break:break-all; white-space:pre-wrap; color:#111; text-align:left;"></div>
+          <div id="v1-mock-desc" style="font-size:10px; margin-bottom:12px; word-break:break-all; white-space:pre-wrap; line-height:1.4; color:#666;"></div>
+          
+          <div style="display:flex; align-items:center; justify-content:space-around;" id="v1-mock-social-container">
+            <div style="flex:1; margin:0 2px; aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(248,250,252,0.2); display:flex; align-items:center; justify-content:center; border:1px solid rgba(226,232,240,0.5); box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+              <img id="v1-mock-icon-1" style="width:100%; height:100%; object-fit:cover;" src="" onerror="this.style.opacity='0'">
+            </div>
+            <div style="flex:1; margin:0 2px; aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(248,250,252,0.2); display:flex; align-items:center; justify-content:center; border:1px solid rgba(226,232,240,0.5); box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+              <img id="v1-mock-icon-2" style="width:100%; height:100%; object-fit:cover;" src="" onerror="this.style.opacity='0'">
+            </div>
+            <div style="flex:1; margin:0 2px; aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(248,250,252,0.2); display:flex; align-items:center; justify-content:center; border:1px solid rgba(226,232,240,0.5); box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+              <img id="v1-mock-icon-3" style="width:100%; height:100%; object-fit:cover;" src="" onerror="this.style.opacity='0'">
+            </div>
+            <div style="flex:1; margin:0 2px; aspect-ratio:1; border-radius:50%; overflow:hidden; background:rgba(248,250,252,0.2); display:flex; align-items:center; justify-content:center; border:1px solid rgba(226,232,240,0.5); box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+              <img id="v1-mock-icon-4" style="width:100%; height:100%; object-fit:cover;" src="" onerror="this.style.opacity='0'">
+            </div>
+          </div>
+        </div>
+        
+        <!-- 底部垂直按鈕區 (Footer) -->
+        <div id="v1-mock-footer-container" style="padding:12px; display:flex; flex-direction:column; gap:8px; border-top:1px solid rgba(0,0,0,0.05); transition:background 0.3s; background:#F9FAFB;">
+          <div id="v1-mock-btn-1" style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Button 1</div>
+          <div id="v1-mock-btn-2" style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Button 2</div>
+          <div id="v1-mock-btn-3" style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Button 3</div>
+        </div>
+      </div>
+      <p style="margin-top:16px; font-size:10px; color:#94a3b8; text-align:center; font-style:italic;">Simulator v1.6.1<br>All Social Icons Animated</p>
+    </div>
+    
+    <!-- 2. 表單填寫區 (中間) -->
+    <div style="flex:1; overflow-y:auto; padding:40px; background:#fff;" class="no-scrollbar">
+      <div style="max-width:560px; margin:0 auto;">
+        <h2 style="font-size:24px; font-weight:bold; color:#1e293b; margin-bottom:4px;">Flex 影片範本編輯器 (V1)</h2>
+        <p style="font-size:11px; color:#94a3b8; font-weight:bold; text-transform:uppercase; letter-spacing:0.1em; border-bottom:1px solid #e5e7eb; padding-bottom:16px; margin-bottom:32px;">Visual Simulator Form</p>
+        
+        <div style="display:flex; flex-direction:column; gap:48px;">
+          
+          <!-- Section 1 -->
+          <section>
+            <h3 style="font-size:13px; font-weight:900; color:#54C061; margin-bottom:20px; text-transform:uppercase; display:flex; align-items:center;">
+              <span style="width:24px; height:24px; background:#54C061; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:8px; font-size:12px;">1</span>
+              影片媒體與整體風格
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:20px;">
+              <div>
+                <label style="font-size:11px; font-weight:bold; color:#64748b; text-transform:uppercase; display:block; margin-bottom:4px;">影片連結 (MP4 URL)</label>
+                <input type="text" id="v1-f-video-url" class="input-field" oninput="generateFlexJson_v1()">
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                  <label style="font-size:11px; font-weight:bold; color:#64748b; text-transform:uppercase; display:block; margin-bottom:4px;">封面圖片連結</label>
+                  <input type="text" id="v1-f-preview-url" class="input-field" oninput="generateFlexJson_v1()">
+                </div>
+                <div>
+                  <label style="font-size:11px; font-weight:bold; color:#64748b; text-transform:uppercase; display:block; margin-bottom:4px;">影片顯示比例 (Aspect)</label>
+                  <input type="text" id="v1-f-aspect-ratio" class="input-field" placeholder="1040:748" oninput="generateFlexJson_v1()">
+                </div>
+              </div>
+
+              <!-- Bubble Size -->
+              <div style="padding:16px; background:#eef2ff; border-radius:12px; border:2px solid rgba(99,102,241,0.3);">
+                <label style="font-size:12px; font-weight:900; color:#6366f1; text-transform:uppercase; display:block; margin-bottom:10px;">📐 Bubble 尺寸 (Size)</label>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;" id="v1-size-pills">
+                  <span data-size="nano" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #d1d5db; background:#fff; color:#94a3b8; transition:all 0.15s; user-select:none;">nano</span>
+                  <span data-size="micro" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #d1d5db; background:#fff; color:#94a3b8; transition:all 0.15s; user-select:none;">micro</span>
+                  <span data-size="deca" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #d1d5db; background:#fff; color:#94a3b8; transition:all 0.15s; user-select:none;">deca</span>
+                  <span data-size="hecto" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #d1d5db; background:#fff; color:#94a3b8; transition:all 0.15s; user-select:none;">hecto</span>
+                  <span data-size="kilo" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #d1d5db; background:#fff; color:#94a3b8; transition:all 0.15s; user-select:none;">kilo</span>
+                  <span data-size="mega" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #d1d5db; background:#fff; color:#94a3b8; transition:all 0.15s; user-select:none;">mega</span>
+                  <span data-size="giga" style="cursor:pointer; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:900; border:2px solid #6366f1; background:#6366f1; color:#fff; transition:all 0.15s; user-select:none;">giga ✓</span>
+                </div>
+                <input type="hidden" id="v1-f-bubble-size" value="giga">
+              </div>
+
+              <div style="padding:16px; background:#f0fdf4; border-radius:12px; border:2px solid rgba(84,192,97,0.3);">
+                <label style="font-size:12px; font-weight:900; color:#54C061; text-transform:uppercase; display:block; margin-bottom:8px;">區塊背景顏色 (Body & Footer)</label>
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <input type="color" id="v1-f-global-bg" value="#FFFFFF" style="width:80px; height:40px; border-radius:4px; cursor:pointer; border:2px solid #d1d5db; padding:0;" oninput="generateFlexJson_v1()">
+                  <span style="font-size:12px; color:#64748b; font-weight:bold;">同步調整下方底色</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 2 -->
+          <section>
+            <h3 style="font-size:13px; font-weight:900; color:#54C061; margin-bottom:20px; text-transform:uppercase; display:flex; align-items:center;">
+              <span style="width:24px; height:24px; background:#54C061; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:8px; font-size:12px;">2</span>
+              中層文字與導購 Icon 設定
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:24px;">
+              <div style="padding:24px; background:#f8fafc; border-radius:16px; border:2px solid #e2e8f0;">
+                <div style="margin-bottom:24px;">
+                  <label style="font-size:11px; font-weight:bold; color:#64748b; text-transform:uppercase; display:block; margin-bottom:4px;">標題區文字 (可換行)</label>
+                  <textarea id="v1-f-title" style="width:100%; height:64px; resize:none; margin-bottom:8px;" class="input-field font-bold" oninput="generateFlexJson_v1()"></textarea>
+                  <div style="display:flex; align-items:center; gap:24px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <label style="font-size:10px; font-weight:900; color:#94a3b8;">對齊</label>
+                      <select id="v1-f-title-align" style="border:2px solid #d1d5db; border-radius:6px; padding:4px 8px; font-size:10px;" onchange="generateFlexJson_v1()">
+                        <option value="start">靠左</option><option value="center">置中</option><option value="end">靠右</option>
+                      </select>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <label style="font-size:10px; font-weight:900; color:#94a3b8;">標題顏色</label>
+                      <input type="color" id="v1-f-title-color" value="#111111" style="width:64px; height:32px; border-radius:4px; cursor:pointer; border:2px solid #d1d5db; padding:0;" oninput="generateFlexJson_v1()">
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size:11px; font-weight:bold; color:#64748b; text-transform:uppercase; display:block; margin-bottom:4px;">內容說明區文字 (可換行)</label>
+                  <textarea id="v1-f-desc" style="width:100%; height:112px; resize:none; margin-bottom:8px;" class="input-field" oninput="generateFlexJson_v1()"></textarea>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <label style="font-size:10px; font-weight:900; color:#94a3b8;">說明顏色</label>
+                    <input type="color" id="v1-f-desc-color" value="#666666" style="width:64px; height:32px; border-radius:4px; cursor:pointer; border:2px solid #d1d5db; padding:0;" oninput="generateFlexJson_v1()">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Icons -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <!-- Icon 1 -->
+                <div style="padding:16px; background:#f9fafb; border-radius:12px; border:2px solid #e5e7eb;">
+                  <label style="font-size:10px; font-weight:900; color:#94a3b8; display:block; margin-bottom:4px; text-transform:uppercase; text-align:center;">Btn 1 Icon</label>
+                  <select id="v1-f-s1-type" style="width:100%; border:2px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:12px; font-weight:bold; background:#fff; margin-bottom:8px; outline:none;" onchange="onIconTypeChange(1)">
+                    <option value="TEL">電話 (TEL)</option><option value="FB">Facebook</option><option value="LINE@">LINE@</option><option value="COMMUNITY">社群</option><option value="IG">Instagram</option><option value="LINE">LINE</option><option value="YT">YouTube</option><option value="MAP">MAP</option>
+                  </select>
+                  <input type="text" id="v1-f-s1-url" class="input-field" style="padding:6px 8px; font-size:10px;" placeholder="URL" oninput="generateFlexJson_v1()">
+                  <div id="v1-f-s1-map-wrap" style="display:none; margin-top:6px;">
+                    <input type="text" id="v1-f-s1-map-addr" style="width:100%; border:2px solid #f59e0b; border-radius:6px; padding:6px 8px; font-size:10px; background:#fffbeb;" placeholder="輸入地址自動轉換" oninput="onMapAddrInput(1)">
+                  </div>
+                </div>
+                <!-- Icon 2 -->
+                <div style="padding:16px; background:#f9fafb; border-radius:12px; border:2px solid #e5e7eb;">
+                  <label style="font-size:10px; font-weight:900; color:#94a3b8; display:block; margin-bottom:4px; text-transform:uppercase; text-align:center;">Btn 2 Icon</label>
+                  <select id="v1-f-s2-type" style="width:100%; border:2px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:12px; font-weight:bold; background:#fff; margin-bottom:8px; outline:none;" onchange="onIconTypeChange(2)">
+                    <option value="FB">Facebook</option><option value="TEL">電話</option><option value="LINE@">LINE@</option><option value="COMMUNITY">社群</option><option value="IG">Instagram</option><option value="LINE">LINE</option><option value="YT">YouTube</option><option value="MAP">MAP</option>
+                  </select>
+                  <input type="text" id="v1-f-s2-url" class="input-field" style="padding:6px 8px; font-size:10px;" placeholder="URL" oninput="generateFlexJson_v1()">
+                  <div id="v1-f-s2-map-wrap" style="display:none; margin-top:6px;">
+                    <input type="text" id="v1-f-s2-map-addr" style="width:100%; border:2px solid #f59e0b; border-radius:6px; padding:6px 8px; font-size:10px; background:#fffbeb;" placeholder="輸入地址自動轉換" oninput="onMapAddrInput(2)">
+                  </div>
+                </div>
+                <!-- Icon 3 -->
+                <div style="padding:16px; background:#f9fafb; border-radius:12px; border:2px solid #e5e7eb;">
+                  <label style="font-size:10px; font-weight:900; color:#94a3b8; display:block; margin-bottom:4px; text-transform:uppercase; text-align:center;">Btn 3 Icon</label>
+                  <select id="v1-f-s3-type" style="width:100%; border:2px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:12px; font-weight:bold; background:#fff; margin-bottom:8px; outline:none;" onchange="onIconTypeChange(3)">
+                    <option value="IG">Instagram</option><option value="TEL">電話</option><option value="FB">Facebook</option><option value="LINE@">LINE@</option><option value="COMMUNITY">社群</option><option value="LINE">LINE</option><option value="YT">YouTube</option><option value="MAP">MAP</option>
+                  </select>
+                  <input type="text" id="v1-f-s3-url" class="input-field" style="padding:6px 8px; font-size:10px;" placeholder="URL" oninput="generateFlexJson_v1()">
+                  <div id="v1-f-s3-map-wrap" style="display:none; margin-top:6px;">
+                    <input type="text" id="v1-f-s3-map-addr" style="width:100%; border:2px solid #f59e0b; border-radius:6px; padding:6px 8px; font-size:10px; background:#fffbeb;" placeholder="輸入地址自動轉換" oninput="onMapAddrInput(3)">
+                  </div>
+                </div>
+                <!-- Icon 4 -->
+                <div style="padding:16px; background:#f9fafb; border-radius:12px; border:2px solid #e5e7eb;">
+                  <label style="font-size:10px; font-weight:900; color:#94a3b8; display:block; margin-bottom:4px; text-transform:uppercase; text-align:center;">Btn 4 Icon</label>
+                  <select id="v1-f-s4-type" style="width:100%; border:2px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:12px; font-weight:bold; background:#fff; margin-bottom:8px; outline:none;" onchange="onIconTypeChange(4)">
+                    <option value="YT">YouTube</option><option value="TEL">電話</option><option value="FB">Facebook</option><option value="LINE@">LINE@</option><option value="COMMUNITY">社群</option><option value="IG">Instagram</option><option value="LINE">LINE</option><option value="MAP">MAP</option>
+                  </select>
+                  <input type="text" id="v1-f-s4-url" class="input-field" style="padding:6px 8px; font-size:10px;" placeholder="URL" oninput="generateFlexJson_v1()">
+                  <div id="v1-f-s4-map-wrap" style="display:none; margin-top:6px;">
+                    <input type="text" id="v1-f-s4-map-addr" style="width:100%; border:2px solid #f59e0b; border-radius:6px; padding:6px 8px; font-size:10px; background:#fffbeb;" placeholder="輸入地址自動轉換" oninput="onMapAddrInput(4)">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 3: 底部按鈕 -->
+          <section style="padding-bottom:120px;">
+            <h3 style="font-size:13px; font-weight:900; color:#54C061; margin-bottom:20px; text-transform:uppercase; display:flex; align-items:center;">
+              <span style="width:24px; height:24px; background:#54C061; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-right:8px; font-size:12px;">3</span>
+              底部操作按鈕設定
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:20px;">
+              <!-- Btn 1 -->
+              <div style="background:#fff; padding:20px; border-radius:16px; border:2px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                  <span style="font-size:10px; font-weight:900; color:#94a3b8;">Button 01</span>
+                  <div style="display:flex; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:6px;"><label style="font-size:9px;">底</label><input type="color" id="v1-f-b1-color" value="#111111" style="width:32px; height:20px; border:none; padding:0; cursor:pointer;" oninput="generateFlexJson_v1()"></div>
+                    <div style="display:flex; align-items:center; gap:6px;"><label style="font-size:9px;">字</label><input type="color" id="v1-f-b1-txt-color" value="#FFFFFF" style="width:32px; height:20px; border:none; padding:0; cursor:pointer;" oninput="generateFlexJson_v1()"></div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:12px;">
+                  <input type="text" id="v1-f-b1-text" class="input-field w-1/3 font-bold" placeholder="文字" oninput="generateFlexJson_v1()">
+                  <input type="text" id="v1-f-b1-url" class="input-field flex-1" placeholder="URL" oninput="generateFlexJson_v1()">
+                </div>
+              </div>
+              <!-- Btn 2 -->
+              <div style="background:#fff; padding:20px; border-radius:16px; border:2px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                  <span style="font-size:10px; font-weight:900; color:#94a3b8;">Button 02</span>
+                  <div style="display:flex; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:6px;"><label style="font-size:9px;">底</label><input type="color" id="v1-f-b2-color" value="#111111" style="width:32px; height:20px; border:none; padding:0; cursor:pointer;" oninput="generateFlexJson_v1()"></div>
+                    <div style="display:flex; align-items:center; gap:6px;"><label style="font-size:9px;">字</label><input type="color" id="v1-f-b2-txt-color" value="#FFFFFF" style="width:32px; height:20px; border:none; padding:0; cursor:pointer;" oninput="generateFlexJson_v1()"></div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:12px;">
+                  <input type="text" id="v1-f-b2-text" class="input-field w-1/3 font-bold" placeholder="文字" oninput="generateFlexJson_v1()">
+                  <input type="text" id="v1-f-b2-url" class="input-field flex-1" placeholder="URL" oninput="generateFlexJson_v1()">
+                </div>
+              </div>
+              <!-- Btn 3 -->
+              <div style="background:#fff; padding:20px; border-radius:16px; border:2px solid #e5e7eb; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                  <span style="font-size:10px; font-weight:900; color:#94a3b8;">Button 03</span>
+                  <div style="display:flex; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:6px;"><label style="font-size:9px;">底</label><input type="color" id="v1-f-b3-color" value="#111111" style="width:32px; height:20px; border:none; padding:0; cursor:pointer;" oninput="generateFlexJson_v1()"></div>
+                    <div style="display:flex; align-items:center; gap:6px;"><label style="font-size:9px;">字</label><input type="color" id="v1-f-b3-txt-color" value="#FFFFFF" style="width:32px; height:20px; border:none; padding:0; cursor:pointer;" oninput="generateFlexJson_v1()"></div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:12px;">
+                  <input type="text" id="v1-f-b3-text" class="input-field w-1/3 font-bold" placeholder="文字" oninput="generateFlexJson_v1()">
+                  <input type="text" id="v1-f-b3-url" class="input-field flex-1" placeholder="URL" oninput="generateFlexJson_v1()">
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const V1_ICONS = {
+    "TEL": "https://aiwe.cc/wp-content/uploads/2026/02/7254567388850a6b4d77b75208ebd4b8.png",
+    "FB": "https://aiwe.cc/wp-content/uploads/2026/02/3986d1fd62384c8cdaa0e7c82f2740d1.png",
+    "LINE@": "https://aiwe.cc/wp-content/uploads/2025/12/673ea1e705f2c04b01c2385856676a9a.png",
+    "COMMUNITY": "https://aiwe.cc/wp-content/uploads/2026/02/90135b795720ba34d79f122bbc8d7d81.png",
+    "IG": "https://aiwe.cc/wp-content/uploads/2026/02/0089b4a4960e49eba9140544307711c6.png",
+    "LINE": "https://aiwe.cc/wp-content/uploads/2026/02/b75a5831fd553c7130aeafbb9783cf79.png",
+    "YT": "https://aiwe.cc/wp-content/uploads/2026/02/87e6f8054bd3672f2885e38bddb112e2.png",
+    "MAP": "https://aiwe.cc/wp-content/uploads/2026/02/5af1a3a285c2bdee4192223e31e1f833.png"
+  };
+
+  const V1_SIZE_MAP = { "nano":"40%", "micro":"50%", "deca":"60%", "hecto":"70%", "kilo":"80%", "mega":"90%", "giga":"100%" };
+
+  function setBubbleSize(size) {
+    document.getElementById('v1-f-bubble-size').value = size;
+    document.querySelectorAll('#v1-size-pills span').forEach(el => {
+      const active = el.dataset.size === size;
+      el.style.background = active ? '#6366f1' : '#fff';
+      el.style.color = active ? '#fff' : '#94a3b8';
+      el.style.borderColor = active ? '#6366f1' : '#d1d5db';
+      el.textContent = active ? size + ' ✓' : el.dataset.size;
+    });
+    generateFlexJson_v1();
+  }
+
+  function initSizePills() {
+    const pills = document.getElementById('v1-size-pills');
+    if (!pills) return;
+    pills.addEventListener('click', (e) => {
+      if (e.target.dataset.size) setBubbleSize(e.target.dataset.size);
+    });
+  }
+
+  function onIconTypeChange(idx) {
+    const type = document.getElementById(`v1-f-s${idx}-type`).value;
+    const wrap = document.getElementById(`v1-f-s${idx}-map-wrap`);
+    const input = document.getElementById(`v1-f-s${idx}-url`);
+    if(type==='MAP') {
+      wrap.style.display='block'; input.readOnly=true; input.style.background='#f1f5f9';
+      input.value = addrToMapUrl(document.getElementById(`v1-f-s${idx}-map-addr`).value);
+    } else {
+      wrap.style.display='none'; input.readOnly=false; input.style.background='#fff';
+    }
+    generateFlexJson_v1();
+  }
+
+  function onMapAddrInput(idx) {
+    document.getElementById(`v1-f-s${idx}-url`).value = addrToMapUrl(document.getElementById(`v1-f-s${idx}-map-addr`).value);
+    generateFlexJson_v1();
+  }
+
+  function addrToMapUrl(addr) { return addr ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr) : ''; }
+
+  const V1_DEF_DATA = {
+    v: "https://obs.line-scdn.net/h9B3GDtq9emxVUmlibAR9FXJqcUNxVSB-WgQhQ3s9MF5IeHN9YC5OU1BhRFVzUVE5SQdJA3hcU11Ca1U4YANWUkNhUBtIRVZ5WRNZV3tbORs/mp4",
+    p: "https://upload.cc/i1/2022/07/29/ygc1lF.png", aspect: "1040:748", size: "giga", globalBg: "#FFFFFF",
+    title: "請輸入姓名或公司名稱", titleColor: "#111111", titleAlign: "start",
+    desc: "✨一行建議16個字\n✨可以簡介公司或是活動內容\n✨四到六排的高度較為適中，不建議太長\n✨多分享、多收穫", descColor: "#666666",
+    s: [ {t:"TEL", u:"tel:0912345678"}, {t:"FB", u:"https://www.facebook.com"}, {t:"IG", u:"https://www.instagram.com"}, {t:"YT", u:"https://www.youtube.com"} ],
+    b: [ {t:"預約服務", u:"https://line.me", c:"#111111", tc:"#FFFFFF"}, {t:"官方網站", u:"https://line.me", c:"#111111", tc:"#FFFFFF"}, {t:"加入好友", u:"https://line.me", c:"#111111", tc:"#FFFFFF"} ]
+  };
+
+  window.loadFlexMenuV1_Data = function(name, json) {
+    document.getElementById('save-filename').value = name;
+    document.getElementById('v1-f-video-url').value = json.hero?.url || "";
+    document.getElementById('v1-f-preview-url').value = json.hero?.previewUrl || "";
+    document.getElementById('v1-f-aspect-ratio').value = json.hero?.aspectRatio || "1040:748";
+    const bSize = json.size || "giga";
+    setBubbleSize(bSize);
+
+    const body = json.body;
+    if (body) {
+      document.getElementById('v1-f-global-bg').value = body.backgroundColor || "#FFFFFF";
+      const contents = body.contents || [];
+      const titleComp = contents.find(c => c.type === 'text' && c.weight === 'bold');
+      const descComp = contents.find(c => c.type === 'text' && c.weight !== 'bold');
+      const iconBox = contents.find(c => c.type === 'box' && c.layout === 'horizontal');
+
+      document.getElementById('v1-f-title').value = titleComp?.text || "";
+      document.getElementById('v1-f-title-color').value = titleComp?.color || "#111111";
+      document.getElementById('v1-f-title-align').value = titleComp?.align || "start";
+      document.getElementById('v1-f-desc').value = descComp?.text || "";
+      document.getElementById('v1-f-desc-color').value = descComp?.color || "#666666";
+
+      if (iconBox && iconBox.contents) {
+        iconBox.contents.forEach((icon, idx) => {
+          if (idx < 4) {
+            const type = Object.keys(V1_ICONS).find(k => V1_ICONS[k] === icon.url) || "FB";
+            document.getElementById(`v1-f-s${idx+1}-type`).value = type;
+            document.getElementById(`v1-f-s${idx+1}-url`).value = icon.action?.uri || "";
+            onIconTypeChange(idx+1);
+          }
+        });
+      }
+    }
+    if (json.footer && json.footer.contents) {
+      json.footer.contents.forEach((box, idx) => {
+        if (idx < 3) {
+          const btnTxt = box.contents?.[0];
+          document.getElementById(`v1-f-b${idx+1}-text`).value = btnTxt?.text || "";
+          document.getElementById(`v1-f-b${idx+1}-url`).value = box.action?.uri || "";
+          document.getElementById(`v1-f-b${idx+1}-color`).value = box.backgroundColor || "#111111";
+          document.getElementById(`v1-f-b${idx+1}-txt-color`).value = btnTxt?.color || "#FFFFFF";
+        }
+      });
+    }
+    generateFlexJson_v1();
+  };
+
+  window.loadFlexTemplate_v1 = function() {
+    const d = V1_DEF_DATA;
+    if(!document.getElementById('v1-f-video-url').value) {
+      document.getElementById('v1-f-video-url').value = d.v;
+      document.getElementById('v1-f-preview-url').value = d.p;
+      document.getElementById('v1-f-aspect-ratio').value = d.aspect;
+      setBubbleSize(d.size);
+      document.getElementById('v1-f-global-bg').value = d.globalBg;
+      document.getElementById('v1-f-title').value = d.title;
+      document.getElementById('v1-f-title-color').value = d.titleColor;
+      document.getElementById('v1-f-title-align').value = d.titleAlign;
+      document.getElementById('v1-f-desc').value = d.desc;
+      document.getElementById('v1-f-desc-color').value = d.descColor;
+      for(let i=1; i<=4; i++) {
+        document.getElementById(`v1-f-s${i}-type`).value = d.s[i-1].t;
+        document.getElementById(`v1-f-s${i}-url`).value = d.s[i-1].u;
+        onIconTypeChange(i);
+      }
+      for(let i=1; i<=3; i++) {
+        document.getElementById(`v1-f-b${i}-text`).value = d.b[i-1].t;
+        document.getElementById(`v1-f-b${i}-url`).value = d.b[i-1].u;
+        document.getElementById(`v1-f-b${i}-color`).value = d.b[i-1].c;
+        document.getElementById(`v1-f-b${i}-txt-color`).value = d.b[i-1].tc;
+      }
+    }
+    initSizePills();
+    generateFlexJson_v1();
+  };
+
+  function generateFlexJson_v1() {
+    const vUrl = document.getElementById('v1-f-video-url').value;
+    const pUrl = document.getElementById('v1-f-preview-url').value;
+    const aspect = document.getElementById('v1-f-aspect-ratio').value || "1040:748";
+    const size = document.getElementById('v1-f-bubble-size').value || "giga";
+    const globalBg = document.getElementById('v1-f-global-bg').value;
+    const titleVal = document.getElementById('v1-f-title').value;
+    const titleCol = document.getElementById('v1-f-title-color').value;
+    const titleAlign = document.getElementById('v1-f-title-align').value;
+    const descVal = document.getElementById('v1-f-desc').value;
+    const descCol = document.getElementById('v1-f-desc-color').value;
+
+    document.getElementById('v1-mock-bubble').style.width = V1_SIZE_MAP[size];
+    document.getElementById('v1-mock-hero').style.aspectRatio = aspect.replace(':', '/');
+    const vp = document.getElementById('v1-mock-video-player');
+    const pi = document.getElementById('v1-mock-preview-img');
+    const em = document.getElementById('v1-mock-empty');
+    const playIcon = document.getElementById('v1-play-icon');
+    vp.style.display = 'none'; pi.style.display = 'none'; em.style.display = 'none'; playIcon.style.display = 'none';
+    if(vUrl && vUrl.trim()!=='') { 
+        vp.src = vUrl; vp.style.display = 'block'; vp.play().catch(e=>{}); 
+        playIcon.style.display = 'block';
+    } 
+    else if(pUrl && pUrl.trim()!=='') { pi.src = pUrl; pi.style.display = 'block'; } else { em.style.display = 'block'; }
+
+    document.getElementById('v1-mock-title').innerText = titleVal;
+    document.getElementById('v1-mock-title').style.color = titleCol;
+    document.getElementById('v1-mock-title').style.textAlign = titleAlign === 'start' ? 'left' : (titleAlign === 'end' ? 'right' : 'center');
+    document.getElementById('v1-mock-desc').innerText = descVal;
+    document.getElementById('v1-mock-desc').style.color = descCol;
+    document.getElementById('v1-mock-body-container').style.backgroundColor = globalBg;
+    document.getElementById('v1-mock-footer-container').style.backgroundColor = globalBg;
+
+    const sD = [];
+    for(let i=1; i<=4; i++) {
+      const type = document.getElementById(`v1-f-s${i}-type`).value;
+      const url = document.getElementById(`v1-f-s${i}-url`).value;
+      sD.push({ iconUrl: V1_ICONS[type], url, type });
+      document.getElementById(`v1-mock-icon-${i}`).src = V1_ICONS[type];
+      document.getElementById(`v1-mock-icon-${i}`).style.opacity = '1';
+    }
+
+    const bD = [];
+    for(let i=1; i<=3; i++) {
+      const t = document.getElementById(`v1-f-b${i}-text`).value;
+      const u = document.getElementById(`v1-f-b${i}-url`).value;
+      const c = document.getElementById(`v1-f-b${i}-color`).value;
+      const tc = document.getElementById(`v1-f-b${i}-txt-color`).value;
+      bD.push({ t, u, c, tc });
+      const mBtn = document.getElementById(`v1-mock-btn-${i}`);
+      mBtn.innerText = t || "-"; mBtn.style.backgroundColor = c; mBtn.style.color = tc;
+    }
+
+    const flex = {
+      "type": "bubble", "size": size,
+      "hero": { "type": "video", "url": vUrl, "previewUrl": pUrl, "altContent": { "type": "image", "size": "full", "aspectRatio": aspect, "aspectMode": "cover", "url": pUrl }, "aspectRatio": aspect },
+      "body": { 
+        "type": "box", "layout": "vertical", "backgroundColor": globalBg, "paddingAll": "sm",
+        "contents": [
+          { "type": "text", "text": titleVal, "weight": "bold", "size": "md", "wrap": true, "color": titleCol, "align": titleAlign },
+          { "type": "text", "text": descVal, "size": "xs", "wrap": true, "color": descCol, "margin": "md" },
+          { "type": "box", "layout": "horizontal", "spacing": "sm", "margin": "lg", "contents": sD.map(s => ({ 
+              "type": "image", 
+              "url": s.iconUrl, 
+              "size": "full", 
+              "aspectRatio": "1:1", 
+              "aspectMode": "cover", 
+              "animated": true, // 修正：所有社群按鈕都設定為 true
+              "action": { "type": "uri", "label": "icon", "uri": s.url || "https://line.me" } 
+          })) }
+        ]
+      },
+      "footer": { 
+        "type": "box", "layout": "vertical", "spacing": "sm", "paddingAll": "sm", "backgroundColor": globalBg,
+        "contents": bD.map(b => ({
+          "type": "box", "layout": "vertical", "contents": [{ "type": "text", "text": b.t || " ", "color": b.tc, "align": "center", "size": "sm", "weight": "bold" }],
+          "paddingAll": "md", "cornerRadius": "md", "backgroundColor": b.c, "action": { "type": "uri", "label": "action", "uri": b.u || "https://line.me" }
+        }))
+      }
+    };
+    
+    const globalOutput = document.getElementById('json-output');
+    if (globalOutput) globalOutput.value = JSON.stringify(flex, null, 2);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadFlexTemplate_v1);
+  } else {
+    loadFlexTemplate_v1();
+  }
+</script>
