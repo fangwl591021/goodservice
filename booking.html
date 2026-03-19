@@ -80,7 +80,8 @@
                 <div class="p-4 space-y-4 pt-6">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="text-lg font-black text-gray-800 border-l-4 border-[#06C755] pl-2 leading-none">選擇活動類型</h2>
-                        <button @click="loadCourses" :disabled="isCoursesLoading" class="flex items-center text-[11px] text-gray-600 bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm hover:bg-gray-50 active:scale-95 transition font-bold">
+                        <!-- ★ 修改3：更新課程按鈕放大 -->
+                        <button @click="loadCourses" :disabled="isCoursesLoading" class="flex items-center text-[13px] text-gray-700 bg-white border border-gray-300 px-4 py-2 rounded-full shadow hover:bg-gray-50 active:scale-95 transition font-bold">
                             <i class="fas fa-sync-alt mr-1.5 text-[#06C755]" :class="{'fa-spin': isCoursesLoading}"></i> {{ isCoursesLoading ? '同步中' : '更新課程' }}
                         </button>
                     </div>
@@ -123,9 +124,11 @@
                                                 <div v-if="splitCourseName(c.name).subName" class="text-[13px] text-gray-500 mt-1 font-bold bg-gray-50 inline-block px-2 py-0.5 rounded">
                                                     {{ splitCourseName(c.name).subName }}</div>
                                             </div>
+                                            <!-- ★ 修改1：金額為0時顯示「免費活動」標籤 -->
                                             <div class="flex flex-col items-end shrink-0">
                                                 <span v-if="isEarlyBird(c)" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ c.price }}</span>
-                                                <span class="text-[#06C755] font-black text-xl">
+                                                <span v-if="getActualPrice(c) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                <span v-else class="text-[#06C755] font-black text-xl">
                                                     <span v-if="isEarlyBird(c)" class="text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded mr-1 align-middle shadow-sm">早鳥</span>${{ getActualPrice(c) }}
                                                 </span>
                                             </div>
@@ -162,7 +165,9 @@
                                                 <h3 class="font-black text-[22px] text-white leading-tight drop-shadow-lg flex-1">{{ themeName }}</h3>
                                                 <div class="flex flex-col items-end">
                                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題營隊</span>
-                                                    <span class="text-white font-black text-xl drop-shadow-md leading-none">${{ getCampThemeMinPrice(themeName) }}<span class="text-xs font-medium ml-0.5 opacity-90">起</span></span>
+                                                    <!-- ★ 修改1：營隊最低價為0時顯示「免費活動」 -->
+                                                    <span v-if="getCampThemeMinPrice(themeName) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                    <span v-else class="text-white font-black text-xl drop-shadow-md leading-none">${{ getCampThemeMinPrice(themeName) }}<span class="text-xs font-medium ml-0.5 opacity-90">起</span></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -207,9 +212,11 @@
                                                     <div class="text-xs text-green-800 font-bold">
                                                         <i class="fas fa-clock mr-1"></i> {{ getCampSelectedCourse(themeName).startDate }} ~ {{ getCampSelectedCourse(themeName).endDate }}
                                                     </div>
+                                                    <!-- ★ 修改1：營隊選中課程金額為0時顯示「免費活動」 -->
                                                     <div class="flex flex-col items-end">
                                                         <span v-if="isEarlyBird(getCampSelectedCourse(themeName))" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ getCampSelectedCourse(themeName).price }}</span>
-                                                        <span class="text-[#06C755] font-black text-2xl leading-none">
+                                                        <span v-if="getActualPrice(getCampSelectedCourse(themeName)) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                        <span v-else class="text-[#06C755] font-black text-2xl leading-none">
                                                             <span v-if="isEarlyBird(getCampSelectedCourse(themeName))" class="text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded mr-1 align-middle shadow-sm relative -top-1">早鳥</span>${{ getActualPrice(getCampSelectedCourse(themeName)) }}
                                                         </span>
                                                     </div>
@@ -235,9 +242,11 @@
                                                 <div class="flex gap-2 mb-1.5"><span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-green-50 text-green-500 border-green-100">其他梯次活動</span></div>
                                                 <h3 class="font-bold text-[17px] text-gray-800 leading-tight">{{ splitCourseName(c.name).mainName }}</h3>
                                             </div>
+                                            <!-- ★ 修改1：其他梯次活動金額為0時顯示「免費活動」 -->
                                             <div class="flex flex-col items-end shrink-0">
                                                 <span v-if="isEarlyBird(c)" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ c.price }}</span>
-                                                <span class="text-[#06C755] font-black text-xl">
+                                                <span v-if="getActualPrice(c) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                <span v-else class="text-[#06C755] font-black text-xl">
                                                     <span v-if="isEarlyBird(c)" class="text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded mr-1 align-middle shadow-sm">早鳥</span>${{ getActualPrice(c) }}
                                                 </span>
                                             </div>
@@ -372,7 +381,9 @@
                                 <span v-if="totalEquipmentPrice > 0" class="text-orange-500"> +設備 ${{ totalEquipmentPrice }}</span>
                                 <span v-if="leaveDeduction > 0" class="text-blue-500"> -請假 ${{ leaveDeduction }}</span>
                             </span>
-                            <span class="text-2xl font-black text-[#06C755] leading-none">${{ calculatedTotal }}</span>
+                            <!-- ★ 修改1：底部金額顯示「免費活動」 -->
+                            <span v-if="calculatedTotal == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
+                            <span v-else class="text-2xl font-black text-[#06C755] leading-none">${{ calculatedTotal }}</span>
                         </div>
                         <button type="submit" :disabled="isSubmitting || excludedDates.length > 1" class="btn-primary w-[45%] shadow-md text-lg">{{ isSubmitting ? '處理中...' : '確認結帳' }}</button>
                     </div>
@@ -388,7 +399,8 @@
 
                 <div v-if="isOrdersLoading" class="text-center py-16">
                     <div class="loader mx-auto mb-3 border-t-blue-500 w-8 h-8 border-4"></div>
-                    <p class="text-sm font-bold text-gray-400 tracking-widest">載入訂單中...</p>
+                    <!-- ★ 修改2：載入文字改為「讀取紀錄中.....」 -->
+                    <p class="text-sm font-bold text-gray-400 tracking-widest">讀取紀錄中.....</p>
                 </div>
 
                 <template v-else>
@@ -410,10 +422,13 @@
                         <div class="border-t border-gray-100 my-3 ml-2"></div>
                         <div class="flex justify-between items-center mb-4 pl-2">
                             <span class="text-sm text-gray-500">學員: <b class="text-gray-800">{{ o.name }}</b></span>
-                            <span class="font-black text-[#06C755] text-2xl">${{ o.amount }}</span>
+                            <!-- ★ 修改1：訂單金額為0時顯示「免費活動」標籤 -->
+                            <span v-if="o.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                            <span v-else class="font-black text-[#06C755] text-2xl">${{ o.amount }}</span>
                         </div>
                         <div class="pl-2 space-y-3 mt-2">
-                            <button v-if="o.status === 'PENDING' && !o.remittance" @click="openOrderDetail(o)" class="text-[15px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold w-full shadow-md active:scale-95 transition flex justify-center items-center gap-2 tracking-wide">
+                            <!-- ★ 修改1：金額為0時不顯示「填寫匯款後五碼」按鈕 -->
+                            <button v-if="o.status === 'PENDING' && !o.remittance && o.amount > 0" @click="openOrderDetail(o)" class="text-[15px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold w-full shadow-md active:scale-95 transition flex justify-center items-center gap-2 tracking-wide">
                                 <i class="fas fa-edit"></i> 填寫匯款後五碼
                             </button>
                             
@@ -564,7 +579,12 @@
                 </div>
 
                 <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 z-30 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                    <div class="flex flex-col"><span class="text-xs text-gray-500">已確認繳費金額</span><span class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span></div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500">已確認繳費金額</span>
+                        <!-- ★ 修改1：詳情頁金額為0顯示「免費活動」 -->
+                        <span v-if="editingOrder && editingOrder.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
+                        <span v-else class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span>
+                    </div>
                     <button @click="view='my_orders'" type="button" class="btn-secondary w-[60%] shadow-md text-lg border-gray-300">返回紀錄</button>
                 </div>
             </div>
@@ -912,7 +932,6 @@
                     return l;
                 };
 
-                // ★ 梯次活動才生成日期列表
                 const generatedDates = computed(() => {
                     if (!selectedCourse.value || selectedCourse.value.type !== '梯次活動') return [];
                     return makeDateList(selectedCourse.value.startDate, selectedCourse.value.endDate);
