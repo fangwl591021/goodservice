@@ -18,6 +18,10 @@
 #reservation-workspace .res-btn-w { background:#fff; border:1px solid #d1d5db; color:#374151; border-radius:8px; padding:9px 18px; font-weight:600; font-size:13px; cursor:pointer; transition:.18s; }
 #reservation-workspace .res-btn-w:hover { border-color:#06C755; color:#06C755; }
 #reservation-workspace .stat-box { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,.02); }
+#reservation-workspace .res-label { display:block; font-size:11px; font-weight:700; color:#6b7280; margin-bottom:5px; }
+#reservation-workspace .camp-batch-block { background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-bottom:12px; position:relative; }
+#reservation-workspace .camp-item-row { display:flex; gap:8px; align-items:flex-end; margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #f3f4f6; }
+#reservation-workspace .camp-item-row:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
 </style>
 
 <div class="flex h-full w-full">
@@ -32,8 +36,9 @@
       <button class="res-nav-item" id="res-nav-dashboard" onclick="window.ReservationModule.setTab('dashboard')"><i class="fas fa-chart-pie w-4 text-center"></i> 營運統計</button>
       <button class="res-nav-item" id="res-nav-orders"    onclick="window.ReservationModule.setTab('orders')">  <i class="fas fa-receipt w-4 text-center"></i>    訂單管理</button>
       <button class="res-nav-item" id="res-nav-add"       onclick="window.ReservationModule.setTab('add')">    <i class="fas fa-plus-circle w-4 text-center"></i> 新增報名</button>
-      <button class="res-nav-item" id="res-nav-courses"   onclick="window.ReservationModule.setTab('courses')"><i class="fas fa-book-open w-4 text-center"></i>   活動管理</button>
+      <button class="res-nav-item" id="res-nav-courses"   onclick="window.ReservationModule.setTab('courses')"><i class="fas fa-calendar-check w-4 text-center"></i> 活動管理</button>
       <button class="res-nav-item" id="res-nav-members"   onclick="window.ReservationModule.setTab('members')"><i class="fas fa-users w-4 text-center"></i>       會員管理</button>
+      <button class="res-nav-item" id="res-nav-attend"    onclick="window.ReservationModule.setTab('attend')"> <i class="fas fa-user-check w-4 text-center"></i>   簽到管理</button>
     </div>
     <div class="p-4 border-t border-slate-100">
       <button onclick="window.ReservationModule.syncAll()" class="res-btn-w w-full text-xs py-2.5">
@@ -44,8 +49,6 @@
 
   <!-- 主內容 -->
   <main class="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
-
-    <!-- 頂部 -->
     <header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
       <h2 id="res-page-title" class="text-lg font-black text-slate-800">營運統計</h2>
       <div class="flex items-center gap-2">
@@ -60,12 +63,13 @@
 
     <!-- 手機 tab -->
     <div class="md:hidden bg-white border-b px-3 py-2 shrink-0">
-      <div class="grid grid-cols-5 gap-1 text-[10px]">
+      <div class="grid grid-cols-6 gap-1 text-[10px]">
         <button id="res-tab-dashboard" onclick="window.ReservationModule.setTab('dashboard')" class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">統計</button>
         <button id="res-tab-orders"    onclick="window.ReservationModule.setTab('orders')"    class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">訂單</button>
         <button id="res-tab-add"       onclick="window.ReservationModule.setTab('add')"       class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">新增</button>
         <button id="res-tab-courses"   onclick="window.ReservationModule.setTab('courses')"   class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">活動</button>
         <button id="res-tab-members"   onclick="window.ReservationModule.setTab('members')"   class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">會員</button>
+        <button id="res-tab-attend"    onclick="window.ReservationModule.setTab('attend')"    class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">簽到</button>
       </div>
     </div>
 
@@ -120,7 +124,6 @@
       <!-- ===== 新增報名 ===== -->
       <div id="res-panel-add" class="hidden">
         <div class="max-w-2xl mx-auto space-y-4">
-          <!-- Step 1 -->
           <div class="res-card">
             <div class="px-6 py-4 border-b flex items-center gap-3">
               <div class="w-7 h-7 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">1</div>
@@ -133,20 +136,18 @@
               <div id="add-course-info" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-xl text-xs text-green-800 font-bold space-y-1"></div>
             </div>
           </div>
-          <!-- Step 2 -->
           <div class="res-card">
             <div class="px-6 py-4 border-b flex items-center gap-3">
               <div class="w-7 h-7 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">2</div>
               <div class="font-black text-slate-800">學員資料 <span class="text-red-400">*</span></div>
             </div>
             <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">學員姓名 *</label><input id="add-name" class="res-input text-sm" placeholder="真實姓名"></div>
-              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">身分證字號 *</label><input id="add-nid" class="res-input text-sm uppercase" placeholder="A123456789"></div>
-              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">聯絡電話 *</label><input id="add-phone" class="res-input text-sm" type="tel" placeholder="0912345678"></div>
-              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">LINE userId（選填）</label><input id="add-uid" class="res-input text-sm font-mono" placeholder="U開頭的LINE userId"></div>
+              <div><label class="res-label">學員姓名 *</label><input id="add-name" class="res-input text-sm" placeholder="真實姓名"></div>
+              <div><label class="res-label">身分證字號 *</label><input id="add-nid" class="res-input text-sm uppercase" placeholder="A123456789"></div>
+              <div><label class="res-label">聯絡電話 *</label><input id="add-phone" class="res-input text-sm" type="tel" placeholder="0912345678"></div>
+              <div><label class="res-label">LINE userId（選填）</label><input id="add-uid" class="res-input text-sm font-mono" placeholder="U開頭的LINE userId"></div>
             </div>
           </div>
-          <!-- Step 3 -->
           <div class="res-card">
             <div class="px-6 py-4 border-b flex items-center gap-3">
               <div class="w-7 h-7 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">3</div>
@@ -172,15 +173,22 @@
           <input id="res-course-kw" type="text" placeholder="搜尋活動..." class="res-input w-56 text-sm" oninput="window.ReservationModule.renderCourses()">
           <button onclick="window.ReservationModule.openCourseModal(null)" class="res-btn-g"><i class="fas fa-plus"></i> 新增活動</button>
         </div>
-        <div class="res-card overflow-x-auto">
+
+        <!-- 一般活動列表 -->
+        <div class="font-bold text-base text-slate-700 mb-2 border-l-4 border-blue-500 pl-2">一般活動</div>
+        <div class="res-card overflow-x-auto mb-6">
           <table class="res-table">
             <thead><tr>
               <th>活動名稱</th><th>類型 / 日期</th><th class="text-center">費用</th>
               <th class="text-center">名額</th><th class="text-center">報名狀況</th><th class="text-right">操作</th>
             </tr></thead>
-            <tbody id="res-course-list"></tbody>
+            <tbody id="res-course-list-normal"></tbody>
           </table>
         </div>
+
+        <!-- 梯次活動群組 -->
+        <div class="font-bold text-base text-slate-700 mb-2 border-l-4 border-green-500 pl-2">梯次活動 <span class="text-xs text-slate-400 font-normal ml-1">(依主題/梯次摺疊)</span></div>
+        <div id="res-camp-groups"></div>
       </div>
 
       <!-- ===== 會員管理 ===== -->
@@ -193,6 +201,31 @@
               <th class="text-center">家人數</th><th class="text-right">操作</th>
             </tr></thead>
             <tbody id="res-member-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== 簽到管理 ===== -->
+      <div id="res-panel-attend" class="hidden">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 mb-4 flex flex-wrap gap-3 items-end">
+          <div class="flex-1 min-w-[180px]">
+            <label class="res-label">選擇活動</label>
+            <select id="attend-course-sel" class="res-input text-sm" onchange="window.ReservationModule.onAttendCourseChange()">
+              <option value="">-- 請選擇活動 --</option>
+            </select>
+          </div>
+          <div>
+            <label class="res-label">上課日期</label>
+            <input id="attend-date" type="date" class="res-input text-sm" onchange="window.ReservationModule.loadAttendList()">
+          </div>
+          <button onclick="window.ReservationModule.saveAttendance()" class="res-btn-g"><i class="fas fa-save"></i> 儲存簽到</button>
+        </div>
+        <div class="res-card overflow-x-auto">
+          <table class="res-table">
+            <thead><tr>
+              <th>學員姓名</th><th class="text-center">電話</th><th class="text-center">出席狀態</th>
+            </tr></thead>
+            <tbody id="res-attend-list"></tbody>
           </table>
         </div>
       </div>
@@ -211,21 +244,21 @@
     <div class="p-5 space-y-3">
       <input type="hidden" id="modal-order-id">
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="block text-xs font-bold text-slate-500 mb-1">狀態</label>
+        <div><label class="res-label">狀態</label>
           <select id="modal-order-status" class="res-input text-sm">
             <option value="PENDING">待付款</option><option value="PAID">已完款</option>
             <option value="REFUND_REQUESTED">申退款</option><option value="REFUNDED">已退款</option>
             <option value="CANCELLED">已取消</option>
           </select>
         </div>
-        <div><label class="block text-xs font-bold text-slate-500 mb-1">實收金額</label>
+        <div><label class="res-label">實收金額</label>
           <input id="modal-order-amount" type="number" class="res-input text-sm">
         </div>
       </div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">匯款後五碼</label>
+      <div><label class="res-label">匯款後五碼</label>
         <input id="modal-order-remittance" maxlength="5" class="res-input text-center font-mono text-2xl tracking-widest">
       </div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">備註</label>
+      <div><label class="res-label">備註</label>
         <textarea id="modal-order-note" rows="2" class="res-input text-sm resize-none"></textarea>
       </div>
     </div>
@@ -236,39 +269,118 @@
   </div>
 </div>
 
-<!-- 活動編輯 Modal -->
+<!-- 活動編輯 Modal（完整版，含梯次批次建立） -->
 <div id="res-course-modal" class="fixed inset-0 bg-black/60 z-[500] hidden items-center justify-center">
   <div class="bg-white w-[95%] max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
     <div class="h-14 border-b px-5 flex justify-between items-center shrink-0">
       <h3 id="res-course-modal-title" class="font-black text-lg">新增活動</h3>
       <button onclick="window.ReservationModule.closeCourseModal()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
     </div>
-    <div class="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="flex-1 overflow-y-auto p-5 space-y-3">
       <input type="hidden" id="cm-id">
-      <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">活動名稱 *</label><input id="cm-name" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">類型</label>
-        <select id="cm-type" class="res-input text-sm"><option>單日活動</option><option>梯次活動</option><option>常態活動</option></select>
+
+      <!-- 類型選擇 -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="res-label">類型</label>
+          <select id="cm-type" class="res-input text-sm" onchange="window.ReservationModule.onCmTypeChange()">
+            <option value="單日活動">單日活動</option>
+            <option value="梯次活動">梯次活動</option>
+            <option value="常態活動">常態活動</option>
+          </select>
+        </div>
+        <div>
+          <label class="res-label">時段類型</label>
+          <select id="cm-timeslot" class="res-input text-sm">
+            <option>全日</option><option>上午</option><option>下午</option><option>晚間</option>
+          </select>
+        </div>
       </div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">時段類型</label>
-        <select id="cm-timeslot" class="res-input text-sm"><option>全日</option><option>上午</option><option>下午</option><option>晚間</option></select>
+
+      <!-- 一般活動欄位 -->
+      <div id="cm-normal-fields">
+        <div class="mb-3"><label class="res-label">活動名稱 *</label><input id="cm-name" class="res-input text-sm" placeholder="活動名稱"></div>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div><label class="res-label">開始日期</label><input id="cm-sdate" type="date" class="res-input text-sm"></div>
+          <div><label class="res-label">結束日期</label><input id="cm-edate" type="date" class="res-input text-sm"></div>
+          <div><label class="res-label">開始時間</label><input id="cm-stime" type="time" class="res-input text-sm"></div>
+          <div><label class="res-label">結束時間</label><input id="cm-etime" type="time" class="res-input text-sm"></div>
+          <div><label class="res-label">活動地點</label><input id="cm-location" class="res-input text-sm"></div>
+          <div><label class="res-label">教練/老師</label><input id="cm-instructor" class="res-input text-sm"></div>
+          <div><label class="res-label">原價</label><input id="cm-price" type="number" class="res-input text-sm"></div>
+          <div><label class="res-label">總名額</label><input id="cm-capacity" type="number" class="res-input text-sm" value="20"></div>
+          <div><label class="res-label">早鳥價</label><input id="cm-ebprice" type="number" class="res-input text-sm"></div>
+          <div><label class="res-label">早鳥截止日</label><input id="cm-ebdate" type="date" class="res-input text-sm"></div>
+          <div><label class="res-label">總堂數</label><input id="cm-sessions" type="number" value="1" class="res-input text-sm"></div>
+          <div><label class="res-label">圖片網址</label><input id="cm-image" class="res-input text-sm" placeholder="https://..."></div>
+        </div>
+        <div><label class="res-label">活動說明</label><textarea id="cm-desc" rows="3" class="res-input text-sm resize-none"></textarea></div>
       </div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">開始日期</label><input id="cm-sdate" type="date" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">結束日期</label><input id="cm-edate" type="date" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">開始時間</label><input id="cm-stime" type="time" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">結束時間</label><input id="cm-etime" type="time" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">活動地點</label><input id="cm-location" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">教練/老師</label><input id="cm-instructor" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">原價</label><input id="cm-price" type="number" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">總名額</label><input id="cm-capacity" type="number" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">早鳥價</label><input id="cm-ebprice" type="number" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">早鳥截止日</label><input id="cm-ebdate" type="date" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">總堂數</label><input id="cm-sessions" type="number" value="1" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">圖片網址</label><input id="cm-image" class="res-input text-sm" placeholder="https://..."></div>
-      <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">活動說明</label><textarea id="cm-desc" rows="3" class="res-input text-sm resize-none"></textarea></div>
+
+      <!-- 梯次活動專屬欄位 -->
+      <div id="cm-camp-fields" class="hidden space-y-3">
+        <!-- 大主題 -->
+        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+          <label class="res-label text-green-800"><i class="fas fa-flag mr-1"></i> 活動大主題 *</label>
+          <input id="cm-camp-theme" class="res-input text-sm border-green-300" placeholder="如: 2026 運動島夏令營">
+        </div>
+
+        <!-- 梯次時間設定 -->
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="res-label">開始時間</label><input id="cm-camp-stime" type="time" class="res-input text-sm"></div>
+          <div><label class="res-label">結束時間</label><input id="cm-camp-etime" type="time" class="res-input text-sm"></div>
+          <div><label class="res-label">活動地點</label><input id="cm-camp-location" class="res-input text-sm"></div>
+          <div><label class="res-label">教練/老師</label><input id="cm-camp-instructor" class="res-input text-sm"></div>
+          <div><label class="res-label">總堂數</label><input id="cm-camp-sessions" type="number" value="5" class="res-input text-sm"></div>
+        </div>
+
+        <!-- 梯次列表 -->
+        <div id="cm-camp-batches"></div>
+
+        <button type="button" onclick="window.ReservationModule.addCampBatch()" class="w-full py-3 border-2 border-dashed border-blue-300 text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition text-sm">
+          <i class="fas fa-plus mr-1"></i> 新增下一梯次
+        </button>
+
+        <div class="bg-yellow-50 text-yellow-700 text-xs p-3 rounded-xl border border-yellow-200">
+          <i class="fas fa-info-circle mr-1"></i> 儲存後系統將自動為每個「梯次 × 項目」建立獨立活動。
+        </div>
+      </div>
+
+      <!-- 梯次活動單筆編輯模式 -->
+      <div id="cm-camp-edit-fields" class="hidden">
+        <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-3">
+          <div class="text-sm font-bold text-green-800 mb-3"><i class="fas fa-flag mr-1"></i> 單筆梯次活動編輯</div>
+          <div class="grid grid-cols-3 gap-3">
+            <div><label class="res-label text-green-700">大主題</label><input id="cm-camp-edit-theme" class="res-input text-sm border-green-300"></div>
+            <div><label class="res-label text-green-700">梯次名稱</label><input id="cm-camp-edit-batch" class="res-input text-sm border-green-300"></div>
+            <div><label class="res-label text-green-700">活動項目</label><input id="cm-camp-edit-item" class="res-input text-sm border-green-300"></div>
+          </div>
+          <div class="mt-2 text-xs text-slate-500 bg-white p-2 rounded-lg border border-green-100">
+            預覽：<span id="cm-camp-edit-preview" class="font-bold text-slate-800"></span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="res-label">開始日期</label><input id="cm-camp-edit-sdate" type="date" class="res-input text-sm"></div>
+          <div><label class="res-label">結束日期</label><input id="cm-camp-edit-edate" type="date" class="res-input text-sm"></div>
+          <div><label class="res-label">開始時間</label><input id="cm-camp-edit-stime" type="time" class="res-input text-sm"></div>
+          <div><label class="res-label">結束時間</label><input id="cm-camp-edit-etime" type="time" class="res-input text-sm"></div>
+          <div><label class="res-label">活動地點</label><input id="cm-camp-edit-location" class="res-input text-sm"></div>
+          <div><label class="res-label">教練/老師</label><input id="cm-camp-edit-instructor" class="res-input text-sm"></div>
+          <div><label class="res-label">原價</label><input id="cm-camp-edit-price" type="number" class="res-input text-sm"></div>
+          <div><label class="res-label">總名額</label><input id="cm-camp-edit-capacity" type="number" class="res-input text-sm"></div>
+          <div><label class="res-label">早鳥價</label><input id="cm-camp-edit-ebprice" type="number" class="res-input text-sm"></div>
+          <div><label class="res-label">早鳥截止日</label><input id="cm-camp-edit-ebdate" type="date" class="res-input text-sm"></div>
+          <div><label class="res-label">總堂數</label><input id="cm-camp-edit-sessions" type="number" value="5" class="res-input text-sm"></div>
+        </div>
+      </div>
     </div>
-    <div class="h-14 border-t px-5 flex justify-end items-center gap-3 shrink-0">
-      <button onclick="window.ReservationModule.closeCourseModal()" class="res-btn-w">取消</button>
-      <button onclick="window.ReservationModule.saveCourse()" class="res-btn-g"><i class="fas fa-save"></i> 儲存活動</button>
+
+    <div class="h-14 border-t px-5 flex justify-between items-center gap-3 shrink-0">
+      <div id="cm-progress" class="text-sm text-slate-500 font-bold hidden"><i class="fas fa-spinner fa-spin mr-1"></i> 建立中 <span id="cm-progress-text"></span></div>
+      <div class="flex gap-3 ml-auto">
+        <button onclick="window.ReservationModule.closeCourseModal()" class="res-btn-w">取消</button>
+        <button onclick="window.ReservationModule.saveCourse()" class="res-btn-g" id="cm-save-btn"><i class="fas fa-save"></i> 儲存活動</button>
+      </div>
     </div>
   </div>
 </div>
@@ -282,15 +394,15 @@
     </div>
     <div class="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
       <input type="hidden" id="mm-uid">
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">姓名</label><input id="mm-name" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">身分證（不可改）</label><input id="mm-nid" class="res-input text-sm bg-slate-100" readonly></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">生日</label><input id="mm-birthday" type="date" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">性別</label><select id="mm-gender" class="res-input text-sm"><option>男</option><option>女</option></select></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">電話</label><input id="mm-phone" class="res-input text-sm"></div>
-      <div><label class="block text-xs font-bold text-slate-500 mb-1">地址</label><input id="mm-address" class="res-input text-sm"></div>
-      <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">健康備註</label><textarea id="mm-health" rows="2" class="res-input text-sm resize-none"></textarea></div>
+      <div><label class="res-label">姓名</label><input id="mm-name" class="res-input text-sm"></div>
+      <div><label class="res-label">身分證（不可改）</label><input id="mm-nid" class="res-input text-sm bg-slate-100" readonly></div>
+      <div><label class="res-label">生日</label><input id="mm-birthday" type="date" class="res-input text-sm"></div>
+      <div><label class="res-label">性別</label><select id="mm-gender" class="res-input text-sm"><option>男</option><option>女</option></select></div>
+      <div><label class="res-label">電話</label><input id="mm-phone" class="res-input text-sm"></div>
+      <div><label class="res-label">地址</label><input id="mm-address" class="res-input text-sm"></div>
+      <div class="md:col-span-2"><label class="res-label">健康備註</label><textarea id="mm-health" rows="2" class="res-input text-sm resize-none"></textarea></div>
       <div class="md:col-span-2">
-        <div class="text-xs font-bold text-slate-500 mb-2">家人名單</div>
+        <div class="res-label mb-2">家人名單</div>
         <div id="mm-family" class="bg-slate-50 border rounded-xl p-3 min-h-[48px] text-sm text-slate-600 space-y-1"></div>
       </div>
     </div>
@@ -305,10 +417,14 @@
 window.ReservationModule = (function () {
   var API = typeof WORKER_URL !== 'undefined' ? WORKER_URL : '';
   var courses = [], orders = [], members = [];
-  var editingOrder = null, editingMember = null;
-  var tabs = ['dashboard','orders','add','courses','members'];
-  var titles = { dashboard:'營運統計', orders:'訂單管理', add:'新增報名', courses:'活動管理', members:'會員管理' };
+  var editingOrder = null, editingMember = null, editingCourseId = null;
+  var campBatchData = []; // 梯次批次建立資料
+  var expandedBatches = {}; // 梯次展開狀態
+  var attendList = []; // 簽到列表
+  var tabs = ['dashboard','orders','add','courses','members','attend'];
+  var titles = { dashboard:'營運統計', orders:'訂單管理', add:'新增報名', courses:'活動管理', members:'會員管理', attend:'簽到管理' };
 
+  // ── API ──
   function callAPI(action, payload, userProfile) {
     var body = { action: action, payload: payload || {} };
     if (userProfile) body.userProfile = userProfile;
@@ -322,6 +438,7 @@ window.ReservationModule = (function () {
   }
 
   function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function fmtDate(d) { if (!d) return ''; return String(d).substring(0,10); }
 
   function statusLabel(s) {
     return {PENDING:'待付款',PAID:'已完款',REFUND_REQUESTED:'申退款中',REFUNDED:'已退款',CANCELLED:'已取消'}[s] || s || '-';
@@ -332,6 +449,17 @@ window.ReservationModule = (function () {
       CANCELLED:'bg-slate-100 text-slate-500'}[s] || 'bg-slate-100 text-slate-500';
   }
 
+  // ── 梯次名稱解析 ──
+  function parseCampName(name) {
+    if (!name) return { theme:'', batch:'', item:'' };
+    var parts = String(name).split(/\s*-\s*/);
+    if (parts.length >= 3) {
+      return { theme: parts[0], batch: parts.slice(1, parts.length-1).join('-'), item: parts[parts.length-1] };
+    }
+    return { theme:'其他梯次活動', batch:'', item: name };
+  }
+
+  // ── Tab ──
   function setTab(tab) {
     tabs.forEach(function(t) {
       var panel = document.getElementById('res-panel-' + t);
@@ -350,8 +478,10 @@ window.ReservationModule = (function () {
     if (exportBtn) exportBtn.classList.toggle('hidden', tab !== 'orders');
     if (tab === 'add') refreshCourseSelect();
     if (tab === 'orders') bindOrderFilters();
+    if (tab === 'attend') refreshAttendCourseSelect();
   }
 
+  // ── 同步 ──
   function syncAll() {
     if (typeof toggleLoader === 'function') toggleLoader(true);
     callAPI('SI_ADMIN_GET_DATA').then(function(data) {
@@ -422,7 +552,6 @@ window.ReservationModule = (function () {
       return ok;
     });
   }
-
   function renderOrders() {
     var list = getFilteredOrders();
     var tbody = document.getElementById('res-order-list');
@@ -440,21 +569,18 @@ window.ReservationModule = (function () {
         +'</tr>';
     }).join('') || '<tr><td colspan="7" class="text-center py-10 text-slate-400">沒有符合的訂單</td></tr>';
   }
-
   function bindOrderFilters() {
     ['res-filter-kw','res-filter-status','res-filter-course'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el && !el._bound) { el._bound=true; el.addEventListener('input',renderOrders); el.addEventListener('change',renderOrders); }
     });
   }
-
   function refreshCourseFilter() {
     var sel = document.getElementById('res-filter-course');
     if (!sel) return;
     sel.innerHTML = '<option value="">全部活動</option>' +
       courses.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join('');
   }
-
   function openOrderModal(orderId) {
     var o = orders.find(function(x){ return x.orderId===orderId; });
     if (!o) return;
@@ -467,12 +593,10 @@ window.ReservationModule = (function () {
     var m = document.getElementById('res-order-modal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
   }
-
   function closeOrderModal() {
     var m = document.getElementById('res-order-modal');
     if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
   }
-
   function saveOrder() {
     if (!editingOrder) return;
     if (typeof toggleLoader === 'function') toggleLoader(true);
@@ -493,72 +617,373 @@ window.ReservationModule = (function () {
     });
   }
 
-  // ── 活動 ──
+  // ── 活動管理（含梯次分組） ──
+  function getPaidCount(courseId) { return orders.filter(function(o){ return o.courseId===courseId && o.status==='PAID'; }).length; }
+  function getPendingCount(courseId) { return orders.filter(function(o){ return o.courseId===courseId && o.status==='PENDING'; }).length; }
+
   function renderCourses() {
     var kw = ((document.getElementById('res-course-kw')||{}).value||'').toLowerCase();
     var list = courses.filter(function(c){ return !kw || c.name.toLowerCase().includes(kw); });
-    var tbody = document.getElementById('res-course-list');
-    if (!tbody) return;
-    tbody.innerHTML = list.map(function(c) {
-      var cOrders = orders.filter(function(o){ return o.courseId===c.id; });
-      var paid = cOrders.filter(function(o){ return o.status==='PAID'; }).length;
-      var pending = cOrders.filter(function(o){ return o.status==='PENDING'; }).length;
-      return '<tr>'
-        +'<td><div class="font-bold text-slate-800">'+esc(c.name)+'</div><span class="text-[10px] font-mono text-slate-400">'+esc(c.id)+'</span></td>'
-        +'<td><span class="badge bg-blue-50 text-blue-700">'+esc(c.type)+'</span><div class="text-xs text-slate-400 mt-1">'+esc(c.startDate)+' ~ '+esc(c.endDate)+'</div></td>'
-        +'<td class="text-center font-black text-[#06C755]">$'+esc(c.price)+'</td>'
-        +'<td class="text-center text-slate-600">'+esc(c.enrolled)+' / '+esc(c.capacity)+'</td>'
-        +'<td class="text-center text-xs"><span class="text-green-600 font-bold">付:'+paid+'</span> <span class="text-amber-500 font-bold">待:'+pending+'</span></td>'
-        +'<td class="text-right"><button onclick="window.ReservationModule.openCourseModal(\''+esc(c.id)+'\')" class="res-btn-w text-xs py-1.5 px-3">編輯</button></td>'
-        +'</tr>';
-    }).join('') || '<tr><td colspan="6" class="text-center py-10 text-slate-400">尚無活動資料</td></tr>';
+
+    // 一般活動
+    var normalList = list.filter(function(c){ return c.type !== '梯次活動' || parseCampName(c.name).theme === '其他梯次活動'; });
+    var normalTbody = document.getElementById('res-course-list-normal');
+    if (normalTbody) {
+      normalTbody.innerHTML = normalList.map(function(c) {
+        var paid = getPaidCount(c.id), pending = getPendingCount(c.id);
+        return '<tr>'
+          +'<td><div class="font-bold text-slate-800">'+esc(c.name)+'</div><span class="text-[10px] font-mono text-slate-400">'+esc(c.id)+'</span></td>'
+          +'<td><span class="badge bg-blue-50 text-blue-700">'+esc(c.type)+'</span><div class="text-xs text-slate-400 mt-1">'+esc(c.startDate)+' ~ '+esc(c.endDate)+'</div></td>'
+          +'<td class="text-center font-black text-[#06C755]">$'+esc(c.price)+'</td>'
+          +'<td class="text-center text-slate-600">'+esc(c.enrolled)+' / '+esc(c.capacity)+'</td>'
+          +'<td class="text-center text-xs"><span class="text-green-600 font-bold">付:'+paid+'</span> <span class="text-amber-500 font-bold">待:'+pending+'</span></td>'
+          +'<td class="text-right space-x-2">'
+          +'<button onclick="window.ReservationModule.goAttend(\''+esc(c.id)+'\')" class="text-green-600 hover:underline text-xs font-bold">簽到</button>'
+          +'<button onclick="window.ReservationModule.openCourseModal(\''+esc(c.id)+'\')" class="res-btn-w text-xs py-1.5 px-3">編輯</button>'
+          +'</td></tr>';
+      }).join('') || '<tr><td colspan="6" class="text-center py-8 text-slate-400">尚無一般活動資料</td></tr>';
+    }
+
+    // 梯次活動分組
+    var campList = list.filter(function(c){ return c.type === '梯次活動' && parseCampName(c.name).theme !== '其他梯次活動'; });
+    var groups = {};
+    campList.forEach(function(c) {
+      var p = parseCampName(c.name);
+      if (!groups[p.theme]) groups[p.theme] = {};
+      if (!groups[p.theme][p.batch]) groups[p.theme][p.batch] = [];
+      groups[p.theme][p.batch].push({ course: c, itemName: p.item });
+    });
+
+    var campEl = document.getElementById('res-camp-groups');
+    if (!campEl) return;
+    if (!Object.keys(groups).length) {
+      campEl.innerHTML = '<div class="text-center py-8 text-slate-400 bg-white rounded-xl border border-slate-100 text-sm font-bold">尚無梯次活動資料</div>';
+      return;
+    }
+    var html = '';
+    Object.keys(groups).forEach(function(theme) {
+      html += '<div class="res-card mb-4 border border-green-200">'
+        +'<div class="bg-green-50 px-5 py-3 border-b border-green-200">'
+        +'<span class="font-black text-green-800 text-base"><i class="fas fa-flag mr-2 opacity-70"></i>'+esc(theme)+'</span></div>'
+        +'<div class="p-3 space-y-2">';
+      Object.keys(groups[theme]).forEach(function(batch) {
+        var bkey = theme + '_' + batch;
+        var items = groups[theme][batch];
+        var isOpen = !!expandedBatches[bkey];
+        html += '<div class="border border-gray-200 rounded-xl overflow-hidden">'
+          +'<button onclick="window.ReservationModule.toggleBatch(\''+esc(bkey)+'\')" class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-green-50 flex justify-between items-center font-bold text-sm transition">'
+          +'<span><i class="far fa-calendar-alt mr-2 text-blue-500"></i>'+esc(batch)+' <span class="text-xs text-slate-400 font-normal ml-1">'+items.length+' 項目</span></span>'
+          +'<i class="fas '+(isOpen?'fa-chevron-up text-green-600':'fa-chevron-down text-gray-400')+'"></i>'
+          +'</button>';
+        if (isOpen) {
+          html += '<div class="overflow-x-auto"><table class="res-table"><thead><tr>'
+            +'<th>活動項目</th><th class="text-center">費用</th><th class="text-center">名額</th>'
+            +'<th class="text-center">繳費狀況</th><th class="text-right">操作</th>'
+            +'</tr></thead><tbody>';
+          items.forEach(function(item) {
+            var c = item.course;
+            var paid = getPaidCount(c.id), pending = getPendingCount(c.id);
+            html += '<tr>'
+              +'<td><div class="font-bold text-slate-800">'+esc(item.itemName)+'</div><span class="text-[10px] font-mono text-slate-400">'+esc(c.id)+'</span></td>'
+              +'<td class="text-center font-black text-[#06C755]">$'+esc(c.price)+'</td>'
+              +'<td class="text-center text-slate-600">'+esc(c.enrolled)+' / '+esc(c.capacity)+'</td>'
+              +'<td class="text-center text-xs"><span class="text-green-600 font-bold">付:'+paid+'</span> <span class="text-amber-500 font-bold">待:'+pending+'</span></td>'
+              +'<td class="text-right space-x-2">'
+              +'<button onclick="window.ReservationModule.goAttend(\''+esc(c.id)+'\')" class="text-green-600 hover:underline text-xs font-bold">簽到</button>'
+              +'<button onclick="window.ReservationModule.openCourseModal(\''+esc(c.id)+'\')" class="res-btn-w text-xs py-1.5 px-3">編輯</button>'
+              +'</td></tr>';
+          });
+          html += '</tbody></table></div>';
+        }
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+    campEl.innerHTML = html;
   }
 
+  function toggleBatch(key) {
+    expandedBatches[key] = !expandedBatches[key];
+    renderCourses();
+  }
+
+  // ── 活動 Modal 類型切換 ──
+  function onCmTypeChange() {
+    var type = document.getElementById('cm-type').value;
+    var isEditing = !!editingCourseId;
+    document.getElementById('cm-normal-fields').classList.toggle('hidden', type === '梯次活動');
+    document.getElementById('cm-camp-fields').classList.toggle('hidden', type !== '梯次活動' || isEditing);
+    document.getElementById('cm-camp-edit-fields').classList.toggle('hidden', type !== '梯次活動' || !isEditing);
+  }
+
+  // ── 梯次批次UI ──
+  function renderCampBatches() {
+    var container = document.getElementById('cm-camp-batches');
+    if (!container) return;
+    var html = '';
+    campBatchData.forEach(function(b, bIdx) {
+      html += '<div class="camp-batch-block">'
+        +(campBatchData.length > 1 ? '<button type="button" onclick="window.ReservationModule.removeCampBatch('+bIdx+')" style="position:absolute;top:10px;right:10px;color:#ef4444;background:none;border:none;cursor:pointer;font-size:14px;"><i class="fas fa-trash"></i></button>' : '')
+        +'<div class="font-bold text-sm text-slate-700 mb-3"><i class="fas fa-calendar-alt text-blue-500 mr-1"></i> 梯次 '+(bIdx+1)+'</div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">'
+        +'<div><label class="res-label">梯次名稱</label><input class="res-input text-sm" placeholder="如: 第一梯次" value="'+esc(b.name)+'" oninput="window.ReservationModule.updateBatch('+bIdx+',\'name\',this.value)"></div>'
+        +'<div><label class="res-label">開始日期</label><input type="date" class="res-input text-sm" value="'+esc(b.startDate)+'" oninput="window.ReservationModule.updateBatch('+bIdx+',\'startDate\',this.value)"></div>'
+        +'<div><label class="res-label">結束日期</label><input type="date" class="res-input text-sm" value="'+esc(b.endDate)+'" oninput="window.ReservationModule.updateBatch('+bIdx+',\'endDate\',this.value)"></div>'
+        +'</div>'
+        +'<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+        +'<span class="font-bold text-sm text-slate-700"><i class="fas fa-running text-orange-500 mr-1"></i> 活動項目</span>'
+        +'<button type="button" onclick="window.ReservationModule.addCampItem('+bIdx+')" style="font-size:11px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:6px;padding:3px 10px;font-weight:700;cursor:pointer;">+ 新增項目</button>'
+        +'</div>';
+      b.items.forEach(function(item, iIdx) {
+        html += '<div class="camp-item-row">'
+          +'<div style="flex:1;"><label class="res-label">項目名稱</label><input class="res-input text-sm" placeholder="如: 籃球特訓" value="'+esc(item.name)+'" oninput="window.ReservationModule.updateItem('+bIdx+','+iIdx+',\'name\',this.value)"></div>'
+          +'<div style="width:90px;"><label class="res-label">單價</label><input type="number" class="res-input text-sm" placeholder="金額" value="'+esc(item.price)+'" oninput="window.ReservationModule.updateItem('+bIdx+','+iIdx+',\'price\',this.value)"></div>'
+          +'<div style="width:80px;"><label class="res-label">名額</label><input type="number" class="res-input text-sm" placeholder="人數" value="'+esc(item.capacity)+'" oninput="window.ReservationModule.updateItem('+bIdx+','+iIdx+',\'capacity\',this.value)"></div>'
+          +(b.items.length > 1 ? '<button type="button" onclick="window.ReservationModule.removeItem('+bIdx+','+iIdx+')" style="color:#ef4444;background:none;border:none;cursor:pointer;padding:8px;margin-bottom:2px;"><i class="fas fa-times"></i></button>' : '')
+          +'</div>';
+      });
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function addCampBatch() {
+    campBatchData.push({ name:'', startDate:'', endDate:'', items:[{ name:'', price:'', capacity:'' }] });
+    renderCampBatches();
+  }
+  function removeCampBatch(idx) {
+    campBatchData.splice(idx, 1);
+    renderCampBatches();
+  }
+  function addCampItem(bIdx) {
+    campBatchData[bIdx].items.push({ name:'', price:'', capacity:'' });
+    renderCampBatches();
+  }
+  function removeItem(bIdx, iIdx) {
+    campBatchData[bIdx].items.splice(iIdx, 1);
+    renderCampBatches();
+  }
+  function updateBatch(bIdx, field, val) { campBatchData[bIdx][field] = val; }
+  function updateItem(bIdx, iIdx, field, val) { campBatchData[bIdx].items[iIdx][field] = val; }
+
+  // ── 開啟/關閉 活動 Modal ──
   function openCourseModal(courseId) {
+    editingCourseId = courseId || null;
     var c = courseId ? courses.find(function(x){ return x.id===courseId; }) : null;
     var title = document.getElementById('res-course-modal-title');
     if (title) title.innerText = c ? '編輯活動' : '新增活動';
-    var fields = { 'cm-id':c?c.id:'','cm-name':c?c.name:'','cm-sdate':c?c.startDate:'','cm-edate':c?c.endDate:'',
-      'cm-stime':c?c.startTime:'','cm-etime':c?c.endTime:'','cm-location':c?c.location:'','cm-instructor':c?c.instructor:'',
-      'cm-price':c?c.price:0,'cm-capacity':c?c.capacity:20,'cm-ebprice':c?c.earlyBirdPrice:0,
-      'cm-ebdate':c?c.earlyBirdDate:'','cm-sessions':c?c.totalSessions:1,'cm-image':c?c.image:'','cm-desc':c?c.description:'' };
-    Object.keys(fields).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=fields[id]; });
-    if (c) document.getElementById('cm-type').value = c.type || '單日活動';
-    if (c) document.getElementById('cm-timeslot').value = c.timeSlotType || '全日';
+    document.getElementById('cm-id').value = c ? c.id : '';
+    document.getElementById('cm-type').value = c ? (c.type || '單日活動') : '單日活動';
+    document.getElementById('cm-type').disabled = !!c; // 編輯時不可改類型
+
+    if (c && c.type === '梯次活動') {
+      // 單筆編輯梯次
+      var p = parseCampName(c.name);
+      document.getElementById('cm-camp-edit-theme').value = p.theme !== '其他梯次活動' ? p.theme : '';
+      document.getElementById('cm-camp-edit-batch').value = p.batch;
+      document.getElementById('cm-camp-edit-item').value = p.item;
+      updateCampEditPreview();
+      document.getElementById('cm-camp-edit-sdate').value = fmtDate(c.startDate);
+      document.getElementById('cm-camp-edit-edate').value = fmtDate(c.endDate);
+      document.getElementById('cm-camp-edit-stime').value = c.startTime || '';
+      document.getElementById('cm-camp-edit-etime').value = c.endTime || '';
+      document.getElementById('cm-camp-edit-location').value = c.location || '';
+      document.getElementById('cm-camp-edit-instructor').value = c.instructor || '';
+      document.getElementById('cm-camp-edit-price').value = c.price || 0;
+      document.getElementById('cm-camp-edit-capacity').value = c.capacity || 20;
+      document.getElementById('cm-camp-edit-ebprice').value = c.earlyBirdPrice || 0;
+      document.getElementById('cm-camp-edit-ebdate').value = fmtDate(c.earlyBirdDate);
+      document.getElementById('cm-camp-edit-sessions').value = c.totalSessions || 5;
+    } else if (c) {
+      // 一般活動編輯
+      document.getElementById('cm-name').value = c.name || '';
+      document.getElementById('cm-sdate').value = fmtDate(c.startDate);
+      document.getElementById('cm-edate').value = fmtDate(c.endDate);
+      document.getElementById('cm-stime').value = c.startTime || '';
+      document.getElementById('cm-etime').value = c.endTime || '';
+      document.getElementById('cm-location').value = c.location || '';
+      document.getElementById('cm-instructor').value = c.instructor || '';
+      document.getElementById('cm-price').value = c.price || 0;
+      document.getElementById('cm-capacity').value = c.capacity || 20;
+      document.getElementById('cm-ebprice').value = c.earlyBirdPrice || 0;
+      document.getElementById('cm-ebdate').value = fmtDate(c.earlyBirdDate);
+      document.getElementById('cm-sessions').value = c.totalSessions || 1;
+      document.getElementById('cm-image').value = c.image || '';
+      document.getElementById('cm-desc').value = c.description || '';
+      document.getElementById('cm-timeslot').value = c.timeSlotType || '全日';
+    } else {
+      // 新增
+      ['cm-name','cm-sdate','cm-edate','cm-stime','cm-etime','cm-location','cm-instructor','cm-image','cm-desc','cm-camp-theme'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+      document.getElementById('cm-price').value = 0;
+      document.getElementById('cm-capacity').value = 20;
+      document.getElementById('cm-ebprice').value = 0;
+      document.getElementById('cm-ebdate').value = '';
+      document.getElementById('cm-sessions').value = 1;
+      document.getElementById('cm-timeslot').value = '全日';
+      campBatchData = [{ name:'', startDate:'', endDate:'', items:[{ name:'', price:'', capacity:'' }] }];
+      renderCampBatches();
+    }
+    onCmTypeChange();
     var m = document.getElementById('res-course-modal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+  }
+
+  function updateCampEditPreview() {
+    var theme = (document.getElementById('cm-camp-edit-theme')||{}).value || '主題';
+    var batch = (document.getElementById('cm-camp-edit-batch')||{}).value || '梯次';
+    var item  = (document.getElementById('cm-camp-edit-item')||{}).value || '項目';
+    var prev = document.getElementById('cm-camp-edit-preview');
+    if (prev) prev.innerText = theme + ' - ' + batch + ' - ' + item;
   }
 
   function closeCourseModal() {
     var m = document.getElementById('res-course-modal');
     if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+    document.getElementById('cm-type').disabled = false;
   }
 
+  // ── 儲存活動 ──
   function saveCourse() {
-    var id = document.getElementById('cm-id').value.trim();
+    var type = document.getElementById('cm-type').value;
+    var isEditing = !!editingCourseId;
+
+    // ── 梯次活動編輯（單筆）──
+    if (type === '梯次活動' && isEditing) {
+      var theme = document.getElementById('cm-camp-edit-theme').value.trim();
+      var batch = document.getElementById('cm-camp-edit-batch').value.trim();
+      var item  = document.getElementById('cm-camp-edit-item').value.trim();
+      if (!theme || !batch || !item) { alert('梯次活動的「大主題」、「梯次名稱」、「活動項目」皆為必填！'); return; }
+      var payload = {
+        id: editingCourseId,
+        name: theme + ' - ' + batch + ' - ' + item,
+        type: '梯次活動',
+        timeSlotType: document.getElementById('cm-timeslot').value,
+        startDate: document.getElementById('cm-camp-edit-sdate').value,
+        endDate: document.getElementById('cm-camp-edit-edate').value,
+        startTime: document.getElementById('cm-camp-edit-stime').value,
+        endTime: document.getElementById('cm-camp-edit-etime').value,
+        location: document.getElementById('cm-camp-edit-location').value,
+        instructor: document.getElementById('cm-camp-edit-instructor').value,
+        price: document.getElementById('cm-camp-edit-price').value,
+        capacity: document.getElementById('cm-camp-edit-capacity').value,
+        earlyBirdPrice: document.getElementById('cm-camp-edit-ebprice').value,
+        earlyBirdDate: document.getElementById('cm-camp-edit-ebdate').value,
+        totalSessions: document.getElementById('cm-camp-edit-sessions').value,
+        equipmentJson: '[]'
+      };
+      if (typeof toggleLoader === 'function') toggleLoader(true);
+      callAPI('SI_ADMIN_UPDATE_COURSE', payload).then(function() {
+        if (typeof toggleLoader === 'function') toggleLoader(false);
+        if (typeof showToast === 'function') showToast('活動已更新');
+        closeCourseModal(); syncAll();
+      }).catch(function(e) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('失敗：' + e.message); });
+      return;
+    }
+
+    // ── 梯次活動批次新增 ──
+    if (type === '梯次活動' && !isEditing) {
+      var campTheme = document.getElementById('cm-camp-theme').value.trim();
+      if (!campTheme) { alert('請填寫活動大主題'); return; }
+      for (var bi=0; bi<campBatchData.length; bi++) {
+        var b = campBatchData[bi];
+        if (!b.name || !b.startDate || !b.endDate) { alert('第'+(bi+1)+'梯次資訊不完整'); return; }
+        for (var ii=0; ii<b.items.length; ii++) {
+          var it = b.items[ii];
+          if (!it.name || !it.price || !it.capacity) { alert('第'+(bi+1)+'梯次第'+(ii+1)+'項目資訊不完整'); return; }
+        }
+      }
+      var total = campBatchData.reduce(function(s,b){ return s+b.items.length; }, 0);
+      if (!confirm('即將建立 '+total+' 項梯次活動，確定嗎？')) return;
+
+      var timeslot = document.getElementById('cm-timeslot').value;
+      var campStime = document.getElementById('cm-camp-stime').value;
+      var campEtime = document.getElementById('cm-camp-etime').value;
+      var campLoc   = document.getElementById('cm-camp-location').value;
+      var campInstr = document.getElementById('cm-camp-instructor').value;
+      var campSess  = document.getElementById('cm-camp-sessions').value;
+
+      var prog = document.getElementById('cm-progress');
+      var progText = document.getElementById('cm-progress-text');
+      var saveBtn = document.getElementById('cm-save-btn');
+      if (prog) prog.classList.remove('hidden');
+      if (saveBtn) saveBtn.disabled = true;
+      if (typeof toggleLoader === 'function') toggleLoader(true);
+
+      var current = 0;
+      var promises = [];
+      campBatchData.forEach(function(b) {
+        b.items.forEach(function(item) {
+          promises.push(function() {
+            var newId = 'CAMP-' + Date.now().toString().slice(-4) + Math.floor(Math.random()*10000);
+            var payload = {
+              id: newId,
+              name: campTheme + ' - ' + b.name.trim() + ' - ' + item.name.trim(),
+              type: '梯次活動',
+              timeSlotType: timeslot,
+              startDate: b.startDate, endDate: b.endDate,
+              startTime: campStime, endTime: campEtime,
+              location: campLoc, instructor: campInstr,
+              price: item.price, capacity: item.capacity,
+              totalSessions: campSess,
+              earlyBirdPrice: 0, earlyBirdDate: '', equipmentJson: '[]'
+            };
+            return callAPI('SI_ADMIN_ADD_COURSE', payload).then(function() {
+              current++;
+              if (progText) progText.innerText = '(' + current + '/' + total + ')';
+            });
+          });
+        });
+      });
+
+      // 循序執行
+      promises.reduce(function(chain, fn) { return chain.then(fn); }, Promise.resolve())
+        .then(function() {
+          if (typeof toggleLoader === 'function') toggleLoader(false);
+          if (typeof showToast === 'function') showToast('全部 '+total+' 項梯次活動建立成功！');
+          if (prog) prog.classList.add('hidden');
+          if (saveBtn) saveBtn.disabled = false;
+          closeCourseModal(); syncAll();
+        }).catch(function(e) {
+          if (typeof toggleLoader === 'function') toggleLoader(false);
+          if (prog) prog.classList.add('hidden');
+          if (saveBtn) saveBtn.disabled = false;
+          alert('建立過程中發生錯誤：' + e.message);
+        });
+      return;
+    }
+
+    // ── 一般活動新增/編輯 ──
     var name = document.getElementById('cm-name').value.trim();
     if (!name) { alert('請填寫活動名稱'); return; }
     var payload = {
-      id: id||undefined, name:name, type:document.getElementById('cm-type').value,
-      timeSlotType:document.getElementById('cm-timeslot').value,
-      startDate:document.getElementById('cm-sdate').value, endDate:document.getElementById('cm-edate').value,
-      startTime:document.getElementById('cm-stime').value, endTime:document.getElementById('cm-etime').value,
-      location:document.getElementById('cm-location').value, instructor:document.getElementById('cm-instructor').value,
-      price:document.getElementById('cm-price').value, capacity:document.getElementById('cm-capacity').value,
-      earlyBirdPrice:document.getElementById('cm-ebprice').value, earlyBirdDate:document.getElementById('cm-ebdate').value,
-      totalSessions:document.getElementById('cm-sessions').value,
-      image:document.getElementById('cm-image').value, description:document.getElementById('cm-desc').value,
-      equipmentJson:'[]'
+      id: editingCourseId || undefined,
+      name: name, type: type,
+      timeSlotType: document.getElementById('cm-timeslot').value,
+      startDate: document.getElementById('cm-sdate').value,
+      endDate: document.getElementById('cm-edate').value,
+      startTime: document.getElementById('cm-stime').value,
+      endTime: document.getElementById('cm-etime').value,
+      location: document.getElementById('cm-location').value,
+      instructor: document.getElementById('cm-instructor').value,
+      price: document.getElementById('cm-price').value,
+      capacity: document.getElementById('cm-capacity').value,
+      earlyBirdPrice: document.getElementById('cm-ebprice').value,
+      earlyBirdDate: document.getElementById('cm-ebdate').value,
+      totalSessions: document.getElementById('cm-sessions').value,
+      image: document.getElementById('cm-image').value,
+      description: document.getElementById('cm-desc').value,
+      equipmentJson: '[]'
     };
+    if (!editingCourseId) {
+      payload.id = 'C' + Date.now().toString().slice(-5) + Math.floor(Math.random()*1000);
+    }
     if (typeof toggleLoader === 'function') toggleLoader(true);
-    callAPI(id ? 'SI_ADMIN_UPDATE_COURSE' : 'SI_ADMIN_ADD_COURSE', payload).then(function() {
+    callAPI(editingCourseId ? 'SI_ADMIN_UPDATE_COURSE' : 'SI_ADMIN_ADD_COURSE', payload).then(function() {
       if (typeof toggleLoader === 'function') toggleLoader(false);
       if (typeof showToast === 'function') showToast('活動已儲存');
       closeCourseModal(); syncAll();
-    }).catch(function(e) {
-      if (typeof toggleLoader === 'function') toggleLoader(false);
-      alert('儲存失敗：' + e.message);
-    });
+    }).catch(function(e) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('儲存失敗：' + e.message); });
   }
 
   // ── 會員 ──
@@ -579,7 +1004,6 @@ window.ReservationModule = (function () {
         +'</tr>';
     }).join('') || '<tr><td colspan="5" class="text-center py-10 text-slate-400">尚無會員資料</td></tr>';
   }
-
   function openMemberModal(userId) {
     var m = members.find(function(x){ return x.userId===userId; });
     if (!m) return;
@@ -604,12 +1028,10 @@ window.ReservationModule = (function () {
     var modal = document.getElementById('res-member-modal');
     if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
   }
-
   function closeMemberModal() {
     var modal = document.getElementById('res-member-modal');
     if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
   }
-
   function saveMember() {
     if (!editingMember) return;
     if (typeof toggleLoader === 'function') toggleLoader(true);
@@ -626,10 +1048,7 @@ window.ReservationModule = (function () {
       if (typeof toggleLoader === 'function') toggleLoader(false);
       if (typeof showToast === 'function') showToast('會員資料已更新');
       closeMemberModal(); syncAll();
-    }).catch(function(e) {
-      if (typeof toggleLoader === 'function') toggleLoader(false);
-      alert('更新失敗：' + e.message);
-    });
+    }).catch(function(e) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('更新失敗：' + e.message); });
   }
 
   // ── 新增報名 ──
@@ -642,7 +1061,6 @@ window.ReservationModule = (function () {
         return '<option value="'+esc(c.id)+'"'+(rem<=0?' disabled':'')+'>'+esc(c.name)+'　$'+c.price+'　剩'+rem+'名</option>';
       }).join('');
   }
-
   function onCourseChange() {
     var sel = document.getElementById('add-course-sel');
     var info = document.getElementById('add-course-info');
@@ -662,7 +1080,6 @@ window.ReservationModule = (function () {
     if (amtEl) amtEl.innerText = '$' + price;
     window._addPrice = price;
   }
-
   function submitAdd() {
     var courseId = (document.getElementById('add-course-sel')||{}).value||'';
     var name = ((document.getElementById('add-name')||{}).value||'').trim();
@@ -685,10 +1102,86 @@ window.ReservationModule = (function () {
         document.getElementById('add-course-info').classList.add('hidden');
         document.getElementById('add-amount').innerText='$0';
         syncAll(); setTab('orders');
-      }).catch(function(e) {
-        if (typeof toggleLoader === 'function') toggleLoader(false);
-        alert('建立失敗：' + e.message);
-      });
+      }).catch(function(e) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('建立失敗：' + e.message); });
+  }
+
+  // ── 簽到管理 ──
+  function refreshAttendCourseSelect() {
+    var sel = document.getElementById('attend-course-sel');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- 請選擇活動 --</option>' +
+      courses.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join('');
+  }
+  function onAttendCourseChange() {
+    var sel = document.getElementById('attend-course-sel');
+    var c = courses.find(function(x){ return x.id===(sel?sel.value:''); });
+    var today = new Date().toISOString().split('T')[0];
+    var dateEl = document.getElementById('attend-date');
+    if (dateEl) {
+      if (c && c.startDate && today < c.startDate) dateEl.value = fmtDate(c.startDate);
+      else if (c && c.endDate && today > c.endDate) dateEl.value = fmtDate(c.endDate);
+      else dateEl.value = today;
+    }
+    loadAttendList();
+  }
+  function loadAttendList() {
+    var courseId = (document.getElementById('attend-course-sel')||{}).value||'';
+    var date = (document.getElementById('attend-date')||{}).value||'';
+    var tbody = document.getElementById('res-attend-list');
+    if (!tbody) return;
+    if (!courseId) { tbody.innerHTML = '<tr><td colspan="3" class="text-center py-8 text-slate-400">請先選擇活動</td></tr>'; return; }
+    var courseOrders = orders.filter(function(o){ return o.courseId===courseId && !['CANCELLED','REFUNDED'].includes(o.status); });
+    attendList = courseOrders.map(function(o) {
+      var att = (o.extraData && o.extraData.attendance) ? o.extraData.attendance : {};
+      return { orderId: o.orderId, name: o.name, phone: o.phone, status: att[date] || 'NONE' };
+    });
+    renderAttendList();
+  }
+  function renderAttendList() {
+    var tbody = document.getElementById('res-attend-list');
+    if (!tbody) return;
+    if (!attendList.length) { tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-slate-400">此活動尚無有效報名學員</td></tr>'; return; }
+    tbody.innerHTML = attendList.map(function(p, idx) {
+      var btnBase = 'padding:4px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;transition:.15s;';
+      var present = p.status==='PRESENT' ? 'background:#22c55e;color:#fff;border-color:#22c55e;' : 'background:#fff;color:#374151;border-color:#d1d5db;';
+      var absent  = p.status==='ABSENT'  ? 'background:#ef4444;color:#fff;border-color:#ef4444;' : 'background:#fff;color:#374151;border-color:#d1d5db;';
+      var leave   = p.status==='LEAVE'   ? 'background:#eab308;color:#fff;border-color:#eab308;' : 'background:#fff;color:#374151;border-color:#d1d5db;';
+      return '<tr>'
+        +'<td class="font-bold text-slate-800">'+esc(p.name)+'</td>'
+        +'<td class="text-center text-slate-600">'+esc(p.phone)+'</td>'
+        +'<td class="text-center" style="white-space:nowrap;">'
+        +'<button style="'+btnBase+present+'" onclick="window.ReservationModule.setAttendStatus('+idx+',\'PRESENT\')">出席</button> '
+        +'<button style="'+btnBase+absent+'"  onclick="window.ReservationModule.setAttendStatus('+idx+',\'ABSENT\')">缺席</button> '
+        +'<button style="'+btnBase+leave+'"   onclick="window.ReservationModule.setAttendStatus('+idx+',\'LEAVE\')">請假</button>'
+        +(p.status!=='NONE' ? ' <button style="'+btnBase+'background:#fff;color:#94a3b8;border-color:#e2e8f0;" onclick="window.ReservationModule.setAttendStatus('+idx+',\'NONE\')">清除</button>' : '')
+        +'</td></tr>';
+    }).join('');
+  }
+  function setAttendStatus(idx, status) {
+    attendList[idx].status = status;
+    renderAttendList();
+  }
+  function saveAttendance() {
+    var courseId = (document.getElementById('attend-course-sel')||{}).value||'';
+    var date = (document.getElementById('attend-date')||{}).value||'';
+    if (!courseId || !date) { alert('請先選擇活動和日期'); return; }
+    if (!attendList.length) { alert('沒有學員資料可以儲存'); return; }
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI('SI_ADMIN_UPDATE_ATTENDANCE', {
+      courseId: courseId, date: date,
+      attendanceData: attendList.map(function(a){ return { orderId: a.orderId, status: a.status }; })
+    }).then(function() {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      if (typeof showToast === 'function') showToast('簽到資料已儲存！');
+      syncAll();
+    }).catch(function(e) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('儲存失敗：' + e.message); });
+  }
+  function goAttend(courseId) {
+    setTab('attend');
+    setTimeout(function() {
+      var sel = document.getElementById('attend-course-sel');
+      if (sel) { sel.value = courseId; onAttendCourseChange(); }
+    }, 100);
   }
 
   // ── CSV 匯出 ──
@@ -716,8 +1209,15 @@ window.ReservationModule = (function () {
     renderOrders:renderOrders, renderCourses:renderCourses, renderMembers:renderMembers,
     openOrderModal:openOrderModal, closeOrderModal:closeOrderModal, saveOrder:saveOrder,
     openCourseModal:openCourseModal, closeCourseModal:closeCourseModal, saveCourse:saveCourse,
+    onCmTypeChange:onCmTypeChange, updateCampEditPreview:updateCampEditPreview,
+    addCampBatch:addCampBatch, removeCampBatch:removeCampBatch,
+    addCampItem:addCampItem, removeItem:removeItem, updateBatch:updateBatch, updateItem:updateItem,
+    toggleBatch:toggleBatch,
     openMemberModal:openMemberModal, closeMemberModal:closeMemberModal, saveMember:saveMember,
-    onCourseChange:onCourseChange, submitAdd:submitAdd, exportCsv:exportCsv
+    onCourseChange:onCourseChange, submitAdd:submitAdd, exportCsv:exportCsv,
+    refreshAttendCourseSelect:refreshAttendCourseSelect, onAttendCourseChange:onAttendCourseChange,
+    loadAttendList:loadAttendList, setAttendStatus:setAttendStatus, saveAttendance:saveAttendance,
+    goAttend:goAttend
   };
 })();
 
