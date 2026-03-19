@@ -1,954 +1,729 @@
 <div id="reservation-workspace" class="workspace-hidden flex-1 h-full w-full bg-[#f0f2f5] overflow-hidden">
-  <div class="flex h-full w-full">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+#reservation-workspace .res-nav-item { display:flex; align-items:center; gap:12px; padding:0 20px; height:48px; font-size:14px; font-weight:700; color:#64748b; border-left:4px solid transparent; cursor:pointer; background:none; border-right:none; border-top:none; border-bottom:none; width:100%; text-align:left; transition:all .18s; }
+#reservation-workspace .res-nav-item:hover { background:#f8fafc; color:#06C755; }
+#reservation-workspace .res-nav-item.active { background:#f0fbf5; color:#06C755; border-left-color:#06C755; font-weight:900; }
+#reservation-workspace .res-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; box-shadow:0 2px 6px rgba(0,0,0,.03); overflow:hidden; margin-bottom:20px; }
+#reservation-workspace .res-table { width:100%; border-collapse:collapse; }
+#reservation-workspace .res-table th { padding:12px 16px; background:#f9fafb; color:#6b7280; font-size:12px; font-weight:700; border-bottom:1px solid #e5e7eb; white-space:nowrap; text-align:left; }
+#reservation-workspace .res-table td { padding:12px 16px; font-size:13px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+#reservation-workspace .res-table tr:last-child td { border-bottom:none; }
+#reservation-workspace .res-table tr:hover td { background:#fafafa; }
+#reservation-workspace .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:700; }
+#reservation-workspace .res-input { width:100%; border:1px solid #d1d5db; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; transition:border .18s; box-sizing:border-box; }
+#reservation-workspace .res-input:focus { border-color:#06C755; }
+#reservation-workspace .res-btn-g { background:#06C755; color:#fff; border:none; border-radius:8px; padding:9px 18px; font-weight:700; font-size:13px; cursor:pointer; transition:.18s; display:inline-flex; align-items:center; gap:6px; }
+#reservation-workspace .res-btn-g:hover { background:#05b34c; }
+#reservation-workspace .res-btn-w { background:#fff; border:1px solid #d1d5db; color:#374151; border-radius:8px; padding:9px 18px; font-weight:600; font-size:13px; cursor:pointer; transition:.18s; }
+#reservation-workspace .res-btn-w:hover { border-color:#06C755; color:#06C755; }
+#reservation-workspace .stat-box { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:20px; box-shadow:0 2px 4px rgba(0,0,0,.02); }
+</style>
 
-    <!-- 左側選單（桌機） -->
-    <aside class="hidden md:flex w-[220px] bg-white border-r border-slate-200 flex-col shrink-0">
-      <div class="px-6 py-5 border-b border-slate-200">
-        <div class="text-xl font-black tracking-tight text-[#06C755]">預約管理站</div>
-        <div class="text-[11px] text-slate-400 font-bold mt-1">Sports-Island Style</div>
+<div class="flex h-full w-full">
+
+  <!-- 左側選單 -->
+  <aside class="hidden md:flex w-[220px] bg-white border-r border-slate-200 flex-col shrink-0 shadow-sm">
+    <div class="px-6 py-5 border-b border-slate-100">
+      <div class="text-lg font-black text-[#06C755] tracking-tight">課程報名系統</div>
+      <div class="text-[11px] text-slate-400 font-bold mt-0.5">Course Registration</div>
+    </div>
+    <div class="flex-1 py-3">
+      <button class="res-nav-item" id="res-nav-dashboard" onclick="window.ReservationModule.setTab('dashboard')"><i class="fas fa-chart-pie w-4 text-center"></i> 營運統計</button>
+      <button class="res-nav-item" id="res-nav-orders"    onclick="window.ReservationModule.setTab('orders')">  <i class="fas fa-receipt w-4 text-center"></i>    訂單管理</button>
+      <button class="res-nav-item" id="res-nav-add"       onclick="window.ReservationModule.setTab('add')">    <i class="fas fa-plus-circle w-4 text-center"></i> 新增報名</button>
+      <button class="res-nav-item" id="res-nav-courses"   onclick="window.ReservationModule.setTab('courses')"><i class="fas fa-book-open w-4 text-center"></i>   課程管理</button>
+      <button class="res-nav-item" id="res-nav-members"   onclick="window.ReservationModule.setTab('members')"><i class="fas fa-users w-4 text-center"></i>       會員管理</button>
+    </div>
+    <div class="p-4 border-t border-slate-100">
+      <button onclick="window.ReservationModule.syncAll()" class="res-btn-w w-full text-xs py-2.5">
+        <i class="fas fa-sync-alt mr-1"></i> 同步資料
+      </button>
+    </div>
+  </aside>
+
+  <!-- 主內容 -->
+  <main class="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
+
+    <!-- 頂部 -->
+    <header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
+      <h2 id="res-page-title" class="text-lg font-black text-slate-800">營運統計</h2>
+      <div class="flex items-center gap-2">
+        <button id="res-export-btn" onclick="window.ReservationModule.exportCsv()" class="hidden res-btn-w text-xs">
+          <i class="fas fa-file-export mr-1"></i> 匯出 CSV
+        </button>
+        <button onclick="window.ReservationModule.syncAll()" class="res-btn-w text-xs">
+          <i class="fas fa-sync-alt mr-1"></i> 同步
+        </button>
       </div>
+    </header>
 
-      <div class="flex-1 py-4">
-        <button onclick="window.ReservationModule.setTab('dashboard')" id="res-nav-dashboard"
-          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
-          <i class="fas fa-chart-pie w-5 text-center"></i><span>營運統計</span>
-        </button>
-        <button onclick="window.ReservationModule.setTab('orders')" id="res-nav-orders"
-          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
-          <i class="fas fa-calendar-check w-5 text-center"></i><span>預約管理</span>
-        </button>
-        <button onclick="window.ReservationModule.setTab('add')" id="res-nav-add"
-          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
-          <i class="fas fa-plus-circle w-5 text-center"></i><span>新增預約</span>
-        </button>
-        <button onclick="window.ReservationModule.setTab('activities')" id="res-nav-activities"
-          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
-          <i class="fas fa-tags w-5 text-center"></i><span>活動管理</span>
-        </button>
-        <button onclick="window.ReservationModule.setTab('insights')" id="res-nav-insights"
-          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
-          <i class="fas fa-lightbulb w-5 text-center"></i><span>預約洞察</span>
-        </button>
+    <!-- 手機 tab -->
+    <div class="md:hidden bg-white border-b px-3 py-2 shrink-0">
+      <div class="grid grid-cols-5 gap-1 text-[10px]">
+        <button id="res-tab-dashboard" onclick="window.ReservationModule.setTab('dashboard')" class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">統計</button>
+        <button id="res-tab-orders"    onclick="window.ReservationModule.setTab('orders')"    class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">訂單</button>
+        <button id="res-tab-add"       onclick="window.ReservationModule.setTab('add')"       class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">新增</button>
+        <button id="res-tab-courses"   onclick="window.ReservationModule.setTab('courses')"   class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">課程</button>
+        <button id="res-tab-members"   onclick="window.ReservationModule.setTab('members')"   class="py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold">會員</button>
       </div>
+    </div>
 
-      <div class="p-4 border-t border-slate-200">
-        <button onclick="window.ReservationModule.loadReservations()"
-          class="w-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold py-2.5 rounded-lg transition text-sm shadow-sm">
-          重新同步資料
-        </button>
-      </div>
-    </aside>
+    <div class="flex-1 overflow-y-auto p-4 md:p-6">
 
-    <!-- 主內容 -->
-    <main class="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
-
-      <!-- 頂部 -->
-      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 shrink-0">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-            <i class="fas fa-calendar-day text-lg"></i>
-          </div>
-          <div class="min-w-0">
-            <h2 id="res-page-title" class="text-lg md:text-xl font-black text-slate-800 truncate">預約管理</h2>
-            <div class="text-[11px] text-slate-400 font-bold tracking-wider uppercase">Reservation Dashboard</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 md:gap-3 shrink-0">
-          <button onclick="window.ReservationModule.exportCsv()"
-            class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg font-bold text-sm hover:bg-blue-100 transition">
-            <i class="fas fa-file-export"></i> 匯出 CSV
-          </button>
-          <button onclick="window.ReservationModule.loadReservations()"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 rounded-lg font-bold text-sm hover:bg-slate-50 transition">
-            <i class="fas fa-sync-alt"></i> 同步
-          </button>
-          <a href="booking.html" target="_blank"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-[#54C061] text-white rounded-lg font-bold text-sm hover:bg-green-600 transition shadow-sm">
-            <i class="fas fa-up-right-from-square"></i> 前台頁
-          </a>
-        </div>
-      </header>
-
-      <!-- 手機版 tab -->
-      <div class="md:hidden bg-white border-b border-slate-200 px-4 py-3 shrink-0">
-        <div class="grid grid-cols-5 gap-1">
-          <button onclick="window.ReservationModule.setTab('dashboard')" id="res-tab-dashboard" class="res-tab-btn px-2 py-2 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 transition">統計</button>
-          <button onclick="window.ReservationModule.setTab('orders')" id="res-tab-orders" class="res-tab-btn px-2 py-2 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 transition">預約</button>
-          <button onclick="window.ReservationModule.setTab('add')" id="res-tab-add" class="res-tab-btn px-2 py-2 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 transition">新增</button>
-          <button onclick="window.ReservationModule.setTab('activities')" id="res-tab-activities" class="res-tab-btn px-2 py-2 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 transition">活動</button>
-          <button onclick="window.ReservationModule.setTab('insights')" id="res-tab-insights" class="res-tab-btn px-2 py-2 rounded-xl text-[11px] font-black bg-slate-100 text-slate-600 transition">洞察</button>
-        </div>
-      </div>
-
-      <!-- 內容 -->
-      <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
-
-        <!-- 統計頁 -->
-        <section id="res-panel-dashboard" class="space-y-6">
-          <div id="res-stat-cards" class="grid grid-cols-2 xl:grid-cols-5 gap-4"></div>
-          <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                <i class="fas fa-ranking-star text-amber-500"></i>
-                <h3 class="font-black text-slate-800">熱門服務排行</h3>
-              </div>
-              <div id="res-top-services" class="p-5"></div>
-            </div>
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                <i class="fas fa-clock text-orange-500"></i>
-                <h3 class="font-black text-slate-800">狀態分布</h3>
-              </div>
-              <div id="res-status-overview" class="p-5"></div>
-            </div>
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                <i class="fas fa-globe text-sky-500"></i>
-                <h3 class="font-black text-slate-800">來源分布</h3>
-              </div>
-              <div id="res-source-overview" class="p-5"></div>
-            </div>
-          </div>
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-              <i class="fas fa-list-check text-green-500"></i>
-              <h3 class="font-black text-slate-800">最近預約</h3>
-            </div>
-            <div id="res-recent-list" class="p-5"></div>
-          </div>
-        </section>
-
-        <!-- 預約管理頁 -->
-        <section id="res-panel-orders" class="space-y-5 hidden">
-          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
-              <div class="xl:col-span-2">
-                <label class="block text-xs font-bold text-slate-500 mb-1">關鍵字搜尋</label>
-                <input id="res-filter-keyword" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]" placeholder="姓名 / 電話 / LINE ID / 備註">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">狀態</label>
-                <select id="res-filter-status" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
-                  <option value="ALL">全部狀態</option>
-                  <option value="待確認">待確認</option>
-                  <option value="已確認">已確認</option>
-                  <option value="已完成">已完成</option>
-                  <option value="已取消">已取消</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">服務項目</label>
-                <select id="res-filter-service" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
-                  <option value="ALL">全部服務</option>
-                </select>
-              </div>
-              <div class="flex items-end gap-2">
-                <button onclick="window.ReservationModule.resetFilters()" class="w-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-600 font-bold py-2.5 rounded-lg transition text-sm">清除條件</button>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
-              <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">起始日期</label>
-                <input id="res-filter-from" type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">結束日期</label>
-                <input id="res-filter-to" type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
-              </div>
-              <div class="flex items-end">
-                <div class="text-sm font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 w-full">篩選結果：<span id="res-filter-count" class="text-[#06C755]">0</span> 筆</div>
-              </div>
-            </div>
-          </div>
-
-          <div id="res-mobile-list" class="md:hidden space-y-4"></div>
-          <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
-            <table class="w-full text-left text-sm min-w-[1100px]">
-              <thead class="bg-slate-50 text-slate-500 font-black tracking-widest border-b border-slate-200">
-                <tr>
-                  <th class="p-4">建立時間</th>
-                  <th class="p-4">預約日期</th>
-                  <th class="p-4">姓名 / 電話</th>
-                  <th class="p-4">服務</th>
-                  <th class="p-4">來源</th>
-                  <th class="p-4">狀態</th>
-                  <th class="p-4 text-right">操作</th>
-                </tr>
-              </thead>
-              <tbody id="res-admin-list" class="divide-y divide-slate-100"></tbody>
+      <!-- ===== 營運統計 ===== -->
+      <div id="res-panel-dashboard">
+        <div id="res-stat-cards" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6"></div>
+        <div class="res-card">
+          <div class="px-5 py-3 border-b font-bold text-slate-700 text-sm">各課程營收概覽</div>
+          <div class="overflow-x-auto">
+            <table class="res-table">
+              <thead><tr>
+                <th>課程名稱</th><th class="text-center">報名數</th>
+                <th class="text-center">已付款</th><th class="text-center">實收</th>
+                <th class="text-center">待付款</th><th class="text-center">待收</th>
+              </tr></thead>
+              <tbody id="res-course-stats"></tbody>
             </table>
           </div>
-        </section>
-
-        <!-- ===== 新增預約頁（運動島課程系統） ===== -->
-        <section id="res-panel-add" class="hidden">
-          <div class="max-w-2xl mx-auto space-y-4">
-
-            <!-- Step 1: 選課程 -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">1</div>
-                <div class="font-black text-slate-800">選擇課程 <span class="text-red-400">*</span></div>
-              </div>
-              <div class="p-4">
-                <select id="add-si-course" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition" onchange="window.ReservationModule.onSICourseChange()">
-                  <option value="">-- 請選擇課程 --</option>
-                </select>
-                <div id="add-si-course-info" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-xl text-xs text-green-800 font-bold space-y-1"></div>
-              </div>
-            </div>
-
-            <!-- Step 2: 填學員資料 -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">2</div>
-                <div class="font-black text-slate-800">學員資料 <span class="text-red-400">*</span></div>
-              </div>
-              <div class="p-4 space-y-3">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">學員姓名 <span class="text-red-400">*</span></label>
-                    <input id="add-si-name" type="text" placeholder="學員真實姓名" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">身分證字號 <span class="text-red-400">*</span></label>
-                    <input id="add-si-nationalid" type="text" placeholder="A123456789" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition uppercase">
-                  </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">聯絡電話 <span class="text-red-400">*</span></label>
-                    <input id="add-si-phone" type="tel" placeholder="0912345678" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">LINE userId（選填）</label>
-                    <input id="add-si-userid" type="text" placeholder="U開頭的LINE userId" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition font-mono text-xs">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Step 3: 費用與備註 -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">3</div>
-                <div class="font-black text-slate-800">費用 / 備註</div>
-              </div>
-              <div class="p-4 space-y-3">
-                <div>
-                  <label class="block text-xs font-bold text-slate-500 mb-1.5">備註（選填）</label>
-                  <textarea id="add-si-note" rows="3" placeholder="特殊狀況或備注..." class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition resize-none"></textarea>
-                </div>
-                <div class="flex items-center justify-between bg-slate-50 rounded-xl px-5 py-4 border">
-                  <span class="text-sm font-bold text-slate-600">應繳金額</span>
-                  <span id="add-si-amount" class="text-2xl font-black text-[#06C755]">$0</span>
-                </div>
-              </div>
-            </div>
-
-            <button onclick="window.ReservationModule.submitSIRegistration()" class="w-full bg-[#06C755] hover:bg-[#05b34c] text-white font-black py-4 rounded-xl text-base shadow-sm transition">
-              <i class="fas fa-check mr-2"></i>確認建立報名訂單
-            </button>
-          </div>
-        </section>
-
-        <!-- ===== 活動管理頁 ===== -->
-        <section id="res-panel-activities" class="hidden space-y-5">
-          <div class="flex items-center justify-between">
-            <div class="text-sm font-bold text-slate-500">共 <span id="act-total-count" class="text-[#06C755]">0</span> 個活動</div>
-            <button onclick="window.ReservationModule.openActivityModal(null)"
-              class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#06C755] text-white rounded-xl font-bold text-sm hover:bg-[#05b34c] transition shadow-sm">
-              <i class="fas fa-plus"></i> 新增活動
-            </button>
-          </div>
-
-          <div id="act-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-        </section>
-
-        <!-- 洞察頁 -->
-        <section id="res-panel-insights" class="space-y-5 hidden">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                <i class="fas fa-calendar-week text-violet-500"></i>
-                <h3 class="font-black text-slate-800">日期分布</h3>
-              </div>
-              <div id="res-date-insights" class="p-5"></div>
-            </div>
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-                <i class="fas fa-user-clock text-emerald-500"></i>
-                <h3 class="font-black text-slate-800">時間帶分布</h3>
-              </div>
-              <div id="res-time-insights" class="p-5"></div>
-            </div>
-          </div>
-          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
-              <i class="fas fa-circle-info text-sky-500"></i>
-              <h3 class="font-black text-slate-800">營運建議</h3>
-            </div>
-            <div id="res-advice-box" class="p-5 space-y-3"></div>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <!-- ===== 預約詳情彈窗 ===== -->
-  <div id="res-detail-modal" class="fixed inset-0 z-[999] hidden bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-        <div>
-          <div class="text-lg font-black text-slate-800">預約詳情</div>
-          <div class="text-[11px] text-slate-400 font-bold uppercase">Reservation Detail</div>
-        </div>
-        <button onclick="window.ReservationModule.closeDetailModal()" class="w-10 h-10 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition flex items-center justify-center">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div id="res-detail-body" class="p-6 max-h-[75vh] overflow-y-auto"></div>
-      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between gap-3">
-        <button id="res-detail-delete-btn" class="px-5 py-2.5 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl font-bold transition text-sm">刪除此筆預約</button>
-        <div class="flex gap-2 justify-end">
-          <button onclick="window.ReservationModule.closeDetailModal()" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-xl font-bold transition text-sm">關閉</button>
-          <button id="res-detail-save-btn" class="px-5 py-2.5 bg-[#06C755] text-white hover:bg-[#05b34c] rounded-xl font-bold transition text-sm shadow-sm">儲存狀態</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== 活動編輯彈窗 ===== -->
-  <div id="act-modal" class="fixed inset-0 z-[999] hidden bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-        <div>
-          <div id="act-modal-title" class="text-lg font-black text-slate-800">新增活動</div>
-          <div class="text-[11px] text-slate-400 font-bold uppercase">Activity Editor</div>
-        </div>
-        <button onclick="window.ReservationModule.closeActivityModal()" class="w-10 h-10 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition flex items-center justify-center">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4">
-        <input type="hidden" id="act-edit-id">
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">活動名稱 <span class="text-red-400">*</span></label>
-            <input id="act-edit-title" type="text" placeholder="例如：體驗課程、私人教練課..." class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">地點</label>
-            <input id="act-edit-location" type="text" placeholder="活動地點" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">價格</label>
-            <input id="act-edit-price" type="text" placeholder="例如：$500 / 免費" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">時長（分鐘）</label>
-            <input id="act-edit-duration" type="number" placeholder="60" min="1" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">排序（數字越小越前）</label>
-            <input id="act-edit-sort" type="number" placeholder="1" min="0" class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">圖片網址（選填）</label>
-            <input id="act-edit-image" type="text" placeholder="https://..." class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">活動描述</label>
-            <textarea id="act-edit-desc" rows="3" placeholder="活動說明..." class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition resize-none"></textarea>
-          </div>
-
-          <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-500 mb-1.5">備注</label>
-            <input id="act-edit-note" type="text" placeholder="其他備注..." class="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-[#06C755] transition">
-          </div>
-
-          <div class="md:col-span-2 flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <input type="checkbox" id="act-edit-active" class="w-5 h-5 accent-[#06C755] cursor-pointer">
-            <label for="act-edit-active" class="text-sm font-bold text-slate-700 cursor-pointer">啟用此活動（前台可見）</label>
-          </div>
         </div>
       </div>
 
-      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex justify-between gap-3">
-        <button id="act-delete-btn" class="px-5 py-2.5 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl font-bold transition text-sm hidden">刪除活動</button>
-        <div class="flex gap-2 ml-auto">
-          <button onclick="window.ReservationModule.closeActivityModal()" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-xl font-bold transition text-sm">取消</button>
-          <button onclick="window.ReservationModule.saveActivity()" class="px-6 py-2.5 bg-[#06C755] text-white hover:bg-[#05b34c] rounded-xl font-bold transition text-sm shadow-sm">
-            <i class="fas fa-save mr-1"></i>儲存活動
+      <!-- ===== 訂單管理 ===== -->
+      <div id="res-panel-orders" class="hidden">
+        <div class="bg-white rounded-xl border border-slate-200 p-4 mb-4 flex flex-wrap gap-3">
+          <input id="res-filter-kw" type="text" placeholder="搜尋姓名、電話、訂單號..." class="res-input flex-1 min-w-[160px] text-sm">
+          <select id="res-filter-status" class="res-input w-36 text-sm">
+            <option value="">全部狀態</option>
+            <option value="PENDING">待付款</option>
+            <option value="PAID">已完款</option>
+            <option value="REFUND_REQUESTED">申退款</option>
+            <option value="REFUNDED">已退款</option>
+            <option value="CANCELLED">已取消</option>
+          </select>
+          <select id="res-filter-course" class="res-input w-44 text-sm">
+            <option value="">全部課程</option>
+          </select>
+        </div>
+        <div class="res-card overflow-x-auto">
+          <table class="res-table">
+            <thead><tr>
+              <th>訂單號</th><th>課程</th><th>學員</th>
+              <th class="text-center">金額</th><th class="text-center">狀態</th>
+              <th class="text-center">後五碼</th><th class="text-right">操作</th>
+            </tr></thead>
+            <tbody id="res-order-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== 新增報名 ===== -->
+      <div id="res-panel-add" class="hidden">
+        <div class="max-w-2xl mx-auto space-y-4">
+          <!-- Step 1 -->
+          <div class="res-card">
+            <div class="px-6 py-4 border-b flex items-center gap-3">
+              <div class="w-7 h-7 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">1</div>
+              <div class="font-black text-slate-800">選擇課程 <span class="text-red-400">*</span></div>
+            </div>
+            <div class="p-4">
+              <select id="add-course-sel" class="res-input text-sm" onchange="window.ReservationModule.onCourseChange()">
+                <option value="">-- 請選擇課程 --</option>
+              </select>
+              <div id="add-course-info" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-xl text-xs text-green-800 font-bold space-y-1"></div>
+            </div>
+          </div>
+          <!-- Step 2 -->
+          <div class="res-card">
+            <div class="px-6 py-4 border-b flex items-center gap-3">
+              <div class="w-7 h-7 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">2</div>
+              <div class="font-black text-slate-800">學員資料 <span class="text-red-400">*</span></div>
+            </div>
+            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">學員姓名 *</label><input id="add-name" class="res-input text-sm" placeholder="真實姓名"></div>
+              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">身分證字號 *</label><input id="add-nid" class="res-input text-sm uppercase" placeholder="A123456789"></div>
+              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">聯絡電話 *</label><input id="add-phone" class="res-input text-sm" type="tel" placeholder="0912345678"></div>
+              <div><label class="block text-xs font-bold text-slate-500 mb-1.5">LINE userId（選填）</label><input id="add-uid" class="res-input text-sm font-mono" placeholder="U開頭的LINE userId"></div>
+            </div>
+          </div>
+          <!-- Step 3 -->
+          <div class="res-card">
+            <div class="px-6 py-4 border-b flex items-center gap-3">
+              <div class="w-7 h-7 rounded-full bg-[#06C755] text-white flex items-center justify-center font-black text-sm">3</div>
+              <div class="font-black text-slate-800">備註 / 確認金額</div>
+            </div>
+            <div class="p-4 space-y-3">
+              <textarea id="add-note" rows="3" placeholder="特殊狀況或備注..." class="res-input text-sm resize-none"></textarea>
+              <div class="flex items-center justify-between bg-slate-50 rounded-xl px-5 py-4 border">
+                <span class="text-sm font-bold text-slate-600">應繳金額</span>
+                <span id="add-amount" class="text-2xl font-black text-[#06C755]">$0</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="window.ReservationModule.submitAdd()" class="res-btn-g w-full py-4 text-base justify-center">
+            <i class="fas fa-check"></i> 確認建立報名訂單
           </button>
         </div>
       </div>
+
+      <!-- ===== 課程管理 ===== -->
+      <div id="res-panel-courses" class="hidden">
+        <div class="flex justify-between items-center mb-4">
+          <input id="res-course-kw" type="text" placeholder="搜尋課程..." class="res-input w-56 text-sm" oninput="window.ReservationModule.renderCourses()">
+          <button onclick="window.ReservationModule.openCourseModal(null)" class="res-btn-g"><i class="fas fa-plus"></i> 新增課程</button>
+        </div>
+        <div class="res-card overflow-x-auto">
+          <table class="res-table">
+            <thead><tr>
+              <th>課程名稱</th><th>類型 / 日期</th><th class="text-center">費用</th>
+              <th class="text-center">名額</th><th class="text-center">報名狀況</th><th class="text-right">操作</th>
+            </tr></thead>
+            <tbody id="res-course-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== 會員管理 ===== -->
+      <div id="res-panel-members" class="hidden">
+        <input id="res-member-kw" type="text" placeholder="搜尋姓名、身分證..." class="res-input w-64 text-sm mb-4" oninput="window.ReservationModule.renderMembers()">
+        <div class="res-card overflow-x-auto">
+          <table class="res-table">
+            <thead><tr>
+              <th>姓名</th><th class="text-center">電話</th><th class="text-center">身分證</th>
+              <th class="text-center">家人數</th><th class="text-right">操作</th>
+            </tr></thead>
+            <tbody id="res-member-list"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- 訂單編輯 Modal -->
+<div id="res-order-modal" class="fixed inset-0 bg-black/60 z-[500] hidden items-center justify-center">
+  <div class="bg-white w-[95%] max-w-sm rounded-2xl shadow-2xl overflow-hidden">
+    <div class="h-14 border-b px-5 flex justify-between items-center">
+      <h3 class="font-black text-lg">編輯訂單</h3>
+      <button onclick="window.ReservationModule.closeOrderModal()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="p-5 space-y-3">
+      <input type="hidden" id="modal-order-id">
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="block text-xs font-bold text-slate-500 mb-1">狀態</label>
+          <select id="modal-order-status" class="res-input text-sm">
+            <option value="PENDING">待付款</option><option value="PAID">已完款</option>
+            <option value="REFUND_REQUESTED">申退款</option><option value="REFUNDED">已退款</option>
+            <option value="CANCELLED">已取消</option>
+          </select>
+        </div>
+        <div><label class="block text-xs font-bold text-slate-500 mb-1">實收金額</label>
+          <input id="modal-order-amount" type="number" class="res-input text-sm">
+        </div>
+      </div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">匯款後五碼</label>
+        <input id="modal-order-remittance" maxlength="5" class="res-input text-center font-mono text-2xl tracking-widest">
+      </div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">備註</label>
+        <textarea id="modal-order-note" rows="2" class="res-input text-sm resize-none"></textarea>
+      </div>
+    </div>
+    <div class="h-14 border-t px-5 flex justify-end items-center gap-3">
+      <button onclick="window.ReservationModule.closeOrderModal()" class="res-btn-w">取消</button>
+      <button onclick="window.ReservationModule.saveOrder()" class="res-btn-g">更新訂單</button>
     </div>
   </div>
+</div>
 
-  <script>
-    window.ReservationModule = {
-      list: [],
-      filteredList: [],
-      activities: [],
-      currentTab: 'dashboard',
-      activeItem: null,
-      filtersBound: false,
+<!-- 課程編輯 Modal -->
+<div id="res-course-modal" class="fixed inset-0 bg-black/60 z-[500] hidden items-center justify-center">
+  <div class="bg-white w-[95%] max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div class="h-14 border-b px-5 flex justify-between items-center shrink-0">
+      <h3 id="res-course-modal-title" class="font-black text-lg">新增課程</h3>
+      <button onclick="window.ReservationModule.closeCourseModal()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input type="hidden" id="cm-id">
+      <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">課程名稱 *</label><input id="cm-name" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">類型</label>
+        <select id="cm-type" class="res-input text-sm"><option>單日課程</option><option>多日營隊</option><option>常態課後</option></select>
+      </div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">時段類型</label>
+        <select id="cm-timeslot" class="res-input text-sm"><option>全日</option><option>上午</option><option>下午</option><option>晚間</option></select>
+      </div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">開始日期</label><input id="cm-sdate" type="date" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">結束日期</label><input id="cm-edate" type="date" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">開始時間</label><input id="cm-stime" type="time" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">結束時間</label><input id="cm-etime" type="time" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">上課地點</label><input id="cm-location" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">教練/老師</label><input id="cm-instructor" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">原價</label><input id="cm-price" type="number" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">總名額</label><input id="cm-capacity" type="number" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">早鳥價</label><input id="cm-ebprice" type="number" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">早鳥截止日</label><input id="cm-ebdate" type="date" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">總堂數</label><input id="cm-sessions" type="number" value="1" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">圖片網址</label><input id="cm-image" class="res-input text-sm" placeholder="https://..."></div>
+      <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">課程說明</label><textarea id="cm-desc" rows="3" class="res-input text-sm resize-none"></textarea></div>
+    </div>
+    <div class="h-14 border-t px-5 flex justify-end items-center gap-3 shrink-0">
+      <button onclick="window.ReservationModule.closeCourseModal()" class="res-btn-w">取消</button>
+      <button onclick="window.ReservationModule.saveCourse()" class="res-btn-g"><i class="fas fa-save"></i> 儲存課程</button>
+    </div>
+  </div>
+</div>
 
-      init: function () {
-        this.bindFiltersOnce();
-        this.setTab('dashboard');
-        this.loadReservations();
-        this.loadActivities();
-        this.loadSICourses();
-      },
+<!-- 會員詳情 Modal -->
+<div id="res-member-modal" class="fixed inset-0 bg-black/60 z-[500] hidden items-center justify-center">
+  <div class="bg-white w-[95%] max-w-lg max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div class="h-14 border-b px-5 flex justify-between items-center shrink-0">
+      <h3 class="font-black text-lg">會員資料</h3>
+      <button onclick="window.ReservationModule.closeMemberModal()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+      <input type="hidden" id="mm-uid">
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">姓名</label><input id="mm-name" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">身分證（不可改）</label><input id="mm-nid" class="res-input text-sm bg-slate-100" readonly></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">生日</label><input id="mm-birthday" type="date" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">性別</label><select id="mm-gender" class="res-input text-sm"><option>男</option><option>女</option></select></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">電話</label><input id="mm-phone" class="res-input text-sm"></div>
+      <div><label class="block text-xs font-bold text-slate-500 mb-1">地址</label><input id="mm-address" class="res-input text-sm"></div>
+      <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">健康備註</label><textarea id="mm-health" rows="2" class="res-input text-sm resize-none"></textarea></div>
+      <div class="md:col-span-2">
+        <div class="text-xs font-bold text-slate-500 mb-2">家人名單</div>
+        <div id="mm-family" class="bg-slate-50 border rounded-xl p-3 min-h-[48px] text-sm text-slate-600 space-y-1"></div>
+      </div>
+    </div>
+    <div class="h-14 border-t px-5 flex justify-end items-center gap-3 shrink-0">
+      <button onclick="window.ReservationModule.closeMemberModal()" class="res-btn-w">取消</button>
+      <button onclick="window.ReservationModule.saveMember()" class="res-btn-g">儲存</button>
+    </div>
+  </div>
+</div>
 
-      bindFiltersOnce: function () {
-        if (this.filtersBound) return;
-        this.filtersBound = true;
-        var self = this;
-        ['res-filter-keyword', 'res-filter-status', 'res-filter-service', 'res-filter-from', 'res-filter-to'].forEach(function (id) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          el.addEventListener('input', function () { self.renderAll(); });
-          el.addEventListener('change', function () { self.renderAll(); });
-        });
-      },
+<script>
+window.ReservationModule = (function () {
+  var API = typeof WORKER_URL !== 'undefined' ? WORKER_URL : '';
+  var courses = [], orders = [], members = [];
+  var editingOrder = null, editingMember = null;
+  var tabs = ['dashboard','orders','add','courses','members'];
+  var titles = { dashboard:'營運統計', orders:'訂單管理', add:'新增報名', courses:'課程管理', members:'會員管理' };
 
-      setTab: function (tab) {
-        this.currentTab = tab;
-        var allTabs = ['dashboard', 'orders', 'add', 'activities', 'insights'];
-        allTabs.forEach(function (key) {
-          var panel = document.getElementById('res-panel-' + key);
-          if (panel) panel.classList.toggle('hidden', key !== tab);
+  function callAPI(action, payload, userProfile) {
+    var body = { action: action, payload: payload || {} };
+    if (userProfile) body.userProfile = userProfile;
+    return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        // SI actions return { status, data }; legacy return { success, data }
+        if (d.status === 'success') return d.data;
+        if (d.success) return d.data || d;
+        throw new Error(d.message || d.msg || '操作失敗');
+      });
+  }
 
-          var nav = document.getElementById('res-nav-' + key);
-          if (nav) {
-            if (key === tab) nav.classList.add('bg-[#f0fbf5]', 'text-[#06C755]', 'border-[#06C755]', 'font-black');
-            else nav.classList.remove('bg-[#f0fbf5]', 'text-[#06C755]', 'border-[#06C755]', 'font-black');
-          }
+  function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-          var mobileTab = document.getElementById('res-tab-' + key);
-          if (mobileTab) {
-            if (key === tab) { mobileTab.classList.remove('bg-slate-100', 'text-slate-600'); mobileTab.classList.add('bg-[#06C755]', 'text-white', 'shadow-sm'); }
-            else { mobileTab.classList.remove('bg-[#06C755]', 'text-white', 'shadow-sm'); mobileTab.classList.add('bg-slate-100', 'text-slate-600'); }
-          }
-        });
+  function statusLabel(s) {
+    return {PENDING:'待付款',PAID:'已完款',REFUND_REQUESTED:'申退款中',REFUNDED:'已退款',CANCELLED:'已取消'}[s] || s || '-';
+  }
+  function statusCls(s) {
+    return {PENDING:'bg-yellow-100 text-yellow-800',PAID:'bg-green-100 text-green-700',
+      REFUND_REQUESTED:'bg-orange-100 text-orange-700',REFUNDED:'bg-red-100 text-red-600',
+      CANCELLED:'bg-slate-100 text-slate-500'}[s] || 'bg-slate-100 text-slate-500';
+  }
 
-        var titleMap = { dashboard: '預約營運統計', orders: '預約管理', add: '新增預約', activities: '活動管理', insights: '預約洞察' };
-        var titleEl = document.getElementById('res-page-title');
-        if (titleEl) titleEl.innerText = titleMap[tab] || '預約管理';
+  function setTab(tab) {
+    tabs.forEach(function(t) {
+      var panel = document.getElementById('res-panel-' + t);
+      if (panel) panel.classList.toggle('hidden', t !== tab);
+      var nav = document.getElementById('res-nav-' + t);
+      if (nav) nav.classList.toggle('active', t === tab);
+      var mTab = document.getElementById('res-tab-' + t);
+      if (mTab) {
+        if (t === tab) { mTab.classList.remove('bg-slate-100','text-slate-600'); mTab.classList.add('bg-[#06C755]','text-white'); }
+        else { mTab.classList.remove('bg-[#06C755]','text-white'); mTab.classList.add('bg-slate-100','text-slate-600'); }
+      }
+    });
+    var titleEl = document.getElementById('res-page-title');
+    if (titleEl) titleEl.innerText = titles[tab] || '';
+    var exportBtn = document.getElementById('res-export-btn');
+    if (exportBtn) exportBtn.classList.toggle('hidden', tab !== 'orders');
+    if (tab === 'add') refreshCourseSelect();
+    if (tab === 'orders') bindOrderFilters();
+  }
 
-        if (tab === 'add') this.refreshActivitySelect();
-      },
+  function syncAll() {
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI('SI_ADMIN_GET_DATA').then(function(data) {
+      courses = data.courses || [];
+      orders = (data.orders || []).slice().reverse();
+      members = data.users || [];
+      renderDashboard();
+      renderOrders();
+      renderCourses();
+      renderMembers();
+      refreshCourseFilter();
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+    }).catch(function(e) {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      alert('同步失敗：' + e.message);
+    });
+  }
 
-      /* ===== 載入預約 ===== */
-      loadSICourses: function () { /* 已在上方定義 */ },
-      _siCurrentPrice: 0,
-      siCourses: [],
+  // ── 統計 ──
+  function renderDashboard() {
+    var totalPaid=0, totalPending=0, validOrders=0;
+    orders.forEach(function(o) {
+      if (o.status==='PAID') { totalPaid += Number(o.amount)||0; validOrders++; }
+      else if (o.status==='PENDING') { totalPending += Number(o.amount)||0; validOrders++; }
+    });
+    var cards = [
+      { label:'實收金額', val:'$'+totalPaid.toLocaleString(), color:'text-[#06C755]', bg:'bg-green-50', icon:'fa-dollar-sign' },
+      { label:'待收金額', val:'$'+totalPending.toLocaleString(), color:'text-amber-500', bg:'bg-amber-50', icon:'fa-hourglass-half' },
+      { label:'有效訂單', val:validOrders+'筆', color:'text-blue-600', bg:'bg-blue-50', icon:'fa-file-signature' },
+      { label:'課程數',   val:courses.length+'門', color:'text-purple-600', bg:'bg-purple-50', icon:'fa-book-open' },
+      { label:'會員數',   val:members.length+'人', color:'text-rose-500', bg:'bg-rose-50', icon:'fa-users' }
+    ];
+    var el = document.getElementById('res-stat-cards');
+    if (el) el.innerHTML = cards.map(function(c) {
+      return '<div class="stat-box relative"><p class="text-xs font-bold text-slate-400 mb-1">'+c.label+'</p>'
+        +'<h3 class="text-2xl font-black '+c.color+'">'+c.val+'</h3>'
+        +'<div class="absolute right-3 top-3 w-9 h-9 '+c.bg+' rounded-xl flex items-center justify-center opacity-70">'
+        +'<i class="fas '+c.icon+' '+c.color+'"></i></div></div>';
+    }).join('');
 
-      loadReservations: function () {
-        var self = this;
-        if (typeof toggleLoader === 'function') toggleLoader(true);
-        fetchApi('getReservations').then(function (res) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          if (!res || !res.success) { self.list = []; self.renderAll(); return; }
-          self.list = (res.data || []).map(function (item) {
-            return {
-              reservationId: item.reservationId || '',
-              createdAt: item.createdAt || item.timestamp || '',
-              updatedAt: item.updatedAt || '',
-              name: item.name || '',
-              phone: item.phone || '',
-              lineId: item.lineId || '',
-              date: item.date || item.reserveDate || '',
-              time: item.time || item.reserveTime || '',
-              service: item.service || '',
-              memo: item.memo || '',
-              status: item.status || '待確認',
-              source: item.source || 'web',
-              calendarEventId: item.calendarEventId || '',
-              timestamp: item.timestamp || item.createdAt || ''
-            };
-          });
-          self.renderAll();
-        }).catch(function (err) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          self.list = []; self.renderAll();
-        });
-      },
+    var tbody = document.getElementById('res-course-stats');
+    if (!tbody) return;
+    tbody.innerHTML = courses.map(function(c) {
+      var co = orders.filter(function(o){ return o.courseId===c.id; });
+      var paid = co.filter(function(o){ return o.status==='PAID'; });
+      var pending = co.filter(function(o){ return o.status==='PENDING'; });
+      var paidRev = paid.reduce(function(s,o){ return s+(Number(o.amount)||0); },0);
+      var pendingRev = pending.reduce(function(s,o){ return s+(Number(o.amount)||0); },0);
+      return '<tr><td class="font-bold">'+esc(c.name)+'</td>'
+        +'<td class="text-center">'+(paid.length+pending.length)+'</td>'
+        +'<td class="text-center text-green-600 font-bold">'+paid.length+'</td>'
+        +'<td class="text-center text-green-600 font-bold">$'+paidRev.toLocaleString()+'</td>'
+        +'<td class="text-center text-amber-500">'+pending.length+'</td>'
+        +'<td class="text-center text-amber-500">$'+pendingRev.toLocaleString()+'</td></tr>';
+    }).join('') || '<tr><td colspan="6" class="text-center py-8 text-slate-400">尚無課程資料</td></tr>';
+  }
 
-      /* ===== 載入活動（保留供活動管理頁用）===== */
-      loadActivities: function () {
-        var self = this;
-        fetchApi('getReservationActivities').then(function (res) {
-          self.activities = (res && res.success && Array.isArray(res.data)) ? res.data : [];
-          self.renderActivities();
-        }).catch(function () { self.activities = []; });
-      },
+  // ── 訂單 ──
+  function getFilteredOrders() {
+    var kw = ((document.getElementById('res-filter-kw')||{}).value||'').toLowerCase();
+    var st = (document.getElementById('res-filter-status')||{}).value||'';
+    var cv = (document.getElementById('res-filter-course')||{}).value||'';
+    return orders.filter(function(o) {
+      var ok = true;
+      if (kw) ok = ok && [o.name,o.phone,o.orderId].join(' ').toLowerCase().includes(kw);
+      if (st) ok = ok && o.status===st;
+      if (cv) ok = ok && o.courseId===cv;
+      return ok;
+    });
+  }
 
-      /* ===== 載入運動島課程（新增預約用）===== */
-      loadSICourses: function () {
-        var self = this;
-        fetchApi('SI_GET_COURSES').then(function (res) {
-          self.siCourses = (res && res.status === 'success' && Array.isArray(res.data)) ? res.data : [];
-          self.refreshSICourseSelect();
-        }).catch(function () { self.siCourses = []; });
-      },
+  function renderOrders() {
+    var list = getFilteredOrders();
+    var tbody = document.getElementById('res-order-list');
+    if (!tbody) return;
+    tbody.innerHTML = list.map(function(o) {
+      var cancelled = o.status==='CANCELLED';
+      return '<tr class="'+(cancelled?'opacity-50':'')+'">'
+        +'<td class="font-mono text-xs text-slate-400">'+(o.orderId||'').slice(-8)+'</td>'
+        +'<td class="font-bold '+(cancelled?'line-through':'')+' text-slate-800 max-w-[140px] truncate">'+esc(o.courseName||o.courseId)+'</td>'
+        +'<td><div class="font-bold text-slate-800">'+esc(o.name)+'</div><div class="text-xs text-slate-400">'+esc(o.phone)+'</div></td>'
+        +'<td class="text-center font-black text-[#06C755]">$'+esc(o.amount)+'</td>'
+        +'<td class="text-center"><span class="badge '+statusCls(o.status)+'">'+statusLabel(o.status)+'</span></td>'
+        +'<td class="text-center font-mono font-bold text-blue-600">'+(o.remittance||'-')+'</td>'
+        +'<td class="text-right"><button onclick="window.ReservationModule.openOrderModal(\''+esc(o.orderId)+'\')" class="res-btn-w text-xs py-1.5 px-3">編輯</button></td>'
+        +'</tr>';
+    }).join('') || '<tr><td colspan="7" class="text-center py-10 text-slate-400">沒有符合的訂單</td></tr>';
+  }
 
-      refreshSICourseSelect: function () {
-        var sel = document.getElementById('add-si-course');
-        if (!sel) return;
-        var html = '<option value="">-- 請選擇課程 --</option>';
-        (this.siCourses || []).forEach(function (c) {
-          var remaining = Math.max(0, (c.capacity || 0) - (c.enrolled || 0));
-          var label = ReservationModule.escapeHtml(c.name) + '　$' + c.price + '　剩 ' + remaining + ' 名';
-          html += '<option value="' + ReservationModule.escapeHtml(c.id) + '"' + (remaining <= 0 ? ' disabled' : '') + '>' + label + '</option>';
-        });
-        sel.innerHTML = html;
-      },
+  function bindOrderFilters() {
+    ['res-filter-kw','res-filter-status','res-filter-course'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && !el._bound) { el._bound=true; el.addEventListener('input',renderOrders); el.addEventListener('change',renderOrders); }
+    });
+  }
 
-      onSICourseChange: function () {
-        var sel = document.getElementById('add-si-course');
-        var info = document.getElementById('add-si-course-info');
-        var amtEl = document.getElementById('add-si-amount');
-        if (!sel || !info) return;
-        var cid = sel.value;
-        if (!cid) { info.classList.add('hidden'); if (amtEl) amtEl.innerText = '$0'; return; }
-        var course = (this.siCourses || []).find(function (c) { return c.id === cid; });
-        if (!course) { info.classList.add('hidden'); return; }
-        var now = new Date();
-        var price = Number(course.price) || 0;
-        if (course.earlyBirdPrice && course.earlyBirdDate) {
-          var eb = new Date(course.earlyBirdDate);
-          eb.setHours(23,59,59,999);
-          if (now <= eb) price = Number(course.earlyBirdPrice) || price;
-        }
-        var txt = '';
-        txt += '<div>📅 ' + (course.startDate || '') + ' ~ ' + (course.endDate || '') + '</div>';
-        if (course.location) txt += '<div>📍 ' + ReservationModule.escapeHtml(course.location) + '</div>';
-        txt += '<div>👤 剩餘名額：' + Math.max(0, (course.capacity||0)-(course.enrolled||0)) + ' 人</div>';
-        info.innerHTML = txt;
-        info.classList.remove('hidden');
-        if (amtEl) amtEl.innerText = '$' + price;
-        this._siCurrentPrice = price;
-      },
+  function refreshCourseFilter() {
+    var sel = document.getElementById('res-filter-course');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">全部課程</option>' +
+      courses.map(function(c){ return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>'; }).join('');
+  }
 
-      /* ===== 新增報名（運動島課程）===== */
-      submitSIRegistration: function () {
-        var courseId = document.getElementById('add-si-course').value;
-        var name = (document.getElementById('add-si-name').value || '').trim();
-        var nationalId = (document.getElementById('add-si-nationalid').value || '').trim().toUpperCase();
-        var phone = (document.getElementById('add-si-phone').value || '').trim();
-        var userId = (document.getElementById('add-si-userid').value || '').trim();
-        var note = document.getElementById('add-si-note').value || '';
+  function openOrderModal(orderId) {
+    var o = orders.find(function(x){ return x.orderId===orderId; });
+    if (!o) return;
+    editingOrder = o;
+    document.getElementById('modal-order-id').value = o.orderId;
+    document.getElementById('modal-order-status').value = o.status || 'PENDING';
+    document.getElementById('modal-order-amount').value = o.amount || 0;
+    document.getElementById('modal-order-remittance').value = o.remittance || '';
+    document.getElementById('modal-order-note').value = o.note || '';
+    var m = document.getElementById('res-order-modal');
+    if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+  }
 
-        if (!courseId) { alert('請選擇課程'); return; }
-        if (!name) { alert('請填寫學員姓名'); return; }
-        if (!nationalId) { alert('請填寫身分證字號'); return; }
-        if (!phone) { alert('請填寫聯絡電話'); return; }
+  function closeOrderModal() {
+    var m = document.getElementById('res-order-modal');
+    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+  }
 
-        var userProfile = userId ? { userId: userId } : { userId: 'ADMIN-' + Date.now() };
-        var payload = {
-          courseId: courseId,
-          userId: userProfile.userId,
-          name: name,
-          nationalId: nationalId,
-          phone: phone,
-          note: note,
-          excludedDates: [],
-          equipments: []
-        };
+  function saveOrder() {
+    if (!editingOrder) return;
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI('SI_ADMIN_UPDATE_ORDER', { orderData: {
+      orderId: editingOrder.orderId,
+      status: document.getElementById('modal-order-status').value,
+      amount: document.getElementById('modal-order-amount').value,
+      remittance: document.getElementById('modal-order-remittance').value,
+      note: document.getElementById('modal-order-note').value,
+      extraData: editingOrder.extraData || {}
+    }}).then(function() {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      if (typeof showToast === 'function') showToast('訂單已更新');
+      closeOrderModal(); syncAll();
+    }).catch(function(e) {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      alert('更新失敗：' + e.message);
+    });
+  }
 
-        if (typeof toggleLoader === 'function') toggleLoader(true);
-        var self = this;
-        fetch(typeof WORKER_URL !== 'undefined' ? WORKER_URL : '', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'SI_REGISTER', payload: payload, userProfile: userProfile })
-        }).then(function(r){ return r.json(); }).then(function (res) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          if (res && res.status === 'success') {
-            if (typeof showToast === 'function') showToast('報名成功！訂單號：' + (res.data && res.data.orderId ? res.data.orderId : ''));
-            ['add-si-name','add-si-nationalid','add-si-phone','add-si-userid','add-si-note'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-            document.getElementById('add-si-course').value = '';
-            document.getElementById('add-si-course-info').classList.add('hidden');
-            document.getElementById('add-si-amount').innerText = '$0';
-          } else {
-            alert('建立失敗：' + (res.message || '未知錯誤'));
-          }
-        }).catch(function (err) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          alert('連線失敗：' + err.message);
-        });
-      },
+  // ── 課程 ──
+  function renderCourses() {
+    var kw = ((document.getElementById('res-course-kw')||{}).value||'').toLowerCase();
+    var list = courses.filter(function(c){ return !kw || c.name.toLowerCase().includes(kw); });
+    var tbody = document.getElementById('res-course-list');
+    if (!tbody) return;
+    tbody.innerHTML = list.map(function(c) {
+      var cOrders = orders.filter(function(o){ return o.courseId===c.id; });
+      var paid = cOrders.filter(function(o){ return o.status==='PAID'; }).length;
+      var pending = cOrders.filter(function(o){ return o.status==='PENDING'; }).length;
+      return '<tr>'
+        +'<td><div class="font-bold text-slate-800">'+esc(c.name)+'</div><span class="text-[10px] font-mono text-slate-400">'+esc(c.id)+'</span></td>'
+        +'<td><span class="badge bg-blue-50 text-blue-700">'+esc(c.type)+'</span><div class="text-xs text-slate-400 mt-1">'+esc(c.startDate)+' ~ '+esc(c.endDate)+'</div></td>'
+        +'<td class="text-center font-black text-[#06C755]">$'+esc(c.price)+'</td>'
+        +'<td class="text-center text-slate-600">'+esc(c.enrolled)+' / '+esc(c.capacity)+'</td>'
+        +'<td class="text-center text-xs"><span class="text-green-600 font-bold">付:'+paid+'</span> <span class="text-amber-500 font-bold">待:'+pending+'</span></td>'
+        +'<td class="text-right"><button onclick="window.ReservationModule.openCourseModal(\''+esc(c.id)+'\')" class="res-btn-w text-xs py-1.5 px-3">編輯</button></td>'
+        +'</tr>';
+    }).join('') || '<tr><td colspan="6" class="text-center py-10 text-slate-400">尚無課程資料</td></tr>';
+  }
 
-      /* ===== 活動管理渲染 ===== */
-      renderActivities: function () {
-        var list = this.activities;
-        var countEl = document.getElementById('act-total-count');
-        if (countEl) countEl.innerText = list.length;
+  function openCourseModal(courseId) {
+    var c = courseId ? courses.find(function(x){ return x.id===courseId; }) : null;
+    var title = document.getElementById('res-course-modal-title');
+    if (title) title.innerText = c ? '編輯課程' : '新增課程';
+    var fields = { 'cm-id':c?c.id:'','cm-name':c?c.name:'','cm-sdate':c?c.startDate:'','cm-edate':c?c.endDate:'',
+      'cm-stime':c?c.startTime:'','cm-etime':c?c.endTime:'','cm-location':c?c.location:'','cm-instructor':c?c.instructor:'',
+      'cm-price':c?c.price:0,'cm-capacity':c?c.capacity:20,'cm-ebprice':c?c.earlyBirdPrice:0,
+      'cm-ebdate':c?c.earlyBirdDate:'','cm-sessions':c?c.totalSessions:1,'cm-image':c?c.image:'','cm-desc':c?c.description:'' };
+    Object.keys(fields).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=fields[id]; });
+    if (c) document.getElementById('cm-type').value = c.type || '單日課程';
+    if (c) document.getElementById('cm-timeslot').value = c.timeSlotType || '全日';
+    var m = document.getElementById('res-course-modal');
+    if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+  }
 
-        var container = document.getElementById('act-list');
-        if (!container) return;
+  function closeCourseModal() {
+    var m = document.getElementById('res-course-modal');
+    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+  }
 
-        if (!list.length) {
-          container.innerHTML = '<div class="col-span-3 bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-400 font-bold">尚未建立任何活動，請點右上角「新增活動」</div>';
-          return;
-        }
-
-        container.innerHTML = list.map(function (act) {
-          var activeBadge = act.isActive === 'Y'
-            ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 border border-green-200 rounded-full text-[11px] font-black">啟用</span>'
-            : '<span class="px-2 py-0.5 bg-slate-100 text-slate-400 border border-slate-200 rounded-full text-[11px] font-black">停用</span>';
-
-          return `
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-              ${act.image ? '<img src="' + ReservationModule.escapeHtml(act.image) + '" class="w-full h-36 object-cover">' : '<div class="w-full h-36 bg-slate-100 flex items-center justify-center text-slate-300"><i class="fas fa-image text-4xl"></i></div>'}
-              <div class="p-4 flex-1 flex flex-col">
-                <div class="flex items-start justify-between gap-2 mb-2">
-                  <div class="font-black text-slate-800 text-base leading-snug">${ReservationModule.escapeHtml(act.title)}</div>
-                  ${activeBadge}
-                </div>
-                ${act.description ? '<div class="text-xs text-slate-500 mb-3 leading-relaxed">' + ReservationModule.escapeHtml(act.description) + '</div>' : ''}
-                <div class="flex flex-wrap gap-2 text-[11px] font-bold mt-auto mb-3">
-                  ${act.location ? '<span class="px-2 py-1 bg-slate-50 rounded-lg border border-slate-200 text-slate-600">📍 ' + ReservationModule.escapeHtml(act.location) + '</span>' : ''}
-                  ${act.durationMin ? '<span class="px-2 py-1 bg-slate-50 rounded-lg border border-slate-200 text-slate-600">⏱ ' + act.durationMin + '分</span>' : ''}
-                  ${act.price ? '<span class="px-2 py-1 bg-green-50 rounded-lg border border-green-200 text-green-700">💰 ' + ReservationModule.escapeHtml(act.price) + '</span>' : ''}
-                </div>
-                <button onclick="window.ReservationModule.openActivityModal('${act.activityId}')"
-                  class="w-full border border-slate-300 hover:bg-slate-50 text-slate-600 font-bold py-2 rounded-xl text-sm transition">
-                  <i class="fas fa-edit mr-1"></i>編輯
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      },
-
-      openActivityModal: function (activityId) {
-        var isNew = !activityId;
-        var act = isNew ? null : this.activities.find(function (a) { return a.activityId === activityId; });
-
-        document.getElementById('act-modal-title').innerText = isNew ? '新增活動' : '編輯活動';
-        document.getElementById('act-edit-id').value = isNew ? '' : activityId;
-        document.getElementById('act-edit-title').value = act ? act.title : '';
-        document.getElementById('act-edit-location').value = act ? act.location : '';
-        document.getElementById('act-edit-price').value = act ? act.price : '';
-        document.getElementById('act-edit-duration').value = act ? act.durationMin : '60';
-        document.getElementById('act-edit-sort').value = act ? act.sort : '9999';
-        document.getElementById('act-edit-image').value = act ? act.image : '';
-        document.getElementById('act-edit-desc').value = act ? act.description : '';
-        document.getElementById('act-edit-note').value = act ? act.note : '';
-        document.getElementById('act-edit-active').checked = act ? (act.isActive === 'Y') : true;
-
-        var deleteBtn = document.getElementById('act-delete-btn');
-        if (deleteBtn) {
-          if (!isNew) {
-            deleteBtn.classList.remove('hidden');
-            deleteBtn.onclick = function () { window.ReservationModule.deleteActivity(activityId); };
-          } else {
-            deleteBtn.classList.add('hidden');
-          }
-        }
-
-        document.getElementById('act-modal').classList.remove('hidden');
-      },
-
-      closeActivityModal: function () {
-        document.getElementById('act-modal').classList.add('hidden');
-      },
-
-      saveActivity: function () {
-        var title = (document.getElementById('act-edit-title').value || '').trim();
-        if (!title) { alert('請填寫活動名稱'); return; }
-
-        var actId = document.getElementById('act-edit-id').value;
-        var payload = {
-          activityId: actId || '',
-          title: title,
-          location: document.getElementById('act-edit-location').value,
-          price: document.getElementById('act-edit-price').value,
-          durationMin: document.getElementById('act-edit-duration').value || 60,
-          sort: document.getElementById('act-edit-sort').value,
-          image: document.getElementById('act-edit-image').value,
-          description: document.getElementById('act-edit-desc').value,
-          note: document.getElementById('act-edit-note').value,
-          isActive: document.getElementById('act-edit-active').checked ? 'Y' : 'N'
-        };
-
-        if (typeof toggleLoader === 'function') toggleLoader(true);
-        var self = this;
-        fetchApi('saveReservationActivity', { activity: payload }).then(function (res) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          if (res && res.success) {
-            if (typeof showToast === 'function') showToast('活動已儲存');
-            self.closeActivityModal();
-            self.loadActivities();
-          } else {
-            alert('儲存失敗：' + ((res && res.msg) || '未知錯誤'));
-          }
-        }).catch(function (err) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          alert('連線失敗：' + err.message);
-        });
-      },
-
-      deleteActivity: function (activityId) {
-        if (!confirm('確定要刪除此活動嗎？')) return;
-        if (typeof toggleLoader === 'function') toggleLoader(true);
-        var self = this;
-        fetchApi('deleteReservationActivity', { activityId: activityId }).then(function (res) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          if (res && res.success) {
-            if (typeof showToast === 'function') showToast('活動已刪除');
-            self.closeActivityModal();
-            self.loadActivities();
-          } else {
-            alert('刪除失敗：' + ((res && res.msg) || ''));
-          }
-        }).catch(function (err) {
-          if (typeof toggleLoader === 'function') toggleLoader(false);
-          alert('連線失敗：' + err.message);
-        });
-      },
-
-      /* ===== 篩選 / 渲染 ===== */
-      getFilteredList: function () {
-        var keyword = (document.getElementById('res-filter-keyword')?.value || '').trim().toLowerCase();
-        var status = document.getElementById('res-filter-status')?.value || 'ALL';
-        var service = document.getElementById('res-filter-service')?.value || 'ALL';
-        var fromDate = document.getElementById('res-filter-from')?.value || '';
-        var toDate = document.getElementById('res-filter-to')?.value || '';
-        return this.list.filter(function (item) {
-          var ok = true;
-          if (keyword) ok = ok && [item.name, item.phone, item.lineId, item.memo, item.service, item.reservationId].join(' ').toLowerCase().indexOf(keyword) > -1;
-          if (status !== 'ALL') ok = ok && item.status === status;
-          if (service !== 'ALL') ok = ok && item.service === service;
-          if (fromDate) ok = ok && String(item.date || '') >= fromDate;
-          if (toDate) ok = ok && String(item.date || '') <= toDate;
-          return ok;
-        });
-      },
-
-      renderAll: function () {
-        this.renderServiceFilter();
-        this.filteredList = this.getFilteredList();
-        this.renderStats();
-        this.renderDashboard();
-        this.renderOrders();
-        this.renderInsights();
-      },
-
-      renderServiceFilter: function () {
-        var el = document.getElementById('res-filter-service');
-        if (!el) return;
-        var current = el.value || 'ALL';
-        var services = {};
-        this.list.forEach(function (item) { if (item.service) services[item.service] = true; });
-        var html = '<option value="ALL">全部服務</option>';
-        Object.keys(services).sort().forEach(function (name) {
-          html += '<option value="' + ReservationModule.escapeHtml(name) + '">' + ReservationModule.escapeHtml(name) + '</option>';
-        });
-        el.innerHTML = html;
-        if ([].slice.call(el.options).some(function (opt) { return opt.value === current; })) el.value = current;
-      },
-
-      renderStats: function () {
-        var total = this.list.length;
-        var pending = this.list.filter(function (x) { return x.status === '待確認'; }).length;
-        var confirmed = this.list.filter(function (x) { return x.status === '已確認'; }).length;
-        var completed = this.list.filter(function (x) { return x.status === '已完成'; }).length;
-        var cancelled = this.list.filter(function (x) { return x.status === '已取消'; }).length;
-        var todayStr = this.todayYmd_();
-        var todayCount = this.list.filter(function (x) { return x.date === todayStr; }).length;
-
-        var cards = [
-          { label: '總預約數', value: total, color: 'text-slate-800', icon: 'fa-clipboard-list', iconBg: 'bg-slate-100 text-slate-500' },
-          { label: '今日預約', value: todayCount, color: 'text-blue-600', icon: 'fa-calendar-day', iconBg: 'bg-blue-50 text-blue-500' },
-          { label: '待確認', value: pending, color: 'text-amber-600', icon: 'fa-hourglass-half', iconBg: 'bg-amber-50 text-amber-500' },
-          { label: '已確認', value: confirmed, color: 'text-green-600', icon: 'fa-circle-check', iconBg: 'bg-green-50 text-green-500' },
-          { label: '已完成/取消', value: completed + cancelled, color: 'text-purple-600', icon: 'fa-chart-line', iconBg: 'bg-purple-50 text-purple-500' }
-        ];
-
-        var statCards = document.getElementById('res-stat-cards');
-        if (statCards) statCards.innerHTML = cards.map(function (card) {
-          return '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center justify-between"><div><div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">' + card.label + '</div><div class="text-3xl font-black ' + card.color + '">' + card.value + '</div></div><div class="w-14 h-14 rounded-2xl ' + card.iconBg + ' flex items-center justify-center shadow-inner"><i class="fas ' + card.icon + ' text-xl"></i></div></div>';
-        }).join('');
-      },
-
-      renderDashboard: function () {
-        document.getElementById('res-top-services').innerHTML = this.renderRankList_(this.rankBy_(this.list, 'service', 5), '目前尚無服務資料');
-        document.getElementById('res-source-overview').innerHTML = this.renderRankList_(this.rankBy_(this.list, 'source', 5), '目前尚無來源資料');
-        document.getElementById('res-status-overview').innerHTML = this.renderRankList_(this.rankBy_(this.list, 'status', 10), '目前尚無狀態資料');
-
-        var recent = this.list.slice(0, 8);
-        document.getElementById('res-recent-list').innerHTML = !recent.length
-          ? '<div class="text-center py-10 text-slate-400 font-bold">目前沒有預約資料</div>'
-          : recent.map(function (item, idx) {
-            return '<div class="flex items-center justify-between gap-3 py-3 ' + (idx < recent.length - 1 ? 'border-b border-slate-100' : '') + '"><div class="min-w-0"><div class="font-bold text-slate-800 truncate">' + ReservationModule.escapeHtml(item.name) + ' <span class="text-slate-400 font-normal">/ ' + ReservationModule.escapeHtml(item.service || '未分類') + '</span></div><div class="text-xs text-slate-500 mt-1">' + ReservationModule.escapeHtml(item.date || '') + ' ' + ReservationModule.escapeHtml(item.time || '') + ' ・ ' + ReservationModule.escapeHtml(item.phone || '') + '</div></div><div>' + ReservationModule.statusBadge_(item.status) + '</div></div>';
-          }).join('');
-      },
-
-      renderOrders: function () {
-        var list = this.filteredList || [];
-        document.getElementById('res-filter-count').innerText = list.length;
-
-        var tbody = document.getElementById('res-admin-list');
-        if (tbody) {
-          tbody.innerHTML = !list.length
-            ? '<tr><td colspan="7" class="p-10 text-center text-slate-400 font-bold">沒有符合條件的預約資料</td></tr>'
-            : list.map(function (item, idx) {
-              return '<tr class="hover:bg-slate-50 transition"><td class="p-4 align-top"><div class="text-xs font-mono text-slate-500">' + ReservationModule.escapeHtml(item.createdAt || '-') + '</div><div class="text-[10px] text-slate-400 mt-1">' + ReservationModule.escapeHtml(item.reservationId || '-') + '</div></td><td class="p-4 align-top"><div class="font-black text-slate-800">' + ReservationModule.escapeHtml(item.date || '-') + '</div><div class="text-xs text-[#06C755] font-bold mt-1">' + ReservationModule.escapeHtml(item.time || '-') + '</div></td><td class="p-4 align-top"><div class="font-bold text-slate-800">' + ReservationModule.escapeHtml(item.name || '-') + '</div><div class="text-xs text-sky-600 font-mono mt-1">' + ReservationModule.escapeHtml(item.phone || '-') + '</div>' + (item.lineId ? '<div class="text-[11px] text-slate-400 mt-1">LINE：' + ReservationModule.escapeHtml(item.lineId) + '</div>' : '') + '</td><td class="p-4 align-top"><div class="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">' + ReservationModule.escapeHtml(item.service || '未分類') + '</div>' + (item.memo ? '<div class="text-xs text-slate-500 mt-2 max-w-[260px] break-words">' + ReservationModule.escapeHtml(item.memo) + '</div>' : '') + '</td><td class="p-4 align-top"><span class="inline-block px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100">' + ReservationModule.escapeHtml(item.source || 'web') + '</span></td><td class="p-4 align-top"><select onchange="window.ReservationModule.quickStatusChange(' + idx + ', this.value)" class="text-xs font-black px-3 py-2 rounded-lg border border-slate-300 outline-none"><option value="待確認" ' + (item.status === '待確認' ? 'selected' : '') + '>待確認</option><option value="已確認" ' + (item.status === '已確認' ? 'selected' : '') + '>已確認</option><option value="已完成" ' + (item.status === '已完成' ? 'selected' : '') + '>已完成</option><option value="已取消" ' + (item.status === '已取消' ? 'selected' : '') + '>已取消</option></select></td><td class="p-4 text-right align-top"><div class="flex justify-end gap-2"><button onclick="window.ReservationModule.openDetailByIndex(' + idx + ')" class="px-3 py-2 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-lg font-bold text-xs transition">詳情</button><button onclick="window.ReservationModule.deleteByIndex(' + idx + ')" class="px-3 py-2 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg font-bold text-xs transition">刪除</button></div></td></tr>';
-            }).join('');
-        }
-
-        var mobile = document.getElementById('res-mobile-list');
-        if (mobile) {
-          mobile.innerHTML = !list.length
-            ? '<div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-400 font-bold">沒有符合條件的預約資料</div>'
-            : list.map(function (item, idx) {
-              return '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"><div class="p-4 border-b border-slate-100 flex justify-between items-start gap-3"><div class="min-w-0"><div class="font-black text-slate-800 text-base">' + ReservationModule.escapeHtml(item.name || '-') + '</div><div class="text-xs text-slate-500 mt-1">' + ReservationModule.escapeHtml(item.date || '-') + ' ' + ReservationModule.escapeHtml(item.time || '-') + '</div><div class="text-xs text-sky-600 font-mono mt-1">' + ReservationModule.escapeHtml(item.phone || '-') + '</div></div><div>' + ReservationModule.statusBadge_(item.status) + '</div></div><div class="px-4 py-3 space-y-2 text-sm"><div class="flex justify-between gap-2"><span class="text-slate-400 font-bold">服務</span><span class="font-bold text-slate-700">' + ReservationModule.escapeHtml(item.service || '未分類') + '</span></div><div class="flex justify-between gap-2"><span class="text-slate-400 font-bold">來源</span><span class="font-bold text-slate-700">' + ReservationModule.escapeHtml(item.source || 'web') + '</span></div></div><div class="px-4 pb-4 space-y-2"><select onchange="window.ReservationModule.quickStatusChange(' + idx + ', this.value)" class="w-full text-sm font-black px-3 py-2.5 rounded-xl border border-slate-300 outline-none"><option value="待確認" ' + (item.status === '待確認' ? 'selected' : '') + '>待確認</option><option value="已確認" ' + (item.status === '已確認' ? 'selected' : '') + '>已確認</option><option value="已完成" ' + (item.status === '已完成' ? 'selected' : '') + '>已完成</option><option value="已取消" ' + (item.status === '已取消' ? 'selected' : '') + '>已取消</option></select><div class="grid grid-cols-2 gap-2"><button onclick="window.ReservationModule.openDetailByIndex(' + idx + ')" class="w-full py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm">查看詳情</button><button onclick="window.ReservationModule.deleteByIndex(' + idx + ')" class="w-full py-2.5 bg-rose-50 text-rose-500 border border-rose-200 rounded-xl font-bold text-sm">刪除</button></div></div></div>';
-            }).join('');
-        }
-      },
-
-      renderInsights: function () {
-        var dateRanks = this.rankBy_(this.list, 'date', 10);
-        var timeRanks = this.rankByTime_(this.list);
-        document.getElementById('res-date-insights').innerHTML = this.renderRankList_(dateRanks, '目前尚無日期資料');
-        document.getElementById('res-time-insights').innerHTML = this.renderRankList_(timeRanks, '目前尚無時間資料');
-
-        var pending = this.list.filter(function (x) { return x.status === '待確認'; }).length;
-        var total = this.list.length;
-        var pendingRate = total ? Math.round((pending / total) * 100) : 0;
-        var topService = this.rankBy_(this.list, 'service', 1)[0];
-        var topDate = dateRanks[0];
-        var topTime = timeRanks[0];
-        var advice = ['目前總預約數為 <b>' + total + '</b> 筆，待確認比例約 <b>' + pendingRate + '%</b>。'];
-        if (topService) advice.push('最熱門服務是 <b>' + this.escapeHtml(topService.label) + '</b>，共 <b>' + topService.count + '</b> 筆。');
-        if (topDate) advice.push('最集中的預約日期是 <b>' + this.escapeHtml(topDate.label) + '</b>。');
-        if (topTime) advice.push('最熱門時間帶是 <b>' + this.escapeHtml(topTime.label) + '</b>。');
-        advice.push(pendingRate >= 40 ? '建議優先追蹤「待確認」訂單，比例偏高，容易流失。' : '目前確認率表現不錯，可考慮進一步做服務分眾追蹤。');
-        document.getElementById('res-advice-box').innerHTML = advice.map(function (txt) {
-          return '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm text-slate-700 leading-relaxed">' + txt + '</div>';
-        }).join('');
-      },
-
-      openDetailByIndex: function (idx) {
-        var item = this.filteredList[idx];
-        if (!item) return;
-        this.activeItem = item;
-        document.getElementById('res-detail-body').innerHTML = `
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">預約編號</div><div class="font-mono text-sm text-slate-700">${this.escapeHtml(item.reservationId || '-')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">建立時間</div><div class="font-mono text-sm text-slate-700">${this.escapeHtml(item.createdAt || '-')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">姓名</div><div class="font-bold text-slate-800">${this.escapeHtml(item.name || '-')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">電話</div><div class="font-mono text-sky-600">${this.escapeHtml(item.phone || '-')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">LINE ID</div><div class="text-slate-700">${this.escapeHtml(item.lineId || '無')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">來源</div><div class="font-bold text-slate-700">${this.escapeHtml(item.source || 'web')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">預約日期</div><div class="font-bold text-slate-800">${this.escapeHtml(item.date || '-')}</div></div>
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">預約時間</div><div class="font-bold text-[#06C755]">${this.escapeHtml(item.time || '-')}</div></div>
-            <div class="md:col-span-2 bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">服務項目</div><div class="font-bold text-slate-800">${this.escapeHtml(item.service || '未分類')}</div></div>
-            <div class="md:col-span-2 bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-1">備註</div><div class="text-slate-700 break-words whitespace-pre-wrap">${this.escapeHtml(item.memo || '無備註')}</div></div>
-            <div class="md:col-span-2 bg-slate-50 rounded-2xl p-4 border border-slate-200"><div class="text-xs font-bold text-slate-400 mb-2">狀態設定</div><select id="res-detail-status" class="w-full border border-slate-300 rounded-xl px-3 py-3 text-sm font-black outline-none focus:border-[#06C755]"><option value="待確認" ${item.status === '待確認' ? 'selected' : ''}>待確認</option><option value="已確認" ${item.status === '已確認' ? 'selected' : ''}>已確認</option><option value="已完成" ${item.status === '已完成' ? 'selected' : ''}>已完成</option><option value="已取消" ${item.status === '已取消' ? 'selected' : ''}>已取消</option></select></div>
-          </div>`;
-
-        document.getElementById('res-detail-save-btn').onclick = function () { window.ReservationModule.saveDetailStatus(document.getElementById('res-detail-status').value); };
-        document.getElementById('res-detail-delete-btn').onclick = function () { window.ReservationModule.deleteActiveItem(); };
-        document.getElementById('res-detail-modal').classList.remove('hidden');
-      },
-
-      closeDetailModal: function () { document.getElementById('res-detail-modal').classList.add('hidden'); this.activeItem = null; },
-      saveDetailStatus: function (status) { if (this.activeItem) this.updateStatus(this.activeItem, status, true); },
-      deleteActiveItem: function () { if (this.activeItem) this.deleteReservationItem(this.activeItem, true); },
-      quickStatusChange: function (idx, status) { var item = this.filteredList[idx]; if (item) this.updateStatus(item, status, false); },
-      deleteByIndex: function (idx) { var item = this.filteredList[idx]; if (item) this.deleteReservationItem(item, false); },
-
-      updateStatus: function (item, status, fromModal) {
-        var self = this;
-        if (typeof toggleLoader === 'function') toggleLoader(true);
-        fetchApi('updateReservationStatus', { reservationId: item.reservationId || '', timestamp: item.createdAt || item.timestamp || '', phone: item.phone || '', status: status })
-          .then(function (res) {
-            if (typeof toggleLoader === 'function') toggleLoader(false);
-            if (res && res.success) { if (typeof showToast === 'function') showToast('狀態已更新'); if (fromModal) self.closeDetailModal(); self.loadReservations(); }
-            else alert('更新失敗：' + ((res && res.msg) || '未知錯誤'));
-          }).catch(function (err) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('更新失敗：' + err.message); });
-      },
-
-      deleteReservationItem: function (item, fromModal) {
-        if (!confirm('確定要刪除這筆預約嗎？此操作無法還原。')) return;
-        var self = this;
-        if (typeof toggleLoader === 'function') toggleLoader(true);
-        fetchApi('deleteReservation', { reservationId: item.reservationId || '', timestamp: item.createdAt || item.timestamp || '', phone: item.phone || '' })
-          .then(function (res) {
-            if (typeof toggleLoader === 'function') toggleLoader(false);
-            if (res && res.success) { if (typeof showToast === 'function') showToast('預約已刪除'); if (fromModal) self.closeDetailModal(); self.loadReservations(); }
-            else alert('刪除失敗：' + ((res && res.msg) || '未知錯誤'));
-          }).catch(function (err) { if (typeof toggleLoader === 'function') toggleLoader(false); alert('刪除失敗：' + err.message); });
-      },
-
-      exportCsv: function () {
-        var list = this.filteredList && this.filteredList.length ? this.filteredList : this.list;
-        if (!list.length) { alert('目前沒有可匯出的資料'); return; }
-        var rows = [['預約編號', '建立時間', '更新時間', '姓名', '電話', 'LINE ID', '預約日期', '預約時間', '服務項目', '備註', '狀態', '來源']];
-        list.forEach(function (item) { rows.push([item.reservationId||'', item.createdAt||'', item.updatedAt||'', item.name||'', item.phone||'', item.lineId||'', item.date||'', item.time||'', item.service||'', item.memo||'', item.status||'', item.source||'']); });
-        var csv = '\uFEFF' + rows.map(function (row) { return row.map(function (cell) { return '"' + String(cell == null ? '' : cell).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
-        var link = document.createElement('a');
-        link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-        link.download = 'reservations_' + this.todayYmd_() + '.csv';
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-      },
-
-      resetFilters: function () {
-        ['res-filter-keyword', 'res-filter-from', 'res-filter-to'].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
-        var s = document.getElementById('res-filter-status'); if (s) s.value = 'ALL';
-        var sv = document.getElementById('res-filter-service'); if (sv) sv.value = 'ALL';
-        this.renderAll();
-      },
-
-      rankBy_: function (list, key, limit) {
-        var map = {};
-        list.forEach(function (item) { var val = String(item[key] || '').trim() || '未分類'; map[val] = (map[val] || 0) + 1; });
-        return Object.keys(map).map(function (k) { return { label: k, count: map[k] }; }).sort(function (a, b) { return b.count - a.count; }).slice(0, limit || 10);
-      },
-
-      rankByTime_: function (list) {
-        var map = {};
-        list.forEach(function (item) {
-          var time = String(item.time || '').trim();
-          var label = '未設定';
-          if (time) { var hour = parseInt(time.split(':')[0], 10); if (!isNaN(hour)) { if (hour < 12) label = '上午'; else if (hour < 18) label = '下午'; else label = '晚上'; } }
-          map[label] = (map[label] || 0) + 1;
-        });
-        return Object.keys(map).map(function (k) { return { label: k, count: map[k] }; }).sort(function (a, b) { return b.count - a.count; });
-      },
-
-      renderRankList_: function (items, emptyText) {
-        if (!items || !items.length) return '<div class="text-center py-10 text-slate-400 font-bold">' + this.escapeHtml(emptyText || '目前沒有資料') + '</div>';
-        return items.map(function (item, idx) {
-          return '<div class="flex items-center justify-between gap-3 py-3 ' + (idx < items.length - 1 ? 'border-b border-slate-100' : '') + '"><div class="flex items-center gap-3 min-w-0"><div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-black shrink-0">' + (idx + 1) + '</div><div class="truncate font-bold text-slate-700">' + ReservationModule.escapeHtml(item.label) + '</div></div><div class="text-[#06C755] font-black">' + item.count + '</div></div>';
-        }).join('');
-      },
-
-      statusBadge_: function (status) {
-        var cls = { '待確認': 'bg-amber-100 text-amber-700 border border-amber-200', '已確認': 'bg-green-100 text-green-700 border border-green-200', '已完成': 'bg-blue-100 text-blue-700 border border-blue-200', '已取消': 'bg-slate-100 text-slate-500 border border-slate-200' };
-        return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-black ' + (cls[status] || 'bg-slate-100 text-slate-600 border border-slate-200') + '">' + this.escapeHtml(status || '-') + '</span>';
-      },
-
-      todayYmd_: function () { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); },
-
-      escapeHtml: function (str) { return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function saveCourse() {
+    var id = document.getElementById('cm-id').value.trim();
+    var name = document.getElementById('cm-name').value.trim();
+    if (!name) { alert('請填寫課程名稱'); return; }
+    var payload = {
+      id: id||undefined, name:name, type:document.getElementById('cm-type').value,
+      timeSlotType:document.getElementById('cm-timeslot').value,
+      startDate:document.getElementById('cm-sdate').value, endDate:document.getElementById('cm-edate').value,
+      startTime:document.getElementById('cm-stime').value, endTime:document.getElementById('cm-etime').value,
+      location:document.getElementById('cm-location').value, instructor:document.getElementById('cm-instructor').value,
+      price:document.getElementById('cm-price').value, capacity:document.getElementById('cm-capacity').value,
+      earlyBirdPrice:document.getElementById('cm-ebprice').value, earlyBirdDate:document.getElementById('cm-ebdate').value,
+      totalSessions:document.getElementById('cm-sessions').value,
+      image:document.getElementById('cm-image').value, description:document.getElementById('cm-desc').value,
+      equipmentJson:'[]'
     };
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI(id ? 'SI_ADMIN_UPDATE_COURSE' : 'SI_ADMIN_ADD_COURSE', payload).then(function() {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      if (typeof showToast === 'function') showToast('課程已儲存');
+      closeCourseModal(); syncAll();
+    }).catch(function(e) {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      alert('儲存失敗：' + e.message);
+    });
+  }
 
-    setTimeout(function () { if (window.ReservationModule) window.ReservationModule.init(); }, 80);
-  </script>
+  // ── 會員 ──
+  function renderMembers() {
+    var kw = ((document.getElementById('res-member-kw')||{}).value||'').toLowerCase();
+    var list = members.filter(function(m){ return !kw || (m.name||'').toLowerCase().includes(kw)||(m.nationalId||'').includes(kw); });
+    var tbody = document.getElementById('res-member-list');
+    if (!tbody) return;
+    tbody.innerHTML = list.map(function(m) {
+      var fmCount = 0;
+      try { fmCount = JSON.parse(m.familyMembersJson||'[]').length; } catch(e){}
+      return '<tr>'
+        +'<td class="font-bold text-slate-800">'+esc(m.name)+'</td>'
+        +'<td class="text-center text-slate-600">'+esc(m.phone)+'</td>'
+        +'<td class="text-center font-mono text-slate-600">'+esc(m.nationalId)+'</td>'
+        +'<td class="text-center"><span class="badge bg-blue-50 text-blue-700">'+fmCount+'</span></td>'
+        +'<td class="text-right"><button onclick="window.ReservationModule.openMemberModal(\''+esc(m.userId)+'\')" class="text-blue-600 hover:underline text-sm font-bold">詳情</button></td>'
+        +'</tr>';
+    }).join('') || '<tr><td colspan="5" class="text-center py-10 text-slate-400">尚無會員資料</td></tr>';
+  }
+
+  function openMemberModal(userId) {
+    var m = members.find(function(x){ return x.userId===userId; });
+    if (!m) return;
+    editingMember = m;
+    document.getElementById('mm-uid').value = m.userId||'';
+    document.getElementById('mm-name').value = m.name||'';
+    document.getElementById('mm-nid').value = m.nationalId||'';
+    document.getElementById('mm-birthday').value = (m.birthday||'').substring(0,10);
+    document.getElementById('mm-gender').value = m.gender||'男';
+    document.getElementById('mm-phone').value = m.phone||'';
+    document.getElementById('mm-address').value = m.address||'';
+    document.getElementById('mm-health').value = m.healthNote||'';
+    var fmEl = document.getElementById('mm-family');
+    try {
+      var fms = JSON.parse(m.familyMembersJson||'[]');
+      fmEl.innerHTML = fms.map(function(f){
+        return '<div class="flex justify-between items-center bg-white border rounded-lg px-3 py-2">'
+          +'<span class="font-bold">'+esc(f.name)+'</span>'
+          +'<span class="text-xs text-[#06C755] font-bold">'+esc(f.relation)+'</span></div>';
+      }).join('') || '<div class="text-slate-400 text-xs">無家人資料</div>';
+    } catch(e) { fmEl.innerHTML = '<div class="text-slate-400 text-xs">無家人資料</div>'; }
+    var modal = document.getElementById('res-member-modal');
+    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+  }
+
+  function closeMemberModal() {
+    var modal = document.getElementById('res-member-modal');
+    if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+  }
+
+  function saveMember() {
+    if (!editingMember) return;
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI('SI_ADMIN_UPDATE_MEMBER', { memberData: {
+      userId: document.getElementById('mm-uid').value,
+      name: document.getElementById('mm-name').value,
+      nationalId: editingMember.nationalId,
+      birthday: document.getElementById('mm-birthday').value,
+      gender: document.getElementById('mm-gender').value,
+      phone: document.getElementById('mm-phone').value,
+      address: document.getElementById('mm-address').value,
+      healthNote: document.getElementById('mm-health').value
+    }}).then(function() {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      if (typeof showToast === 'function') showToast('會員資料已更新');
+      closeMemberModal(); syncAll();
+    }).catch(function(e) {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      alert('更新失敗：' + e.message);
+    });
+  }
+
+  // ── 新增報名 ──
+  function refreshCourseSelect() {
+    var sel = document.getElementById('add-course-sel');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- 請選擇課程 --</option>' +
+      courses.map(function(c) {
+        var rem = Math.max(0,(c.capacity||0)-(c.enrolled||0));
+        return '<option value="'+esc(c.id)+'"'+(rem<=0?' disabled':'')+'>'+esc(c.name)+'　$'+c.price+'　剩'+rem+'名</option>';
+      }).join('');
+  }
+
+  function onCourseChange() {
+    var sel = document.getElementById('add-course-sel');
+    var info = document.getElementById('add-course-info');
+    var amtEl = document.getElementById('add-amount');
+    if (!sel||!info) return;
+    var c = courses.find(function(x){ return x.id===sel.value; });
+    if (!c) { info.classList.add('hidden'); if(amtEl) amtEl.innerText='$0'; return; }
+    var price = Number(c.price)||0;
+    if (c.earlyBirdPrice && c.earlyBirdDate) {
+      var eb = new Date(c.earlyBirdDate); eb.setHours(23,59,59,999);
+      if (new Date()<=eb) price = Number(c.earlyBirdPrice)||price;
+    }
+    info.innerHTML = '<div>📅 '+esc(c.startDate)+' ~ '+esc(c.endDate)+'</div>'
+      +(c.location?'<div>📍 '+esc(c.location)+'</div>':'')
+      +'<div>👤 剩餘名額：'+Math.max(0,(c.capacity||0)-(c.enrolled||0))+' 人</div>';
+    info.classList.remove('hidden');
+    if (amtEl) amtEl.innerText = '$' + price;
+    window._addPrice = price;
+  }
+
+  function submitAdd() {
+    var courseId = (document.getElementById('add-course-sel')||{}).value||'';
+    var name = ((document.getElementById('add-name')||{}).value||'').trim();
+    var nid = ((document.getElementById('add-nid')||{}).value||'').trim().toUpperCase();
+    var phone = ((document.getElementById('add-phone')||{}).value||'').trim();
+    var uid = ((document.getElementById('add-uid')||{}).value||'').trim();
+    var note = ((document.getElementById('add-note')||{}).value||'');
+    if (!courseId) { alert('請選擇課程'); return; }
+    if (!name) { alert('請填寫學員姓名'); return; }
+    if (!nid) { alert('請填寫身分證字號'); return; }
+    if (!phone) { alert('請填寫聯絡電話'); return; }
+    var userProfile = { userId: uid || ('ADMIN-' + Date.now()) };
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI('SI_REGISTER', { courseId:courseId, userId:userProfile.userId, name:name, nationalId:nid, phone:phone, note:note, excludedDates:[], equipments:[] }, userProfile)
+      .then(function(data) {
+        if (typeof toggleLoader === 'function') toggleLoader(false);
+        if (typeof showToast === 'function') showToast('報名成功！訂單號：' + (data&&data.orderId?data.orderId:''));
+        ['add-name','add-nid','add-phone','add-uid','add-note'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+        document.getElementById('add-course-sel').value='';
+        document.getElementById('add-course-info').classList.add('hidden');
+        document.getElementById('add-amount').innerText='$0';
+        syncAll(); setTab('orders');
+      }).catch(function(e) {
+        if (typeof toggleLoader === 'function') toggleLoader(false);
+        alert('建立失敗：' + e.message);
+      });
+  }
+
+  // ── CSV 匯出 ──
+  function exportCsv() {
+    var list = getFilteredOrders();
+    if (!list.length) { alert('沒有可匯出的資料'); return; }
+    var rows = [['訂單號','課程','學員','電話','金額','狀態','後五碼','建立時間']];
+    list.forEach(function(o) {
+      rows.push([o.orderId||'',o.courseName||'',o.name||'',o.phone||'',o.amount||0,statusLabel(o.status),o.remittance||'',o.createdAt||'']);
+    });
+    var csv = '\uFEFF'+rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+    a.download = 'orders_'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+
+  function init() {
+    setTab('dashboard');
+    syncAll();
+  }
+
+  return {
+    init:init, setTab:setTab, syncAll:syncAll,
+    renderOrders:renderOrders, renderCourses:renderCourses, renderMembers:renderMembers,
+    openOrderModal:openOrderModal, closeOrderModal:closeOrderModal, saveOrder:saveOrder,
+    openCourseModal:openCourseModal, closeCourseModal:closeCourseModal, saveCourse:saveCourse,
+    openMemberModal:openMemberModal, closeMemberModal:closeMemberModal, saveMember:saveMember,
+    onCourseChange:onCourseChange, submitAdd:submitAdd, exportCsv:exportCsv
+  };
+})();
+
+setTimeout(function() {
+  if (window.ReservationModule) window.ReservationModule.init();
+}, 150);
+</script>
 </div>
