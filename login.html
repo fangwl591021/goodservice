@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>系統登入</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 1. 引入 LINE LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-md w-96 text-center">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">系統登入</h2>
+        
+        <div id="loading" class="text-gray-500 mb-4">
+            正在載入 LINE 登入資訊，請稍候...
+        </div>
+
+        <div id="profileBox" class="hidden">
+            <img id="pictureUrl" src="" alt="Profile" class="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-green-500">
+            <p id="displayName" class="text-xl font-bold text-gray-800 mb-2"></p>
+            <p id="statusMessage" class="text-gray-500 mb-6 text-sm"></p>
+            
+            <!-- 這裡示範一個系統內部登入的按鈕，或者您可以讓 LIFF 載入完自動幫他登入 -->
+            <button id="systemLoginBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition">
+                進入系統
+            </button>
+        </div>
+        
+        <div id="errorBox" class="hidden text-red-500 mt-4"></div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 🚨 請替換成您在 Apps Script 部署的「網頁應用程式網址」
+        // =========================================================================
+        const GAS_URL = "請填寫您的_APPS_SCRIPT_網頁應用程式網址"; 
+        
+        // 填入您截圖上的 LIFF ID
+        const LIFF_ID = "2009524128-bJMVabyM"; 
+        let lineProfile = null;
+
+        // 2. 初始化 LIFF
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                
+                if (liff.isLoggedIn()) {
+                    // 已經登入 LINE，取得使用者資料
+                    getUserProfile();
+                } else {
+                    // 尚未登入，引導至 LINE 登入畫面
+                    liff.login();
+                }
+            } catch (err) {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('errorBox').classList.remove('hidden');
+                document.getElementById('errorBox').innerText = "LIFF 初始化失敗：" + err.message;
+            }
+        }
+
+        // 3. 取得 LINE 使用者資料
+        async function getUserProfile() {
+            try {
+                lineProfile = await liff.getProfile();
+                
+                // 顯示在畫面上
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('profileBox').classList.remove('hidden');
+                
+                document.getElementById('pictureUrl').src = lineProfile.pictureUrl || 'https://via.placeholder.com/150';
+                document.getElementById('displayName').innerText = lineProfile.displayName;
+                document.getElementById('statusMessage').innerText = lineProfile.userId; // 顯示 ID 供確認
+
+            } catch (err) {
+                document.getElementById('errorBox').classList.remove('hidden');
+                document.getElementById('errorBox').innerText = "取得資料失敗：" + err.message;
+            }
+        }
+
+        // 4. 結合我們之前改寫的 GAS API 進行系統登入
+        document.getElementById('systemLoginBtn').addEventListener('click', function() {
+            if (!lineProfile) return;
+
+            // 改變按鈕狀態
+            this.innerText = "登入中...";
+            this.disabled = true;
+
+            // 這裡假設我們用 LINE ID 作為系統登入的帳號 (您可以依照您的邏輯修改)
+            var payload = {
+                action: 'login',
+                username: lineProfile.userId, // 使用 LINE ID 當作 username
+                password: 'LINE_LOGIN'        // 假設的密碼機制，或後端直接信任 LINE ID
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    // 登入成功，將資料存入 localStorage，並導向您的管理後台頁面
+                    localStorage.setItem('currentUser', JSON.stringify(res.user));
+                    alert('登入成功！即將進入系統');
+                    // window.location.href = 'admin.html'; // 導向後台
+                } else {
+                    // 如果帳號不存在，您可以引導他去「註冊頁面」
+                    alert('系統中找不到您的 LINE 帳號，請先聯絡管理員註冊。');
+                    this.innerText = "進入系統";
+                    this.disabled = false;
+                }
+            })
+            .catch(err => {
+                alert('網路連線發生錯誤');
+                this.innerText = "進入系統";
+                this.disabled = false;
+            });
+        });
+
+        // 網頁載入後馬上執行 LIFF 初始化
+        window.onload = function() {
+            initializeLiff();
+        };
+    </script>
+</body>
+</html>
