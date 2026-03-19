@@ -25,6 +25,7 @@
                         <th class="p-4 text-center">權限</th>
                         <th class="p-4 text-center">RM配額</th>
                         <th class="p-4 text-center">FLEX配額</th>
+                        <th class="p-4 text-center">無限(OK)</th>
                         <th class="p-4">到期日</th>
                         <th class="p-4 text-right">操作</th>
                     </tr>
@@ -71,10 +72,20 @@
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">FLEX 配額 (總數)</label><input type="number" id="adm-flexQuota" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="3"></div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">模組權限設定 (輸入數字組合，如 12345)</label>
-                    <input type="text" id="adm-perms" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="1234">
-                    <p class="text-[10px] text-slate-400 mt-1">1:圖文選單, 2:自由版(Flex), 3:行事曆, 4:網址擷取, 5:帳號管理(Admin)</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">模組權限設定</label>
+                        <input type="text" id="adm-perms" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="1234">
+                        <p class="text-[10px] text-slate-400 mt-1">1:圖文 2:Flex 3:日曆 4:網址 5:Admin</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-2">無限制配額 (L欄)</label>
+                        <select id="adm-unlimited" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none">
+                            <option value="">依照配額限制</option>
+                            <option value="OK">OK (無限制)</option>
+                        </select>
+                        <p class="text-[10px] text-slate-400 mt-1">若選為 OK，將無視左側數字。</p>
+                    </div>
                 </div>
             </div>
             <div class="p-5 border-t border-slate-100 flex justify-end gap-3 bg-slate-50 rounded-b-xl">
@@ -90,20 +101,19 @@
             users: [],
             loadUsers: function() {
                 var tbody = document.getElementById('admin-user-list');
-                tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-slate-400 font-bold animate-pulse">載入中...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-slate-400 font-bold animate-pulse">載入中...</td></tr>';
                 
-                // 【核心修改】改用 fetchApi 取代原有的 google.script.run
                 fetchApi('getAllUsers')
                 .then(function(res) {
                     if (res.success) {
                         window.AdminModule.users = res.data;
                         window.AdminModule.renderUsers(res.data);
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-red-400">載入失敗: ' + res.msg + '</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-red-400">載入失敗: ' + res.msg + '</td></tr>';
                     }
                 })
                 .catch(function(err){
-                    tbody.innerHTML = '<tr><td colspan="9" class="p-8 text-center text-red-400">網路連線錯誤，請稍後再試。</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="10" class="p-8 text-center text-red-400">網路連線錯誤，請稍後再試。</td></tr>';
                 });
             },
             renderUsers: function(data) {
@@ -114,6 +124,10 @@
                         ? '<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded">ACTIVE</span>'
                         : '<span class="px-2 py-1 bg-red-100 text-red-700 text-[10px] font-black rounded">SUSPEND</span>';
                         
+                    var unlimitedTag = u.unlimited === 'OK'
+                        ? '<span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-black rounded">OK</span>'
+                        : '<span class="px-2 py-1 bg-slate-100 text-slate-400 text-[10px] font-black rounded">-</span>';
+
                     var tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 transition";
                     tr.innerHTML = `
@@ -124,6 +138,7 @@
                         <td class="p-4 text-center"><span class="px-2 py-1 border border-slate-200 text-slate-500 font-mono text-[10px] rounded">${u.permissions}</span></td>
                         <td class="p-4 text-center font-black text-blue-600">${u.rmQuota}</td>
                         <td class="p-4 text-center font-black text-purple-600">${u.flexQuota}</td>
+                        <td class="p-4 text-center">${unlimitedTag}</td>
                         <td class="p-4 text-slate-500 text-xs font-mono">${u.expireDate}</td>
                         <td class="p-4 text-right">
                             <button onclick="window.AdminModule.editUser(${idx})" class="px-4 py-1.5 border border-[#54C061] text-[#54C061] hover:bg-green-50 rounded font-bold transition text-xs">編輯</button>
@@ -144,6 +159,7 @@
                 document.getElementById('adm-rmQuota').value = '1';
                 document.getElementById('adm-flexQuota').value = '3';
                 document.getElementById('adm-perms').value = '1234';
+                document.getElementById('adm-unlimited').value = '';
                 document.getElementById('adm-account').disabled = false;
                 document.getElementById('admin-modal-title').innerText = "新增用戶";
             },
@@ -162,6 +178,7 @@
                 document.getElementById('adm-rmQuota').value = u.rmQuota || 1;
                 document.getElementById('adm-flexQuota').value = u.flexQuota || 3;
                 document.getElementById('adm-perms').value = u.permissions;
+                document.getElementById('adm-unlimited').value = u.unlimited === 'OK' ? 'OK' : '';
                 
                 document.getElementById('adm-account').disabled = true; // 編輯模式不允許更改登入帳號 ID
                 document.getElementById('admin-modal-title').innerText = "編輯用戶";
@@ -178,7 +195,8 @@
                     expireDate: document.getElementById('adm-expire').value,
                     rmQuota: parseInt(document.getElementById('adm-rmQuota').value) || 1,
                     flexQuota: parseInt(document.getElementById('adm-flexQuota').value) || 3,
-                    permissions: document.getElementById('adm-perms').value
+                    permissions: document.getElementById('adm-perms').value,
+                    unlimited: document.getElementById('adm-unlimited').value // L 欄資料
                 };
 
                 if (!userData.account || !userData.password) {
@@ -187,14 +205,13 @@
                 }
 
                 toggleLoader(true);
-                // 【核心修改】使用 fetchApi 傳送儲存請求給後端 Worker
                 fetchApi('saveUserData', { userData: userData })
                 .then(function(res) {
                     toggleLoader(false);
                     if (res.success) {
                         showToast("儲存成功！");
                         window.AdminModule.closeUserModal();
-                        window.AdminModule.loadUsers(); // 重新載入列表
+                        window.AdminModule.loadUsers(); 
                     } else {
                         alert('儲存失敗: ' + res.msg);
                     }
