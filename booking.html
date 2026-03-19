@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>線上預約服務</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen pb-10">
+
+    <!-- 頂部橫幅 -->
+    <div class="bg-gradient-to-r from-[#54C061] to-[#3ca048] pt-12 pb-24 px-6 text-center text-white rounded-b-[40px] shadow-md">
+        <h1 class="text-3xl font-black tracking-widest mb-2">線上預約</h1>
+        <p class="text-sm font-medium opacity-90">請填寫您的需求，我們將盡快為您安排</p>
+    </div>
+
+    <!-- 表單區塊 -->
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl -mt-16 mx-4 overflow-hidden">
+        
+        <!-- LIFF 讀取中的使用者資料區塊 -->
+        <div id="liff-profile" class="bg-slate-50 p-4 border-b border-slate-100 flex items-center gap-4 hidden">
+            <img id="liff-avatar" src="https://via.placeholder.com/50" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover">
+            <div>
+                <p class="text-xs text-slate-400 font-bold">目前登入身分</p>
+                <p id="liff-name" class="font-black text-slate-700"></p>
+            </div>
+        </div>
+
+        <form id="publicBookingForm" class="p-6 space-y-5">
+            <div>
+                <label class="block text-sm font-black text-slate-700 mb-2">真實姓名 <span class="text-red-500">*</span></label>
+                <input type="text" id="res-name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium" placeholder="請輸入姓名">
+            </div>
+
+            <div>
+                <label class="block text-sm font-black text-slate-700 mb-2">聯絡電話 <span class="text-red-500">*</span></label>
+                <input type="tel" id="res-phone" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium font-mono" placeholder="09xx-xxx-xxx">
+            </div>
+            
+            <input type="hidden" id="res-lineId" value="">
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-black text-slate-700 mb-2">預約日期 <span class="text-red-500">*</span></label>
+                    <input type="date" id="res-date" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium font-mono">
+                </div>
+                <div>
+                    <label class="block text-sm font-black text-slate-700 mb-2">預約時間 <span class="text-red-500">*</span></label>
+                    <select id="res-time" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium">
+                        <option value="" disabled selected>請選擇</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-black text-slate-700 mb-2">服務項目 <span class="text-red-500">*</span></label>
+                <select id="res-service" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium">
+                    <option value="" disabled selected>請選擇您需要的服務</option>
+                    <option value="系統諮詢">系統諮詢</option>
+                    <option value="活動企劃討論">活動企劃討論</option>
+                    <option value="售後技術支援">售後技術支援</option>
+                    <option value="其它">其它</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-black text-slate-700 mb-2">備註說明</label>
+                <textarea id="res-memo" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium resize-none" placeholder="有什麼特別需要我們注意的嗎？(選填)"></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-[#111111] hover:bg-slate-800 text-white font-black text-lg py-4 px-4 rounded-xl transition duration-200 shadow-lg mt-4 flex items-center justify-center gap-2">
+                <span>確認送出預約</span>
+            </button>
+        </form>
+
+        <!-- 處理中畫面 -->
+        <div id="loading-screen" class="hidden p-12 flex flex-col items-center justify-center">
+            <svg class="animate-spin h-12 w-12 text-[#54C061] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-slate-500 font-bold">預約資料傳送中...</p>
+        </div>
+
+        <!-- 成功/失敗訊息 -->
+        <div id="result-screen" class="hidden p-10 text-center"></div>
+
+    </div>
+
+    <script>
+        // 🚨 重要：請填寫您實際的 Worker 網址與 LIFF ID
+        const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
+        const LIFF_ID = "2009524128-bJMVabyM"; 
+
+        // 設定日期限制 (不能選過去)
+        const dateInput = document.getElementById('res-date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+        // LIFF 初始化
+        async function initLiff() {
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    document.getElementById('liff-profile').classList.remove('hidden');
+                    document.getElementById('liff-name').innerText = profile.displayName;
+                    document.getElementById('liff-avatar').src = profile.pictureUrl || "https://via.placeholder.com/50";
+                    
+                    // 將 LINE ID 和名稱隱藏填入表單
+                    document.getElementById('res-lineId').value = profile.userId;
+                    // 自動填入名稱 (如果客人想改可以自己改)
+                    document.getElementById('res-name').value = profile.displayName;
+                } else {
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Initialization failed", err);
+            }
+        }
+
+        window.onload = () => { initLiff(); };
+
+        // 表單送出處理
+        document.getElementById('publicBookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const payload = {
+                action: 'book_event',
+                data: {
+                    name: document.getElementById('res-name').value,
+                    phone: document.getElementById('res-phone').value,
+                    lineId: document.getElementById('res-lineId').value,
+                    date: document.getElementById('res-date').value,
+                    time: document.getElementById('res-time').value,
+                    service: document.getElementById('res-service').value,
+                    memo: document.getElementById('res-memo').value
+                }
+            };
+
+            // 切換畫面
+            document.getElementById('publicBookingForm').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+
+            fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(result => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                const resultDiv = document.getElementById('result-screen');
+                resultDiv.classList.remove('hidden');
+
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-black text-slate-800 mb-2">預約成功！</h2>
+                        <p class="text-slate-500 font-medium mb-6">我們已經收到您的預約資訊，<br>將盡快由專人為您服務。</p>
+                        <button onclick="liff.closeWindow()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black py-3 rounded-xl transition">關閉視窗</button>
+                    `;
+                } else {
+                    showError(result.msg);
+                }
+            })
+            .catch(err => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                showError("網路連線異常，請稍後再試。");
+            });
+        });
+
+        function showError(msg) {
+            const resultDiv = document.getElementById('result-screen');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = `
+                <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </div>
+                <h2 class="text-xl font-black text-slate-800 mb-2">發生錯誤</h2>
+                <p class="text-rose-500 font-medium mb-6">${msg}</p>
+                <button onclick="location.reload()" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl transition">返回重新填寫</button>
+            `;
+        }
+    </script>
+</body>
+</html>
