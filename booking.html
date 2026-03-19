@@ -1,199 +1,659 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>線上預約服務</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>線上預約</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <style>
+    body {
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: #f8fafc;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+    .input-field {
+      width: 100%;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+      transition: 0.2s;
+    }
+    .input-field:focus {
+      border-color: #54C061;
+      box-shadow: 0 0 0 3px rgba(84, 192, 97, 0.12);
+    }
+    .btn-line {
+      background: #54C061;
+      color: #fff;
+      font-weight: 900;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+    .btn-line:hover {
+      background: #43ad50;
+    }
+    .btn-soft {
+      background: #fff;
+      border: 1px solid #dbe2ea;
+      color: #475569;
+      font-weight: 700;
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+    .btn-soft:hover {
+      background: #f8fafc;
+    }
+    .tab-active {
+      background: #54C061;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(84, 192, 97, 0.25);
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    .status-confirmed {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .status-done {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .status-cancelled {
+      background: #e2e8f0;
+      color: #475569;
+    }
+    .fade-in {
+      animation: fadeIn 0.25s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-10">
 
-    <!-- 頂部橫幅 -->
-    <div class="bg-gradient-to-r from-[#54C061] to-[#3ca048] pt-12 pb-24 px-6 text-center text-white rounded-b-[40px] shadow-md">
-        <h1 class="text-3xl font-black tracking-widest mb-2">線上預約</h1>
-        <p class="text-sm font-medium opacity-90">請填寫您的需求，我們將盡快為您安排</p>
-    </div>
-
-    <!-- 表單區塊 -->
-    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl -mt-16 mx-4 overflow-hidden">
-        
-        <!-- LIFF 讀取中的使用者資料區塊 -->
-        <div id="liff-profile" class="bg-slate-50 p-4 border-b border-slate-100 flex items-center gap-4 hidden">
-            <img id="liff-avatar" src="https://via.placeholder.com/50" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover">
-            <div>
-                <p class="text-xs text-slate-400 font-bold">目前登入身分</p>
-                <p id="liff-name" class="font-black text-slate-700"></p>
-            </div>
-        </div>
-
-        <form id="publicBookingForm" class="p-6 space-y-5">
-            <div>
-                <label class="block text-sm font-black text-slate-700 mb-2">真實姓名 <span class="text-red-500">*</span></label>
-                <input type="text" id="res-name" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium" placeholder="請輸入姓名">
-            </div>
-
-            <div>
-                <label class="block text-sm font-black text-slate-700 mb-2">聯絡電話 <span class="text-red-500">*</span></label>
-                <input type="tel" id="res-phone" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium font-mono" placeholder="09xx-xxx-xxx">
-            </div>
-            
-            <input type="hidden" id="res-lineId" value="">
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-black text-slate-700 mb-2">預約日期 <span class="text-red-500">*</span></label>
-                    <input type="date" id="res-date" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium font-mono">
-                </div>
-                <div>
-                    <label class="block text-sm font-black text-slate-700 mb-2">預約時間 <span class="text-red-500">*</span></label>
-                    <select id="res-time" required class="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium">
-                        <option value="" disabled selected>請選擇</option>
-                        <option value="09:00">09:00</option>
-                        <option value="10:00">10:00</option>
-                        <option value="11:00">11:00</option>
-                        <option value="13:00">13:00</option>
-                        <option value="14:00">14:00</option>
-                        <option value="15:00">15:00</option>
-                        <option value="16:00">16:00</option>
-                        <option value="17:00">17:00</option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-black text-slate-700 mb-2">服務項目 <span class="text-red-500">*</span></label>
-                <select id="res-service" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium">
-                    <option value="" disabled selected>請選擇您需要的服務</option>
-                    <option value="系統諮詢">系統諮詢</option>
-                    <option value="活動企劃討論">活動企劃討論</option>
-                    <option value="售後技術支援">售後技術支援</option>
-                    <option value="其它">其它</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-black text-slate-700 mb-2">備註說明</label>
-                <textarea id="res-memo" rows="3" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-0 focus:border-[#54C061] focus:bg-white outline-none transition text-sm font-medium resize-none" placeholder="有什麼特別需要我們注意的嗎？(選填)"></textarea>
-            </div>
-
-            <button type="submit" id="submitBtn" class="w-full bg-[#111111] hover:bg-slate-800 text-white font-black text-lg py-4 px-4 rounded-xl transition duration-200 shadow-lg mt-4 flex items-center justify-center gap-2">
-                <span>確認送出預約</span>
-            </button>
-        </form>
-
-        <!-- 處理中畫面 -->
-        <div id="loading-screen" class="hidden p-12 flex flex-col items-center justify-center">
-            <svg class="animate-spin h-12 w-12 text-[#54C061] mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+<body>
+  <div class="max-w-3xl mx-auto min-h-screen bg-slate-50">
+    <!-- Header -->
+    <div class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200">
+      <div class="px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-[#54C061] text-white flex items-center justify-center shadow-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
             </svg>
-            <p class="text-slate-500 font-bold">預約資料傳送中...</p>
+          </div>
+          <div>
+            <h1 class="text-lg font-black text-slate-800 tracking-wide">線上預約中心</h1>
+            <p class="text-[11px] font-bold text-slate-400 tracking-widest uppercase">Booking Center</p>
+          </div>
         </div>
-
-        <!-- 成功/失敗訊息 -->
-        <div id="result-screen" class="hidden p-10 text-center"></div>
-
+        <button id="btn-refresh" class="btn-soft px-4 py-2 text-sm" onclick="loadMyReservations()">
+          重新整理
+        </button>
+      </div>
     </div>
 
-    <script>
-        // ✅ 已固定寫入 Worker 網址與 LIFF ID
-        const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
-        const LIFF_ID = "2009524128-bJMVabyM"; 
+    <div class="p-4 pb-28">
+      <!-- Profile Card -->
+      <div class="card p-4 mb-4">
+        <div class="flex items-center gap-4">
+          <img id="profile-avatar" src="https://via.placeholder.com/120x120?text=User"
+            class="w-14 h-14 rounded-full object-cover border border-slate-200" />
+          <div class="flex-1 min-w-0">
+            <div id="profile-name" class="font-black text-slate-800 text-base truncate">訪客模式</div>
+            <div id="profile-sub" class="text-xs text-slate-400 font-bold mt-1 break-all">尚未取得 LINE 身分，可手動填寫</div>
+          </div>
+        </div>
+      </div>
 
-        // 設定日期限制 (不能選過去)
-        const dateInput = document.getElementById('res-date');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.setAttribute('min', today);
+      <!-- Tabs -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <button id="tab-book" class="tab-active px-4 py-3 rounded-2xl font-black text-sm" onclick="switchTab('book')">
+          我要預約
+        </button>
+        <button id="tab-mine" class="bg-white text-slate-600 px-4 py-3 rounded-2xl font-black text-sm border border-slate-200"
+          onclick="switchTab('mine')">
+          我的預約
+        </button>
+      </div>
 
-        // LIFF 初始化
-        async function initLiff() {
-            try {
-                await liff.init({ liffId: LIFF_ID });
-                if (liff.isLoggedIn()) {
-                    const profile = await liff.getProfile();
-                    document.getElementById('liff-profile').classList.remove('hidden');
-                    document.getElementById('liff-name').innerText = profile.displayName;
-                    document.getElementById('liff-avatar').src = profile.pictureUrl || "https://via.placeholder.com/50";
-                    
-                    // 將 LINE ID 和名稱隱藏填入表單
-                    document.getElementById('res-lineId').value = profile.userId;
-                    // 自動填入名稱 (如果客人想改可以自己改)
-                    document.getElementById('res-name').value = profile.displayName;
-                } else {
-                    liff.login();
-                }
-            } catch (err) {
-                console.error("LIFF Initialization failed", err);
-            }
+      <!-- BOOK TAB -->
+      <div id="view-book" class="fade-in">
+        <div class="card p-5 mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-black text-slate-800">建立新預約</h2>
+            <span class="text-[10px] font-black px-2 py-1 rounded-full bg-green-50 text-green-600">前台可用版</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">姓名</label>
+              <input id="f-name" type="text" class="input-field" placeholder="請輸入姓名">
+            </div>
+
+            <div>
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">聯絡電話</label>
+              <input id="f-phone" type="tel" class="input-field" placeholder="請輸入手機號碼">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">LINE ID / LINE UserId</label>
+              <input id="f-lineId" type="text" class="input-field bg-slate-50" placeholder="若有 LIFF 會自動帶入" readonly>
+            </div>
+
+            <div>
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">預約日期</label>
+              <input id="f-date" type="date" class="input-field">
+            </div>
+
+            <div>
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">預約時段</label>
+              <input id="f-time" type="time" step="1800" class="input-field">
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">服務項目</label>
+              <input id="f-service" list="service-list" type="text" class="input-field" placeholder="例如：剪髮、諮詢、體驗、按摩、課程預約">
+              <datalist id="service-list">
+                <option value="服務諮詢"></option>
+                <option value="體驗預約"></option>
+                <option value="課程預約"></option>
+                <option value="顧問諮詢"></option>
+                <option value="到店服務"></option>
+              </datalist>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">備註</label>
+              <textarea id="f-memo" rows="4" class="input-field resize-none" placeholder="可填寫需求、問題、注意事項"></textarea>
+            </div>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button class="btn-line py-3.5 text-base shadow-md" onclick="submitBooking()">確認送出預約</button>
+            <button class="btn-soft py-3.5 text-base" onclick="resetBookingForm()">清空內容</button>
+          </div>
+        </div>
+
+        <div class="card p-4">
+          <h3 class="font-black text-slate-800 mb-3">使用說明</h3>
+          <div class="text-sm text-slate-600 space-y-2 leading-relaxed">
+            <p>1. 建議從 LINE 內開啟，系統會自動帶入 LINE 身分。</p>
+            <p>2. 若沒有在 LINE 內開啟，也可以手動填寫姓名與電話建立預約。</p>
+            <p>3. 若要改期，可到「我的預約」先取消原預約，再重新送出新預約。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINE TAB -->
+      <div id="view-mine" class="hidden fade-in">
+        <div class="card p-5 mb-4">
+          <div class="flex flex-col md:flex-row md:items-end gap-4">
+            <div class="flex-1">
+              <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">查詢電話（若非 LINE 開啟可手動查詢）</label>
+              <input id="search-phone" type="tel" class="input-field" placeholder="請輸入預約時使用的電話">
+            </div>
+            <div class="flex gap-3">
+              <button class="btn-soft px-5 py-3" onclick="loadMyReservations()">查詢我的預約</button>
+              <button class="btn-soft px-5 py-3" onclick="document.getElementById('search-phone').value=''; loadMyReservations();">清除條件</button>
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-400 leading-relaxed">
+            若已取得 LINE 身分，系統會優先用 LINE ID 幫你過濾；否則可輸入電話查詢。
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div class="card p-4">
+            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">我的總筆數</div>
+            <div id="my-stat-total" class="text-2xl font-black text-slate-700">0</div>
+          </div>
+          <div class="card p-4">
+            <div class="text-[10px] font-black text-amber-500 uppercase mb-1">待確認</div>
+            <div id="my-stat-pending" class="text-2xl font-black text-amber-600">0</div>
+          </div>
+          <div class="card p-4">
+            <div class="text-[10px] font-black text-green-500 uppercase mb-1">已確認</div>
+            <div id="my-stat-confirmed" class="text-2xl font-black text-green-600">0</div>
+          </div>
+          <div class="card p-4">
+            <div class="text-[10px] font-black text-blue-500 uppercase mb-1">已完成</div>
+            <div id="my-stat-done" class="text-2xl font-black text-blue-600">0</div>
+          </div>
+        </div>
+
+        <!-- List -->
+        <div id="my-reservation-list" class="space-y-4">
+          <div class="card p-8 text-center text-slate-400 font-bold">
+            尚未查詢預約資料
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div id="loading-mask" class="hidden fixed inset-0 z-[999] bg-white/80 backdrop-blur-sm items-center justify-center">
+    <div class="bg-white rounded-2xl px-6 py-5 shadow-2xl border border-slate-100 text-center">
+      <div class="w-10 h-10 mx-auto mb-3 rounded-full border-4 border-[#54C061] border-t-transparent animate-spin"></div>
+      <div class="text-sm font-black text-slate-600 tracking-widest uppercase">載入中...</div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed left-1/2 -translate-x-1/2 bottom-6 z-[1000] bg-slate-800 text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl"></div>
+
+  <script>
+    /* ===== 可調整參數 ===== */
+    const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
+    const LIFF_ID = "2009524128-bJMVabyM"; // 若你的 booking 頁使用不同 LIFF ID，改這行即可
+
+    const appState = {
+      activeTab: 'book',
+      profile: null,
+      lineId: '',
+      reservations: []
+    };
+
+    function showLoading(show) {
+      const el = document.getElementById('loading-mask');
+      if (!el) return;
+      if (show) {
+        el.classList.remove('hidden');
+        el.classList.add('flex');
+      } else {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      setTimeout(() => {
+        el.classList.add('hidden');
+      }, 2200);
+    }
+
+    function esc(str) {
+      return String(str == null ? '' : str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function callApi(action, payload = {}) {
+      return fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...payload })
+      }).then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      });
+    }
+
+    function switchTab(tab) {
+      appState.activeTab = tab;
+
+      const book = document.getElementById('view-book');
+      const mine = document.getElementById('view-mine');
+      const tabBook = document.getElementById('tab-book');
+      const tabMine = document.getElementById('tab-mine');
+
+      if (tab === 'book') {
+        book.classList.remove('hidden');
+        mine.classList.add('hidden');
+        tabBook.className = 'tab-active px-4 py-3 rounded-2xl font-black text-sm';
+        tabMine.className = 'bg-white text-slate-600 px-4 py-3 rounded-2xl font-black text-sm border border-slate-200';
+      } else {
+        mine.classList.remove('hidden');
+        book.classList.add('hidden');
+        tabMine.className = 'tab-active px-4 py-3 rounded-2xl font-black text-sm';
+        tabBook.className = 'bg-white text-slate-600 px-4 py-3 rounded-2xl font-black text-sm border border-slate-200';
+        loadMyReservations();
+      }
+    }
+
+    function setTodayMin() {
+      const dateInput = document.getElementById('f-date');
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const ymd = `${yyyy}-${mm}-${dd}`;
+      dateInput.min = ymd;
+      if (!dateInput.value) dateInput.value = ymd;
+    }
+
+    function resetBookingForm(keepIdentity = true) {
+      const name = document.getElementById('f-name').value;
+      const phone = document.getElementById('f-phone').value;
+      const lineId = document.getElementById('f-lineId').value;
+
+      document.getElementById('f-service').value = '';
+      document.getElementById('f-memo').value = '';
+      document.getElementById('f-time').value = '';
+
+      if (!keepIdentity) {
+        document.getElementById('f-name').value = '';
+        document.getElementById('f-phone').value = '';
+        document.getElementById('f-lineId').value = '';
+      } else {
+        document.getElementById('f-name').value = name;
+        document.getElementById('f-phone').value = phone;
+        document.getElementById('f-lineId').value = lineId;
+      }
+
+      setTodayMin();
+    }
+
+    async function initLiffSafe() {
+      if (!window.liff || !LIFF_ID) return;
+
+      try {
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          // 若在外部瀏覽器也能手填，所以不強制卡死
+          return;
         }
 
-        window.onload = () => { initLiff(); };
+        const profile = await liff.getProfile();
+        appState.profile = profile;
+        appState.lineId = profile.userId || '';
 
-        // 表單送出處理
-        document.getElementById('publicBookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.getElementById('profile-avatar').src = profile.pictureUrl || 'https://via.placeholder.com/120x120?text=User';
+        document.getElementById('profile-name').innerText = profile.displayName || 'LINE 使用者';
+        document.getElementById('profile-sub').innerText = profile.userId || '已取得 LINE 身分';
 
-            const payload = {
-                action: 'book_event',
-                data: {
-                    name: document.getElementById('res-name').value,
-                    phone: document.getElementById('res-phone').value,
-                    lineId: document.getElementById('res-lineId').value,
-                    date: document.getElementById('res-date').value,
-                    time: document.getElementById('res-time').value,
-                    service: document.getElementById('res-service').value,
-                    memo: document.getElementById('res-memo').value
-                }
-            };
+        if (!document.getElementById('f-name').value) {
+          document.getElementById('f-name').value = profile.displayName || '';
+        }
+        document.getElementById('f-lineId').value = profile.userId || '';
+      } catch (err) {
+        console.error('LIFF init failed:', err);
+      }
+    }
 
-            // 切換畫面
-            document.getElementById('publicBookingForm').classList.add('hidden');
-            document.getElementById('loading-screen').classList.remove('hidden');
-            document.getElementById('result-screen').classList.add('hidden');
+    async function submitBooking() {
+      const name = document.getElementById('f-name').value.trim();
+      const phone = document.getElementById('f-phone').value.trim();
+      const lineId = document.getElementById('f-lineId').value.trim();
+      const date = document.getElementById('f-date').value;
+      const time = document.getElementById('f-time').value;
+      const service = document.getElementById('f-service').value.trim();
+      const memo = document.getElementById('f-memo').value.trim();
 
-            fetch(WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(result => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                const resultDiv = document.getElementById('result-screen');
-                resultDiv.classList.remove('hidden');
+      if (!name) return alert('請輸入姓名');
+      if (!phone) return alert('請輸入聯絡電話');
+      if (!date) return alert('請選擇預約日期');
+      if (!time) return alert('請選擇預約時段');
+      if (!service) return alert('請填寫服務項目');
 
-                if (result.success) {
-                    resultDiv.innerHTML = `
-                        <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        <h2 class="text-2xl font-black text-slate-800 mb-2">預約成功！</h2>
-                        <p class="text-slate-500 font-medium mb-6">我們已經收到您的預約資訊，<br>將盡快由專人為您服務。</p>
-                        <button onclick="liff.closeWindow()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-black py-3 rounded-xl transition">關閉視窗</button>
-                    `;
-                } else {
-                    showError(result.msg);
-                }
-            })
-            .catch(err => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                showError("網路連線異常，請稍後再試。");
-            });
+      showLoading(true);
+
+      try {
+        const res = await callApi('book_event', {
+          data: {
+            name,
+            phone,
+            lineId,
+            date,
+            time,
+            service,
+            memo
+          }
         });
 
-        function showError(msg) {
-            const resultDiv = document.getElementById('result-screen');
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = `
-                <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </div>
-                <h2 class="text-xl font-black text-slate-800 mb-2">發生錯誤</h2>
-                <p class="text-rose-500 font-medium mb-6">${msg}</p>
-                <button onclick="location.reload()" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl transition">返回重新填寫</button>
-            `;
+        showLoading(false);
+
+        if (res.success) {
+          localStorage.setItem('booking_last_phone', phone);
+          showToast('預約成功');
+          resetBookingForm(true);
+          switchTab('mine');
+          loadMyReservations();
+        } else {
+          alert(res.msg || '預約失敗');
         }
-    </script>
+      } catch (err) {
+        showLoading(false);
+        console.error(err);
+        alert('預約送出失敗，請檢查網路或 API');
+      }
+    }
+
+    function getIdentityForSearch() {
+      const lineId = (appState.lineId || document.getElementById('f-lineId').value || '').trim();
+      const manualPhone = (document.getElementById('search-phone').value || '').trim();
+      const formPhone = (document.getElementById('f-phone').value || '').trim();
+      const savedPhone = (localStorage.getItem('booking_last_phone') || '').trim();
+
+      return {
+        lineId,
+        phone: manualPhone || formPhone || savedPhone
+      };
+    }
+
+    function filterMyReservations(list) {
+      const identity = getIdentityForSearch();
+      const lineId = identity.lineId;
+      const phone = identity.phone;
+
+      if (!lineId && !phone) return [];
+
+      return list.filter(item => {
+        let ok = false;
+        if (lineId && item.lineId && String(item.lineId).trim() === lineId) ok = true;
+        if (!ok && phone && item.phone && String(item.phone).trim() === phone) ok = true;
+        return ok;
+      });
+    }
+
+    async function loadMyReservations() {
+      const container = document.getElementById('my-reservation-list');
+      container.innerHTML = '<div class="card p-8 text-center text-slate-400 font-bold">查詢中...</div>';
+
+      try {
+        const res = await callApi('getReservations', {});
+        if (!res.success) {
+          container.innerHTML = '<div class="card p-8 text-center text-red-400 font-bold">讀取失敗</div>';
+          return;
+        }
+
+        const all = Array.isArray(res.data) ? res.data : [];
+        const mine = filterMyReservations(all);
+        appState.reservations = mine;
+        renderMyReservations();
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '<div class="card p-8 text-center text-red-400 font-bold">網路錯誤，請稍後再試</div>';
+      }
+    }
+
+    function renderMyReservations() {
+      const list = appState.reservations || [];
+      const container = document.getElementById('my-reservation-list');
+
+      let pending = 0, confirmed = 0, done = 0;
+      list.forEach(item => {
+        if (item.status === '待確認') pending++;
+        if (item.status === '已確認') confirmed++;
+        if (item.status === '已完成') done++;
+      });
+
+      document.getElementById('my-stat-total').innerText = list.length;
+      document.getElementById('my-stat-pending').innerText = pending;
+      document.getElementById('my-stat-confirmed').innerText = confirmed;
+      document.getElementById('my-stat-done').innerText = done;
+
+      if (!list.length) {
+        container.innerHTML = `
+          <div class="card p-8 text-center">
+            <div class="text-slate-300 text-5xl mb-3">📭</div>
+            <div class="font-black text-slate-500">目前查不到你的預約資料</div>
+            <div class="text-xs text-slate-400 mt-2">可改用電話查詢，或先建立一筆新預約</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+
+      list.forEach((item, idx) => {
+        const badgeClass =
+          item.status === '待確認' ? 'status-pending' :
+          item.status === '已確認' ? 'status-confirmed' :
+          item.status === '已完成' ? 'status-done' : 'status-cancelled';
+
+        const canCancel = item.status === '待確認' || item.status === '已確認';
+
+        const card = document.createElement('div');
+        card.className = 'card p-5 fade-in';
+        card.innerHTML = `
+          <div class="flex justify-between items-start gap-3 mb-4">
+            <div class="min-w-0 flex-1">
+              <div class="font-black text-slate-800 text-lg break-words">${esc(item.service || '未命名服務')}</div>
+              <div class="text-xs text-slate-400 font-bold mt-1 break-all">${esc(item.reservationId || item.timestamp || '-')}</div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-black ${badgeClass}">
+              ${esc(item.status || '未分類')}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4">
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+              <div class="text-[10px] font-black text-slate-400 uppercase mb-1">預約日期 / 時段</div>
+              <div class="font-bold text-slate-700">${esc(item.date || '-')}</div>
+              <div class="text-xs font-bold text-[#54C061] mt-1">${esc(item.time || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+              <div class="text-[10px] font-black text-slate-400 uppercase mb-1">建立時間</div>
+              <div class="font-bold text-slate-700">${esc(item.createdAt || item.timestamp || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+              <div class="text-[10px] font-black text-slate-400 uppercase mb-1">姓名 / 電話</div>
+              <div class="font-bold text-slate-800">${esc(item.name || '-')}</div>
+              <div class="text-xs text-sky-600 font-mono mt-1">${esc(item.phone || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+              <div class="text-[10px] font-black text-slate-400 uppercase mb-1">LINE ID</div>
+              <div class="font-mono text-xs text-slate-600 break-all">${esc(item.lineId || '-')}</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 mb-4">
+            <div class="text-[10px] font-black text-slate-400 uppercase mb-1">備註</div>
+            <div class="text-sm text-slate-600 whitespace-pre-wrap break-words">${esc(item.memo || '無備註')}</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <button class="btn-soft py-3 text-sm" onclick="copyReservationToForm(${idx})">
+              複製資料再預約
+            </button>
+            <button class="btn-soft py-3 text-sm" onclick="switchTab('book'); window.scrollTo({top:0,behavior:'smooth'});">
+              回到預約表單
+            </button>
+            ${canCancel
+              ? `<button class="py-3 text-sm font-black rounded-xl border border-rose-200 text-rose-500 bg-white hover:bg-rose-500 hover:text-white transition" onclick="cancelReservation(${idx})">取消此預約</button>`
+              : `<button class="py-3 text-sm font-black rounded-xl border border-slate-200 text-slate-300 bg-slate-50 cursor-not-allowed" disabled>目前不可取消</button>`
+            }
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function copyReservationToForm(idx) {
+      const item = appState.reservations[idx];
+      if (!item) return;
+
+      document.getElementById('f-name').value = item.name || document.getElementById('f-name').value;
+      document.getElementById('f-phone').value = item.phone || document.getElementById('f-phone').value;
+      if (!document.getElementById('f-lineId').value && item.lineId) {
+        document.getElementById('f-lineId').value = item.lineId;
+      }
+      document.getElementById('f-service').value = item.service || '';
+      document.getElementById('f-memo').value = item.memo || '';
+      document.getElementById('f-date').value = item.date || document.getElementById('f-date').value;
+      document.getElementById('f-time').value = item.time || '';
+
+      switchTab('book');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('已帶入表單，可直接重約');
+    }
+
+    async function cancelReservation(idx) {
+      const item = appState.reservations[idx];
+      if (!item) return;
+
+      if (!confirm('確定要取消這筆預約嗎？')) return;
+
+      const payload = { status: '已取消' };
+      if (item.reservationId) {
+        payload.reservationId = item.reservationId;
+      } else {
+        payload.timestamp = item.timestamp || item.createdAt || '';
+        payload.phone = item.phone || '';
+      }
+
+      showLoading(true);
+
+      try {
+        const res = await callApi('updateReservationStatus', payload);
+        showLoading(false);
+
+        if (res.success) {
+          showToast('預約已取消');
+          loadMyReservations();
+        } else {
+          alert(res.msg || '取消失敗');
+        }
+      } catch (err) {
+        showLoading(false);
+        console.error(err);
+        alert('取消失敗，請稍後再試');
+      }
+    }
+
+    async function bootstrap() {
+      setTodayMin();
+
+      const savedPhone = localStorage.getItem('booking_last_phone') || '';
+      if (savedPhone) {
+        document.getElementById('search-phone').value = savedPhone;
+        if (!document.getElementById('f-phone').value) {
+          document.getElementById('f-phone').value = savedPhone;
+        }
+      }
+
+      await initLiffSafe();
+    }
+
+    document.addEventListener('DOMContentLoaded', bootstrap);
+  </script>
 </body>
 </html>
