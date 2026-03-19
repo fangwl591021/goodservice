@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>運動島綜合運動體能館</title>
+    <title>活動預約系統</title>
     <!-- LINE SDK -->
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <!-- Vue 3 -->
@@ -34,7 +34,7 @@
     <div id="app" v-cloak class="max-w-md mx-auto bg-white min-h-screen shadow-2xl flex flex-col relative overflow-hidden">
         <!-- Header -->
         <header class="bg-[#06C755] text-white p-3 sticky top-0 z-30 flex items-center justify-between shadow-md">
-            <h1 class="text-[16px] font-black tracking-widest truncate pl-1">運動島綜合運動體能館</h1>
+            <h1 class="text-[16px] font-black tracking-widest truncate pl-1">活動預約系統</h1>
             <div class="flex items-center bg-white/20 pl-1 pr-3 py-1 rounded-full shrink-0 shadow-inner">
                 <img v-if="userProfile && userProfile.pictureUrl" :src="userProfile.pictureUrl" class="w-7 h-7 rounded-full object-cover mr-2 border border-white/50 shadow-sm">
                 <i v-else class="fas fa-user text-sm mr-2 ml-2"></i>
@@ -55,12 +55,6 @@
 
             <!-- View 1: Main Course List -->
             <div v-else-if="view === 'course_list'" class="animate-fade-in pb-10">
-                <!-- 頂部宣傳 Banner -->
-                <div class="w-full bg-white relative">
-                    <img src="https://aiwe.cc/wp-content/uploads/2026/02/17a931ba9905835dd08db446b3d33e1b.png" alt="運動島活動 Banner" class="w-full h-auto block object-cover">
-                    <div class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent"></div>
-                </div>
-
                 <!-- 橫式功能操作列 -->
                 <div class="bg-white px-3 py-4 shadow-[0_4px_15px_rgba(0,0,0,0.04)] grid gap-2 border-b sticky top-0 z-20" :class="isAdmin ? 'grid-cols-4' : 'grid-cols-3'">
                     <button @click="editProfile" :class="{'opacity-50 cursor-not-allowed': isAuthLoading}" class="bg-green-50 text-[#06C755] border border-green-100 rounded-xl py-2.5 flex flex-col items-center justify-center transition shadow-sm relative">
@@ -658,7 +652,7 @@
                 const loadCourses = async () => {
                     isCoursesLoading.value = true;
                     try {
-                        const fetchedCourses = await callApi('GET_COURSES');
+                        const fetchedCourses = await callApi('SI_GET_COURSES');
                         const newSelections = { ...campSelections.value };
                         // ★ 梯次活動
                         fetchedCourses.filter(c => c.type === '梯次活動').forEach(c => {
@@ -683,7 +677,7 @@
                         await liff.init({ liffId: LIFF_ID });
                         if (!liff.isLoggedIn()) { liff.login(); return; }
                         userProfile.value = await liff.getProfile();
-                        const data = await callApi('CHECK_USER');
+                        const data = await callApi('SI_CHECK_USER');
                         if (data && data.registered) {
                             userInfo.value = data.info;
                             isAuthLoading.value = false;
@@ -709,7 +703,7 @@
                 const goToMyOrders = async () => {
                     if (isAuthLoading.value) return alert('系統載入中，請稍候');
                     isOrdersLoading.value = true; view.value = 'my_orders';
-                    try { const orders = await callApi('GET_USER_ORDERS'); myOrders.value = orders; }
+                    try { const orders = await callApi('SI_GET_USER_ORDERS'); myOrders.value = orders; }
                     catch (e) { error.value = '讀取訂單失敗'; } finally { isOrdersLoading.value = false; }
                 };
 
@@ -726,9 +720,9 @@
                 const submitMemberRegister = async () => {
                     isSubmitting.value = true;
                     try {
-                        await callApi('REGISTER_USER', { userId: userProfile.value ? userProfile.value.userId : '', ...regForm.value });
+                        await callApi('SI_REGISTER_USER', { userId: userProfile.value ? userProfile.value.userId : '', ...regForm.value });
                         alert('資料儲存成功！');
-                        const data = await callApi('CHECK_USER');
+                        const data = await callApi('SI_CHECK_USER');
                         userInfo.value = data.info;
                         view.value = 'course_list';
                         if (courses.value.length === 0) loadCourses();
@@ -815,7 +809,7 @@
                     if (!selectedAttendee.value || !selectedAttendee.value.name) return alert('請勾選要上課的學員');
                     isSubmitting.value = true;
                     try {
-                        const userOrders = await callApi('GET_USER_ORDERS');
+                        const userOrders = await callApi('SI_GET_USER_ORDERS');
                         myOrders.value = userOrders;
                         const parseDateStr = (dStr) => dStr ? new Date(dStr).getTime() : 0;
                         const parseTimeStr = (tStr) => { const ft = fmtTime(tStr); if (!ft || !ft.includes(':')) return 0; const p = ft.split(':'); return parseInt(p[0]||'0')*60 + parseInt(p[1]||'0'); };
@@ -834,7 +828,7 @@
                         });
                         if (overlappingOrder) { alert('報名失敗：學員 [' + selectedAttendee.value.name + '] 於此時段已報名了「' + (overlappingOrder.courseName || '其他活動') + '」，發生時間重疊！'); return; }
                         const pl = { courseId: selectedCourse.value.id, userId: userProfile.value ? userProfile.value.userId : '', name: selectedAttendee.value.name, nationalId: selectedAttendee.value.nationalId, phone: selectedAttendee.value.phone || (userInfo.value && userInfo.value.phone), excludedDates: excludedDates.value, equipments: selectedEquipments.value, note: registrationNote.value };
-                        await callApi('REGISTER', pl);
+                        await callApi('SI_REGISTER', pl);
                         view.value = 'success';
                     } catch (e) { alert(e.message); } finally { isSubmitting.value = false; }
                 };
@@ -847,18 +841,18 @@
                     if (tempRemittance.value.length !== 5) return alert('請輸入完整的後五碼');
                     if (!confirm(`確認回填匯款後五碼：${tempRemittance.value}？\n確認後設備調整與取消功能將鎖定。`)) return;
                     isSubmitting.value = true;
-                    try { await callApi('UPDATE_MY_ORDER', { orderId: editingOrder.value.orderId, remittance: tempRemittance.value, excludedDates: tempExcludedDates.value, equipments: tempSelectedEquipments.value }); remittanceConfirmed.value = true; alert('後五碼已確認回填！'); }
+                    try { await callApi('SI_UPDATE_MY_ORDER', { orderId: editingOrder.value.orderId, remittance: tempRemittance.value, excludedDates: tempExcludedDates.value, equipments: tempSelectedEquipments.value }); remittanceConfirmed.value = true; alert('後五碼已確認回填！'); }
                     catch (e) { alert('回填失敗：' + e.message); } finally { isSubmitting.value = false; }
                 };
                 const toggleEditDate = d => { const i = tempExcludedDates.value.indexOf(d); if (i > -1) tempExcludedDates.value.splice(i, 1); else tempExcludedDates.value = [d]; };
                 const isEditEqSelected = eq => tempSelectedEquipments.value.some(e => e.name === eq.name);
                 const toggleEditEquipment = eq => { const idx = tempSelectedEquipments.value.findIndex(e => e.name === eq.name); if (idx > -1) tempSelectedEquipments.value.splice(idx, 1); else tempSelectedEquipments.value.push(eq); };
-                const submitEditOrder = async () => { isSubmitting.value = true; try { await callApi('UPDATE_MY_ORDER', { orderId: editingOrder.value.orderId, remittance: tempRemittance.value, excludedDates: tempExcludedDates.value, equipments: tempSelectedEquipments.value }); alert('修改資料已儲存！'); goToMyOrders(); } catch (e) { alert('儲存失敗：' + e.message); } finally { isSubmitting.value = false; } };
+                const submitEditOrder = async () => { isSubmitting.value = true; try { await callApi('SI_UPDATE_MY_ORDER', { orderId: editingOrder.value.orderId, remittance: tempRemittance.value, excludedDates: tempExcludedDates.value, equipments: tempSelectedEquipments.value }); alert('修改資料已儲存！'); goToMyOrders(); } catch (e) { alert('儲存失敗：' + e.message); } finally { isSubmitting.value = false; } };
                 const isLeaveDateChanged = computed(() => { if (!editingOrder.value || !editingOrder.value.extraData) return false; const oldDates = editingOrder.value.extraData.excludedDates || []; const newDates = tempExcludedDates.value || []; if (oldDates.length !== newDates.length) return true; return oldDates[0] !== newDates[0]; });
                 const updateLeaveDateOnly = async () => {
                     isSubmitting.value = true;
                     try {
-                        await callApi('UPDATE_LEAVE_DATE', { orderId: editingOrder.value.orderId, excludedDates: tempExcludedDates.value });
+                        await callApi('SI_UPDATE_LEAVE_DATE', { orderId: editingOrder.value.orderId, excludedDates: tempExcludedDates.value });
                         alert('請假日期已成功變更！');
                         editingOrder.value.extraData.excludedDates = [...tempExcludedDates.value];
                         const orderInList = myOrders.value.find(o => o.orderId === editingOrder.value.orderId);
@@ -869,7 +863,7 @@
                     if (editingOrder.value && editingOrder.value.status !== 'PENDING') return alert('只有「待付款」的訂單可以直接取消。若需退費請聯繫客服人員辦理。');
                     if (!confirm('確定要取消此筆報名嗎？\n取消後名額將被釋出，此操作無法復原。')) return;
                     isSubmitting.value = true;
-                    try { await callApi('CANCEL_MY_ORDER', { orderId: editingOrder.value.orderId }); alert('報名已成功取消，名額已釋出！'); goToMyOrders(); }
+                    try { await callApi('SI_CANCEL_MY_ORDER', { orderId: editingOrder.value.orderId }); alert('報名已成功取消，名額已釋出！'); goToMyOrders(); }
                     catch (e) { alert('取消失敗：' + e.message); } finally { isSubmitting.value = false; }
                 };
 
