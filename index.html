@@ -327,13 +327,16 @@
             baseUrl = 'https://fangwl591021.github.io/goodservice/';
         }
 
+        // 🌟 關鍵修復：加入時間戳記，強制所有裝置與帳號都抓取最新檔案，不使用舊快取
+        const ts = new Date().getTime();
+
         const modules = [
-            { id: 'dynamic-module-menu', url: baseUrl + 'menu.html' },
-            { id: 'dynamic-module-v1', url: baseUrl + 'v1.html' },
-            { id: 'dynamic-module-v2', url: baseUrl + 'v2.html' },
-            { id: 'dynamic-module-v3', url: baseUrl + 'v3.html' },
-            { id: 'dynamic-module-capture', url: baseUrl + 'capture.html' },
-            { id: 'dynamic-module-admin', url: baseUrl + 'admin.html' }
+            { id: 'dynamic-module-menu', url: baseUrl + 'menu.html?v=' + ts },
+            { id: 'dynamic-module-v1', url: baseUrl + 'v1.html?v=' + ts },
+            { id: 'dynamic-module-v2', url: baseUrl + 'v2.html?v=' + ts },
+            { id: 'dynamic-module-v3', url: baseUrl + 'v3.html?v=' + ts },
+            { id: 'dynamic-module-capture', url: baseUrl + 'capture.html?v=' + ts },
+            { id: 'dynamic-module-admin', url: baseUrl + 'admin.html?v=' + ts }
         ];
 
         for (let mod of modules) {
