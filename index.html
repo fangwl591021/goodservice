@@ -83,12 +83,12 @@
 </head>
 <body>
 
-  <div id="loader" class="fixed inset-0 z-[700] bg-white/95 workspace-hidden flex flex-col items-center justify-center">
+  <div id="loader" class="fixed inset-0 z-[700] bg-white/95 flex flex-col items-center justify-center">
     <div class="animate-spin rounded-full h-12 w-12 border-[4px] border-[#54C061] border-t-transparent mb-4"></div>
-    <p class="font-bold text-slate-800 text-xs tracking-widest uppercase">Syncing Database...</p>
+    <p class="font-bold text-slate-800 text-xs tracking-widest uppercase">載入系統模組中...</p>
   </div>
 
-  <div id="auth-layer" class="fixed inset-0 z-[600] bg-white flex items-center justify-center">
+  <div id="auth-layer" class="fixed inset-0 z-[600] bg-white flex items-center justify-center workspace-hidden">
     <section class="w-[400px] flex flex-col items-center p-8">
       <h2 class="text-3xl font-bold text-slate-800 mb-6 uppercase">Rich Menu Pro</h2>
       <div id="auth-form" class="w-full space-y-4">
@@ -235,14 +235,14 @@
         </div>
       </div>
       
-      <!-- 提醒：若您是部屬在 GitHub Pages，下方 <?!= ... ?> 這些 GAS 語法將無法運作！
-           請直接將對應 HTML 檔案的內容複製貼上替換掉這些標籤。 -->
-      <?!= HtmlService.createHtmlOutputFromFile('menu').getContent(); ?>
-      <?!= HtmlService.createHtmlOutputFromFile('v1').getContent(); ?>
-      <? try { ?> <?!= HtmlService.createHtmlOutputFromFile('v2').getContent(); ?> <? } catch(e) {} ?>
-      <?!= HtmlService.createHtmlOutputFromFile('v3').getContent(); ?>
-      <? try { ?> <?!= HtmlService.createHtmlOutputFromFile('capture').getContent(); ?> <? } catch(e) {} ?>
-      <? try { ?> <?!= HtmlService.createHtmlOutputFromFile('admin').getContent(); ?> <? } catch(e) {} ?>
+      <!-- 🚀 新增：透過 JavaScript 動態載入外部模組的佔位區塊 -->
+      <div id="dynamic-module-menu"></div>
+      <div id="dynamic-module-v1"></div>
+      <div id="dynamic-module-v2"></div>
+      <div id="dynamic-module-v3"></div>
+      <div id="dynamic-module-capture"></div>
+      <div id="dynamic-module-admin"></div>
+
     </main>
 
     <aside class="app-panel">
@@ -262,9 +262,10 @@
         
         <div class="hidden sm:flex items-center ml-8 bg-slate-900 rounded-md border border-slate-700 px-3 py-1 shadow-inner">
            <span class="text-[10px] text-slate-400 font-black mr-2 uppercase">對外網址</span>
-           <input type="text" id="public-calendar-url" value="<?= ScriptApp.getService().getUrl() ?>?p=query" class="bg-transparent border-none text-slate-300 text-[11px] font-mono w-[280px] outline-none" readonly>
+           <!-- 修正行事曆對外連結，改讀取 GitHub 的 query.html -->
+           <input type="text" id="public-calendar-url" value="query.html" class="bg-transparent border-none text-slate-300 text-[11px] font-mono w-[280px] outline-none" readonly>
            <button onclick="copyCalendarUrl()" class="ml-2 text-[#54C061] hover:text-green-400 text-[10px] font-bold px-2 border-l border-slate-700 transition">複製</button>
-           <a href="<?= ScriptApp.getService().getUrl() ?>?p=query" id="new-tab-calendar-link" target="_blank" class="ml-1 text-sky-400 hover:text-sky-300 text-[10px] font-bold px-2 border-l border-slate-700 transition">開新分頁</a>
+           <a href="query.html" id="new-tab-calendar-link" target="_blank" class="ml-1 text-sky-400 hover:text-sky-300 text-[10px] font-bold px-2 border-l border-slate-700 transition">開新分頁</a>
         </div>
       </div>
       <button onclick="closeCalendarPop()" class="text-slate-300 hover:text-white transition bg-slate-700 hover:bg-rose-500 rounded-full p-2">
@@ -291,15 +292,16 @@
          <div class="animate-spin rounded-full h-10 w-10 border-4 border-[#54C061] border-t-transparent mb-4"></div>
          <span class="text-xs font-bold text-slate-400 tracking-widest">系統連線中...</span>
       </div>
-      <iframe id="calendar-iframe" data-src="<?= ScriptApp.getService().getUrl() ?>?p=query" class="w-full h-full border-none relative z-20 opacity-0 transition-opacity duration-500" onload="if(this.src && this.src !== 'about:blank') { this.style.opacity='1'; document.getElementById('calendar-loader').style.display='none'; }"></iframe>
+      <!-- 修正 iframe 來源，改讀取 GitHub 上的 query.html -->
+      <iframe id="calendar-iframe" data-src="query.html" class="w-full h-full border-none relative z-20 opacity-0 transition-opacity duration-500" onload="if(this.src && this.src !== 'about:blank') { this.style.opacity='1'; document.getElementById('calendar-loader').style.display='none'; }"></iframe>
     </div>
   </div>
 
   <script>
-    // 🚨 【關鍵修改】請將這行改成您的 Cloudflare Worker 網址
-    const WORKER_URL = "https://goodservice.fangwl591021.workers.dev/";
+    // 🚨 請再次確保這裡填入了您的 Cloudflare Worker 網址
+    const WORKER_URL = "請填寫您的_Cloudflare_Worker_網址";
 
-    // 新增：通用 API 呼叫函數
+    // 通用 API 呼叫函數
     function fetchApi(action, payload = {}) {
         payload.action = action;
         return fetch(WORKER_URL, {
@@ -316,6 +318,56 @@
     window.currentFileList = [];
     window.currentCategoryCount = 0;
     window.currentCategoryLimit = 0;
+
+    // 🚀 新增：動態從 GitHub 載入其他模組 HTML
+    async function loadAllModules() {
+        // 判斷當前環境，解決在編輯器預覽 (blob URL) 中相對路徑解析失敗的問題
+        let baseUrl = '';
+        if (window.location.protocol === 'blob:' || window.location.hostname.includes('usercontent')) {
+            baseUrl = 'https://fangwl591021.github.io/goodservice/';
+        }
+
+        const modules = [
+            { id: 'dynamic-module-menu', url: baseUrl + 'menu.html' },
+            { id: 'dynamic-module-v1', url: baseUrl + 'v1.html' }, // 注意：請將 GitHub 上的 vi.html 改名為 v1.html
+            { id: 'dynamic-module-v2', url: baseUrl + 'v2.html' },
+            { id: 'dynamic-module-v3', url: baseUrl + 'v3.html' },
+            { id: 'dynamic-module-capture', url: baseUrl + 'capture.html' },
+            { id: 'dynamic-module-admin', url: baseUrl + 'admin.html' }
+        ];
+
+        for (let mod of modules) {
+            try {
+                const res = await fetch(mod.url);
+                if (res.ok) {
+                    const html = await res.text();
+                    const container = document.getElementById(mod.id);
+                    container.innerHTML = html;
+                    
+                    // 重新解析並執行載入 HTML 裡面的 <script> 標籤，讓功能生效
+                    Array.from(container.querySelectorAll("script")).forEach(oldScript => {
+                        const newScript = document.createElement("script");
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                } else {
+                    console.warn("模組載入失敗: " + mod.url);
+                }
+            } catch (err) {
+                console.error("無法取得模組: " + mod.url, err);
+            }
+        }
+        
+        // 模組全部載入完畢，隱藏開頭的 Loading 畫面，顯示登入框
+        document.getElementById('loader').classList.add('workspace-hidden');
+        document.getElementById('auth-layer').classList.remove('workspace-hidden');
+    }
+
+    // 當網頁架構準備好後，自動開始拉取其他 HTML 功能
+    window.addEventListener('DOMContentLoaded', () => {
+        loadAllModules();
+    });
 
     function applyPermissions(perms) {
       const pStr = String(perms || "");
@@ -357,19 +409,22 @@
       var publicUrlInput = document.getElementById('public-calendar-url');
       var newTabLink = document.getElementById('new-tab-calendar-link');
       
-      var baseUrl = iframe.getAttribute('data-src').split('?')[0];
+      var baseUrl = iframe.getAttribute('data-src').split('?')[0]; // 通常就是 query.html
       
       document.getElementById('calendar-loader').style.display = 'flex';
       iframe.style.opacity = '0';
       
-      var targetUrl = baseUrl + "?p=query";
+      var targetUrl = baseUrl;
       if (cid) {
-          targetUrl += "&cid=" + encodeURIComponent(cid);
+          targetUrl += "?cid=" + encodeURIComponent(cid);
       }
       
       iframe.src = targetUrl;
-      publicUrlInput.value = targetUrl;
-      if (newTabLink) newTabLink.href = targetUrl;
+      
+      // 計算出絕對網址方便使用者複製
+      var absoluteUrl = new URL(targetUrl, window.location.href).href;
+      publicUrlInput.value = absoluteUrl;
+      if (newTabLink) newTabLink.href = absoluteUrl;
       
       localStorage.setItem('saved_calendar_id', cid);
     }
@@ -408,7 +463,6 @@
       showToast("網址已複製！");
     }
 
-    // ★ 替換原本的 google.script.run
     function doLogin() {
       var u = document.getElementById('login-user').value, p = document.getElementById('login-pass').value; if(!u || !p) return; 
       toggleLoader(true);
@@ -519,7 +573,6 @@
     
     function closeSubSidebar() { document.body.classList.remove('sub-sidebar-open'); }
 
-    // ★ 替換原本的 google.script.run
     function renderProjectList(type) {
       var container = document.getElementById('project-list-container');
       container.innerHTML = '<div class="p-10 text-center text-slate-300 text-[10px] font-bold uppercase animate-pulse">Loading...</div>';
@@ -552,7 +605,6 @@
       });
     }
 
-    // ★ 替換原本的 google.script.run
     function loadProject(f, type) {
       document.getElementById('save-filename').value = f.filename;
       if (type === 'richmenu') {
@@ -579,7 +631,6 @@
       }
     }
 
-    // ★ 替換原本的 google.script.run
     function doSaveMenu() {
       var name = document.getElementById('save-filename').value; if (!name) return alert("請輸入名稱");
       
@@ -616,7 +667,6 @@
       }).catch(function(err){ toggleLoader(false); alert('儲存失敗'); });
     }
 
-    // ★ 替換原本的 google.script.run
     function doUploadRichMenu() {
       var token = document.getElementById('rich-menu-token').value;
       var chatBar = document.getElementById('rich-menu-chatbar').value || "選單";
@@ -653,7 +703,6 @@
       showToast("JSON 已複製"); 
     }
 
-    // ★ 替換原本的 google.script.run
     document.getElementById("img-upload").onchange = function(e) { 
       var f = e.target.files[0]; if(!f || !window.MenuModule) return;
       if(f.size > 1024 * 1024) { alert("圖片超過 1MB！"); return; }
