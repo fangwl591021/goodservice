@@ -309,16 +309,27 @@
     const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
 
     function fetchApi(action, payload = {}) {
-        payload.action = action;
-        return fetch(WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).then(res => {
-            if (!res.ok) throw new Error("Worker 回應狀態異常: " + res.status);
-            return res.json();
-        });
-    }
+    payload.action = action;
+
+    return fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).then(async (res) => {
+        const text = await res.text();
+
+        if (!res.ok) {
+            throw new Error("Worker 回應狀態異常: " + res.status + " / " + text.slice(0, 200));
+        }
+
+        try {
+            return JSON.parse(text);
+        } catch (err) {
+            console.error("API 回傳非 JSON 內容：", text);
+            throw new Error("API 回傳的不是 JSON，通常是 GAS_URL 錯誤、Apps Script 權限未公開，或 Worker 指到了 HTML 頁面。");
+        }
+    });
+}
 
     var currentUser = null, currentCat = '';
     var currentWorkspace = 'richmenu';
