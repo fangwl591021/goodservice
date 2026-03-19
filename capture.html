@@ -118,7 +118,7 @@
     document.getElementById('voomImageSection').classList.add('hidden');
     document.getElementById('voomImageGrid').innerHTML = '';
 
-    // 【修正】使用全域定義的 fetchApi 取代 google.script.run
+    // 【修正核心】完全改用 fetchApi，移除所有 google.script.run 的殘留
     if (typeof fetchApi === 'function') {
       fetchApi('getLineVoomMedia', { url: urlInput })
         .then(function(data) {
@@ -204,7 +204,7 @@
   function onVoomFailure(error) {
     document.getElementById('fetchVoomBtn').disabled = false;
     document.getElementById('voomLoadingSpinner').classList.add('hidden');
-    showVoomError('與伺服器連線發生錯誤：' + error.message);
+    showVoomError('與伺服器連線發生錯誤：' + (error.message || '未知錯誤'));
   }
 
   function showVoomError(msg) {
