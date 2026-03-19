@@ -195,16 +195,6 @@
         <svg class="w-4 h-4 sidebar-text chevron text-slate-400 group-hover:text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"></path></svg>
       </div>
 
-      <div id="nav-sportisland" class="nav-cat-btn group flex items-center justify-between" onclick="openSportIslandWorkspace()" title="運動島課程報名">
-        <div class="flex items-center gap-4 px-2">
-          <svg class="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#54C061] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span class="sidebar-text">運動島報名系統</span>
-        </div>
-        <svg class="w-4 h-4 sidebar-text chevron text-slate-400 group-hover:text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"></path></svg>
-      </div>
-
       <div id="nav-admin" class="nav-cat-btn group flex items-center justify-between" onclick="openAdminWorkspace()" title="帳號管理">
         <div class="flex items-center gap-4 px-2">
           <svg class="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#54C061] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -262,7 +252,6 @@
       <div id="dynamic-module-capture"></div>
       <div id="dynamic-module-admin"></div>
       <div id="dynamic-module-reservation"></div>
-      <div id="dynamic-module-sportisland"></div>
 
     </main>
 
@@ -365,8 +354,7 @@
             { id: 'dynamic-module-v3', url: baseUrl + 'v3.html?v=' + ts },
             { id: 'dynamic-module-capture', url: baseUrl + 'capture.html?v=' + ts },
             { id: 'dynamic-module-admin', url: baseUrl + 'admin.html?v=' + ts },
-            { id: 'dynamic-module-reservation', url: baseUrl + 'reservation.html?v=' + ts },
-            { id: 'dynamic-module-sportisland', url: baseUrl + 'sportisland.html?v=' + ts }
+            { id: 'dynamic-module-reservation', url: baseUrl + 'reservation.html?v=' + ts }
         ];
 
         for (let mod of modules) {
@@ -406,7 +394,6 @@
         { id: 'nav-reservation', val: '3' },
         { id: 'nav-calendar', val: '4' },
         { id: 'nav-capture', val: '5' },
-        { id: 'nav-sportisland', val: '3' },
         { id: 'nav-admin', val: '6' }
       ];
 
@@ -517,7 +504,7 @@
           else if (pStr.includes('4')) openCalendarPop();
           else if (pStr.includes('5')) openCaptureWorkspace();
           else {
-            var ids = ['template-selector', 'menu-workspace', 'flex-workspace-v1', 'flex-workspace-v2', 'v3-workspace', 'capture-workspace', 'admin-workspace', 'reservation-workspace', 'sportisland-workspace'];
+            var ids = ['template-selector', 'menu-workspace', 'flex-workspace-v1', 'flex-workspace-v2', 'v3-workspace', 'capture-workspace', 'admin-workspace', 'reservation-workspace'];
             ids.forEach(id => { var el = document.getElementById(id); if(el) el.classList.add('workspace-hidden'); });
           }
         } else {
@@ -538,14 +525,13 @@
       document.getElementById('flex-tools').classList.add('workspace-hidden');
       document.getElementById('panel-editor-ui').classList.add('workspace-hidden');
 
-      if (type === 'capture' || type === 'admin' || type === 'reservation' || type === 'sportisland') {
+      if (type === 'capture' || type === 'admin' || type === 'reservation') {
         document.body.classList.add('full-workspace');
         var el = document.getElementById(type + '-workspace');
         if(el) el.classList.remove('workspace-hidden');
         if (type === 'admin') document.getElementById('save-filename').value = "系統帳號管理";
         else if (type === 'capture') document.getElementById('save-filename').value = "網址擷取工具";
         else if (type === 'reservation') document.getElementById('save-filename').value = "預約報名系統";
-        else if (type === 'sportisland') document.getElementById('save-filename').value = "運動島報名系統";
       } else {
         document.body.classList.remove('full-workspace');
       }
@@ -575,12 +561,6 @@
       closeSubSidebar();
       openWorkspace('admin');
       if(window.AdminModule) window.AdminModule.loadUsers();
-    }
-
-    function openSportIslandWorkspace() {
-      closeSubSidebar();
-      openWorkspace('sportisland');
-      setTimeout(function() { if(window.SIModule) window.SIModule.syncData(); }, 200);
     }
 
     function openReservationWorkspace() {
