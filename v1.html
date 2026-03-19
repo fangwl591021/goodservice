@@ -46,7 +46,7 @@
           <div id="v1-mock-btn-3" style="height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; padding:0 8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; box-shadow:0 1px 2px rgba(0,0,0,0.05);">Button 3</div>
         </div>
       </div>
-      <p style="margin-top:16px; font-size:10px; color:#94a3b8; text-align:center; font-style:italic;">Simulator v1.6.1<br>All Social Icons Animated</p>
+      <p style="margin-top:16px; font-size:10px; color:#94a3b8; text-align:center; font-style:italic;">Simulator v1.6.2<br>Independent Alignments Added</p>
     </div>
     
     <!-- 2. 表單填寫區 (中間) -->
@@ -128,12 +128,22 @@
                     </div>
                   </div>
                 </div>
+                
+                <!-- 新增：獨立的內容說明區文字對齊設定 -->
                 <div>
                   <label style="font-size:11px; font-weight:bold; color:#64748b; text-transform:uppercase; display:block; margin-bottom:4px;">內容說明區文字 (可換行)</label>
                   <textarea id="v1-f-desc" style="width:100%; height:112px; resize:none; margin-bottom:8px;" class="input-field" oninput="generateFlexJson_v1()"></textarea>
-                  <div style="display:flex; align-items:center; gap:12px;">
-                    <label style="font-size:10px; font-weight:900; color:#94a3b8;">說明顏色</label>
-                    <input type="color" id="v1-f-desc-color" value="#666666" style="width:64px; height:32px; border-radius:4px; cursor:pointer; border:2px solid #d1d5db; padding:0;" oninput="generateFlexJson_v1()">
+                  <div style="display:flex; align-items:center; gap:24px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <label style="font-size:10px; font-weight:900; color:#94a3b8;">對齊</label>
+                      <select id="v1-f-desc-align" style="border:2px solid #d1d5db; border-radius:6px; padding:4px 8px; font-size:10px;" onchange="generateFlexJson_v1()">
+                        <option value="start">靠左</option><option value="center">置中</option><option value="end">靠右</option>
+                      </select>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <label style="font-size:10px; font-weight:900; color:#94a3b8;">說明顏色</label>
+                      <input type="color" id="v1-f-desc-color" value="#666666" style="width:64px; height:32px; border-radius:4px; cursor:pointer; border:2px solid #d1d5db; padding:0;" oninput="generateFlexJson_v1()">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -304,7 +314,7 @@
     v: "https://obs.line-scdn.net/h9B3GDtq9emxVUmlibAR9FXJqcUNxVSB-WgQhQ3s9MF5IeHN9YC5OU1BhRFVzUVE5SQdJA3hcU11Ca1U4YANWUkNhUBtIRVZ5WRNZV3tbORs/mp4",
     p: "https://upload.cc/i1/2022/07/29/ygc1lF.png", aspect: "1040:748", size: "giga", globalBg: "#FFFFFF",
     title: "請輸入姓名或公司名稱", titleColor: "#111111", titleAlign: "start",
-    desc: "✨一行建議16個字\n✨可以簡介公司或是活動內容\n✨四到六排的高度較為適中，不建議太長\n✨多分享、多收穫", descColor: "#666666",
+    desc: "✨一行建議16個字\n✨可以簡介公司或是活動內容\n✨四到六排的高度較為適中，不建議太長\n✨多分享、多收穫", descColor: "#666666", descAlign: "start",
     s: [ {t:"TEL", u:"tel:0912345678"}, {t:"FB", u:"https://www.facebook.com"}, {t:"IG", u:"https://www.instagram.com"}, {t:"YT", u:"https://www.youtube.com"} ],
     b: [ {t:"預約服務", u:"https://line.me", c:"#111111", tc:"#FFFFFF"}, {t:"官方網站", u:"https://line.me", c:"#111111", tc:"#FFFFFF"}, {t:"加入好友", u:"https://line.me", c:"#111111", tc:"#FFFFFF"} ]
   };
@@ -330,6 +340,7 @@
       document.getElementById('v1-f-title-align').value = titleComp?.align || "start";
       document.getElementById('v1-f-desc').value = descComp?.text || "";
       document.getElementById('v1-f-desc-color').value = descComp?.color || "#666666";
+      document.getElementById('v1-f-desc-align').value = descComp?.align || "start";
 
       if (iconBox && iconBox.contents) {
         iconBox.contents.forEach((icon, idx) => {
@@ -369,6 +380,7 @@
       document.getElementById('v1-f-title-align').value = d.titleAlign;
       document.getElementById('v1-f-desc').value = d.desc;
       document.getElementById('v1-f-desc-color').value = d.descColor;
+      document.getElementById('v1-f-desc-align').value = d.descAlign || "start";
       for(let i=1; i<=4; i++) {
         document.getElementById(`v1-f-s${i}-type`).value = d.s[i-1].t;
         document.getElementById(`v1-f-s${i}-url`).value = d.s[i-1].u;
@@ -396,6 +408,7 @@
     const titleAlign = document.getElementById('v1-f-title-align').value;
     const descVal = document.getElementById('v1-f-desc').value;
     const descCol = document.getElementById('v1-f-desc-color').value;
+    const descAlign = document.getElementById('v1-f-desc-align').value;
 
     document.getElementById('v1-mock-bubble').style.width = V1_SIZE_MAP[size];
     document.getElementById('v1-mock-hero').style.aspectRatio = aspect.replace(':', '/');
@@ -415,6 +428,7 @@
     document.getElementById('v1-mock-title').style.textAlign = titleAlign === 'start' ? 'left' : (titleAlign === 'end' ? 'right' : 'center');
     document.getElementById('v1-mock-desc').innerText = descVal;
     document.getElementById('v1-mock-desc').style.color = descCol;
+    document.getElementById('v1-mock-desc').style.textAlign = descAlign === 'start' ? 'left' : (descAlign === 'end' ? 'right' : 'center');
     document.getElementById('v1-mock-body-container').style.backgroundColor = globalBg;
     document.getElementById('v1-mock-footer-container').style.backgroundColor = globalBg;
 
@@ -445,14 +459,14 @@
         "type": "box", "layout": "vertical", "backgroundColor": globalBg, "paddingAll": "sm",
         "contents": [
           { "type": "text", "text": titleVal, "weight": "bold", "size": "md", "wrap": true, "color": titleCol, "align": titleAlign },
-          { "type": "text", "text": descVal, "size": "xs", "wrap": true, "color": descCol, "margin": "md" },
+          { "type": "text", "text": descVal, "size": "xs", "wrap": true, "color": descCol, "margin": "md", "align": descAlign },
           { "type": "box", "layout": "horizontal", "spacing": "sm", "margin": "lg", "contents": sD.map(s => ({ 
               "type": "image", 
               "url": s.iconUrl, 
               "size": "full", 
               "aspectRatio": "1:1", 
               "aspectMode": "cover", 
-              "animated": true, // 修正：所有社群按鈕都設定為 true
+              "animated": true,
               "action": { "type": "uri", "label": "icon", "uri": s.url || "https://line.me" } 
           })) }
         ]
