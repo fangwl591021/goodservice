@@ -12,65 +12,20 @@
 
   <style>
     [v-cloak] { display: none !important; }
-    body {
-      background: #f5f6f8;
-      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-    }
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #06C755;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .line-btn {
-      background: #06C755;
-      color: #fff;
-      font-weight: 800;
-      border-radius: 14px;
-      transition: .18s;
-    }
+    body { background: #f5f6f8; font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; }
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #06C755; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .line-btn { background: #06C755; color: #fff; font-weight: 800; border-radius: 14px; transition: .18s; }
     .line-btn:hover { background: #05b34c; }
-    .line-btn:disabled {
-      background: #cbd5e1;
-      color: #64748b;
-      cursor: not-allowed;
-    }
-    .ghost-btn {
-      background: #fff;
-      border: 1px solid #d1d5db;
-      color: #475569;
-      font-weight: 700;
-      border-radius: 14px;
-      transition: .18s;
-    }
+    .line-btn:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; }
+    .ghost-btn { background: #fff; border: 1px solid #d1d5db; color: #475569; font-weight: 700; border-radius: 14px; transition: .18s; }
     .ghost-btn:hover { background: #f8fafc; }
-    .card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,.03);
-    }
-    .input-ui, .select-ui, .textarea-ui {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      background: #f8fafc;
-      border-radius: 14px;
-      padding: 12px 14px;
-      outline: none;
-      font-size: 16px;
-      transition: .18s;
-    }
-    .input-ui:focus, .select-ui:focus, .textarea-ui:focus {
-      border-color: #06C755;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(6,199,85,.08);
-    }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 22px; box-shadow: 0 2px 10px rgba(0,0,0,.03); }
+    .input-ui, .select-ui, .textarea-ui { width: 100%; border: 1px solid #d1d5db; background: #f8fafc; border-radius: 14px; padding: 12px 14px; outline: none; font-size: 16px; transition: .18s; }
+    .input-ui:focus, .select-ui:focus, .textarea-ui:focus { border-color: #06C755; background: #fff; box-shadow: 0 0 0 3px rgba(6,199,85,.08); }
+    .act-card { border: 2px solid #e5e7eb; border-radius: 18px; cursor: pointer; transition: .18s; background: #fff; overflow: hidden; }
+    .act-card:hover { border-color: #06C755; box-shadow: 0 4px 16px rgba(6,199,85,.12); }
+    .act-card.selected { border-color: #06C755; background: #f0fdf4; box-shadow: 0 4px 16px rgba(6,199,85,.18); }
     .fade-enter-active, .fade-leave-active { transition: opacity .25s; }
     .fade-enter-from, .fade-leave-to { opacity: 0; }
   </style>
@@ -85,12 +40,9 @@
         <p class="text-[10px] opacity-90 font-bold tracking-wider">BOOKING SERVICE</p>
       </div>
       <div class="flex items-center bg-white/20 pl-1 pr-3 py-1 rounded-full shrink-0 shadow-inner max-w-[160px]">
-        <img v-if="userProfile.pictureUrl" :src="userProfile.pictureUrl"
-          class="w-7 h-7 rounded-full object-cover mr-2 border border-white/50 shadow-sm">
+        <img v-if="userProfile.pictureUrl" :src="userProfile.pictureUrl" class="w-7 h-7 rounded-full object-cover mr-2 border border-white/50 shadow-sm">
         <i v-else class="fas fa-user text-sm mr-2 ml-2"></i>
-        <span class="text-[12px] font-bold truncate">
-          {{ profile.name || userProfile.displayName || '訪客' }}
-        </span>
+        <span class="text-[12px] font-bold truncate">{{ profile.name || userProfile.displayName || '訪客' }}</span>
       </div>
     </header>
 
@@ -114,11 +66,7 @@
       <!-- home -->
       <div v-else-if="view === 'home'" class="pb-24">
         <div class="w-full bg-white relative">
-          <img
-            src="https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop"
-            alt="booking banner"
-            class="w-full h-48 object-cover"
-          >
+          <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop" alt="booking banner" class="w-full h-48 object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <div class="absolute bottom-4 left-4 right-4 text-white">
             <div class="text-2xl font-black leading-tight">線上預約服務</div>
@@ -150,22 +98,51 @@
             </button>
           </div>
 
+          <!-- 活動列表預覽 -->
           <div class="card p-5">
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-4">
               <div>
-                <div class="text-lg font-black text-slate-800">快速預約入口</div>
-                <div class="text-xs text-slate-400 font-bold">SPORTS-ISLAND STYLE</div>
+                <div class="text-lg font-black text-slate-800">可預約活動</div>
+                <div class="text-xs text-slate-400 font-bold">AVAILABLE ACTIVITIES</div>
               </div>
               <div class="w-12 h-12 rounded-2xl bg-[#06C755] text-white flex items-center justify-center shadow-sm">
                 <i class="fas fa-bolt text-lg"></i>
               </div>
             </div>
-            <div class="text-sm text-slate-600 leading-relaxed mb-4">
-              可先維護姓名、電話與 LINE 資料，再快速完成預約。預約後可在「我的預約」查看狀態。
+
+            <div v-if="isLoadingActivities" class="text-center py-6">
+              <div class="loader mx-auto w-8 h-8 border-4 border-t-green-500"></div>
             </div>
-            <button @click="goBooking" class="w-full py-3.5 line-btn shadow-md text-[15px]">
-              開始預約
-            </button>
+
+            <div v-else-if="activities.length === 0" class="text-center py-6 text-slate-400 text-sm font-bold">目前沒有開放活動</div>
+
+            <div v-else class="space-y-3">
+              <div v-for="act in activities.slice(0,3)" :key="act.activityId"
+                @click="quickBookActivity(act)"
+                class="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-green-50 hover:border-green-200 transition cursor-pointer active:scale-95">
+                <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-200">
+                  <img v-if="act.image" :src="act.image" class="w-full h-full object-cover">
+                  <div v-else class="w-full h-full flex items-center justify-center text-slate-400">
+                    <i class="fas fa-image"></i>
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-black text-slate-800 truncate text-sm">{{ act.title }}</div>
+                  <div class="text-[11px] text-slate-400 font-bold mt-0.5">
+                    <span v-if="act.location">📍{{ act.location }}</span>
+                    <span v-if="act.durationMin" class="ml-2">⏱{{ act.durationMin }}分</span>
+                    <span v-if="act.price" class="ml-2 text-green-600">{{ act.price }}</span>
+                  </div>
+                </div>
+                <div class="shrink-0 text-[#06C755]"><i class="fas fa-chevron-right text-sm"></i></div>
+              </div>
+
+              <button v-if="activities.length > 3" @click="goBooking" class="w-full text-center text-xs font-black text-[#06C755] py-2 hover:underline">
+                查看全部 {{ activities.length }} 個活動 →
+              </button>
+            </div>
+
+            <button @click="goBooking" class="w-full py-3.5 line-btn shadow-md text-[15px] mt-4">開始預約</button>
           </div>
 
           <div class="card p-5">
@@ -186,8 +163,7 @@
             </div>
           </div>
 
-          <a href="https://lin.ee/Y0FKXqD" target="_blank"
-            class="card p-5 flex items-center justify-between active:scale-95 transition">
+          <a href="https://lin.ee/Y0FKXqD" target="_blank" class="card p-5 flex items-center justify-between active:scale-95 transition">
             <div>
               <div class="text-base font-black text-slate-800">聯繫客服</div>
               <div class="text-xs text-slate-400 font-bold mt-1">LINE 客服小幫手</div>
@@ -202,63 +178,121 @@
       <!-- profile -->
       <div v-else-if="view === 'profile'" class="p-4 pb-24">
         <div class="flex items-center mb-4">
-          <button @click="view='home'"
-            class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
+          <button @click="view='home'" class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
             <i class="fas fa-arrow-left"></i>
           </button>
           <h2 class="text-xl font-black text-slate-800">基本資料維護</h2>
         </div>
-
         <div class="card p-5 space-y-4">
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1">姓名</label>
             <input v-model="profile.name" class="input-ui" placeholder="請輸入姓名">
           </div>
-
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1">聯絡電話</label>
             <input v-model="profile.phone" class="input-ui" placeholder="請輸入手機號碼">
           </div>
-
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1">LINE ID</label>
             <input v-model="profile.lineId" class="input-ui bg-slate-100" readonly>
           </div>
-
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1">備註</label>
             <textarea v-model="profile.note" rows="3" class="textarea-ui" placeholder="可記錄需求或常用說明"></textarea>
           </div>
+          <button @click="saveProfile" class="w-full py-3.5 line-btn shadow-md text-[15px]">儲存個人資料</button>
+        </div>
+      </div>
 
-          <button @click="saveProfile" class="w-full py-3.5 line-btn shadow-md text-[15px]">
-            儲存個人資料
+      <!-- booking：步驟 1 選活動 -->
+      <div v-else-if="view === 'booking'" class="p-4 pb-24">
+        <div class="flex items-center mb-4">
+          <button @click="view='home'" class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+          <h2 class="text-xl font-black text-slate-800">選擇活動</h2>
+        </div>
+
+        <div v-if="isLoadingActivities" class="text-center py-16">
+          <div class="loader mx-auto mb-3"></div>
+          <p class="text-sm font-bold text-slate-400">載入活動中...</p>
+        </div>
+
+        <div v-else-if="activities.length === 0" class="card p-10 text-center text-slate-400">
+          <i class="fas fa-box-open text-4xl mb-3 text-slate-300"></i>
+          <div class="font-bold">目前沒有開放活動</div>
+        </div>
+
+        <div v-else class="space-y-4">
+          <div v-for="act in activities" :key="act.activityId"
+            @click="selectActivity(act)"
+            :class="['act-card', bookingForm.activityId === act.activityId ? 'selected' : '']">
+            <div v-if="act.image" class="w-full h-36 overflow-hidden">
+              <img :src="act.image" class="w-full h-full object-cover">
+            </div>
+            <div class="p-4">
+              <div class="flex items-start justify-between gap-2">
+                <div class="font-black text-slate-800 text-base leading-snug">{{ act.title }}</div>
+                <div v-if="bookingForm.activityId === act.activityId" class="w-6 h-6 rounded-full bg-[#06C755] text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <i class="fas fa-check text-xs"></i>
+                </div>
+              </div>
+              <div v-if="act.description" class="text-xs text-slate-500 mt-1.5 leading-relaxed">{{ act.description }}</div>
+              <div class="flex flex-wrap gap-2 mt-3 text-[11px] font-bold">
+                <span v-if="act.location" class="px-2.5 py-1 bg-slate-100 rounded-lg text-slate-600">📍 {{ act.location }}</span>
+                <span v-if="act.durationMin" class="px-2.5 py-1 bg-slate-100 rounded-lg text-slate-600">⏱ {{ act.durationMin }} 分鐘</span>
+                <span v-if="act.price" class="px-2.5 py-1 bg-green-100 rounded-lg text-green-700">💰 {{ act.price }}</span>
+              </div>
+              <div v-if="act.note" class="mt-2 text-[11px] text-slate-400 italic">{{ act.note }}</div>
+            </div>
+          </div>
+
+          <button @click="goBookingForm" :disabled="!bookingForm.activityId" class="w-full py-4 line-btn shadow-lg text-base mt-2">
+            下一步：填寫預約資料 →
           </button>
         </div>
       </div>
 
-      <!-- booking -->
-      <div v-else-if="view === 'booking'" class="p-4 pb-24">
+      <!-- booking：步驟 2 填資料 -->
+      <div v-else-if="view === 'bookingForm'" class="p-4 pb-24">
         <div class="flex items-center mb-4">
-          <button @click="view='home'"
-            class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
+          <button @click="view='booking'" class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
             <i class="fas fa-arrow-left"></i>
           </button>
-          <h2 class="text-xl font-black text-slate-800">{{ editSeedMode ? '重新帶入預約資料' : '新增預約' }}</h2>
+          <h2 class="text-xl font-black text-slate-800">填寫預約資料</h2>
+        </div>
+
+        <!-- 已選活動摘要 -->
+        <div v-if="selectedActivity" class="card p-4 mb-4 border-green-200 bg-green-50">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-200">
+              <img v-if="selectedActivity.image" :src="selectedActivity.image" class="w-full h-full object-cover">
+              <div v-else class="w-full h-full flex items-center justify-center text-slate-400"><i class="fas fa-calendar-check text-lg text-green-400"></i></div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-black text-green-800 truncate">{{ selectedActivity.title }}</div>
+              <div class="text-[11px] text-green-600 font-bold mt-0.5">
+                <span v-if="selectedActivity.location">📍{{ selectedActivity.location }}</span>
+                <span v-if="selectedActivity.durationMin" class="ml-2">⏱{{ selectedActivity.durationMin }}分</span>
+                <span v-if="selectedActivity.price" class="ml-2">💰{{ selectedActivity.price }}</span>
+              </div>
+            </div>
+            <button @click="view='booking'" class="text-green-600 text-xs font-black hover:underline shrink-0">更換</button>
+          </div>
         </div>
 
         <div class="card p-5 space-y-4">
-          <div class="bg-green-50 border border-green-100 rounded-2xl p-4">
-            <div class="text-sm font-black text-green-700 mb-1">預約人資料</div>
-            <div class="text-xs text-green-600">此區會自動帶入你在「基本資料」儲存的內容。</div>
+          <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3 text-xs text-slate-500 font-bold">
+            以下資料將自動帶入，確認後可修改
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1">姓名</label>
+            <label class="block text-sm font-bold text-slate-700 mb-1">姓名 <span class="text-red-400">*</span></label>
             <input v-model="bookingForm.name" class="input-ui" placeholder="請輸入姓名">
           </div>
 
           <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1">電話</label>
+            <label class="block text-sm font-bold text-slate-700 mb-1">電話 <span class="text-red-400">*</span></label>
             <input v-model="bookingForm.phone" class="input-ui" placeholder="請輸入手機號碼">
           </div>
 
@@ -267,21 +301,13 @@
             <input v-model="bookingForm.lineId" class="input-ui bg-slate-100" readonly>
           </div>
 
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1">服務項目</label>
-            <select v-model="bookingForm.service" class="select-ui">
-              <option value="">請選擇服務</option>
-              <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
-            </select>
-          </div>
-
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-sm font-bold text-slate-700 mb-1">預約日期</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1">預約日期 <span class="text-red-400">*</span></label>
               <input v-model="bookingForm.date" type="date" class="input-ui">
             </div>
             <div>
-              <label class="block text-sm font-bold text-slate-700 mb-1">預約時間</label>
+              <label class="block text-sm font-bold text-slate-700 mb-1">預約時間 <span class="text-red-400">*</span></label>
               <select v-model="bookingForm.time" class="select-ui">
                 <option value="">請選擇</option>
                 <option v-for="t in timeOptions" :key="t" :value="t">{{ t }}</option>
@@ -306,8 +332,7 @@
       <!-- my reservations -->
       <div v-else-if="view === 'myReservations'" class="p-4 pb-24">
         <div class="flex items-center mb-4">
-          <button @click="view='home'"
-            class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
+          <button @click="view='home'" class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
             <i class="fas fa-arrow-left"></i>
           </button>
           <h2 class="text-xl font-black text-slate-800">我的預約</h2>
@@ -315,21 +340,9 @@
 
         <div class="mb-4 card p-4">
           <div class="grid grid-cols-3 gap-2">
-            <button @click="myFilter='ALL'"
-              :class="myFilter==='ALL' ? 'bg-[#06C755] text-white shadow-sm' : 'bg-slate-100 text-slate-600'"
-              class="py-2 rounded-xl text-xs font-black transition">
-              全部
-            </button>
-            <button @click="myFilter='ACTIVE'"
-              :class="myFilter==='ACTIVE' ? 'bg-[#06C755] text-white shadow-sm' : 'bg-slate-100 text-slate-600'"
-              class="py-2 rounded-xl text-xs font-black transition">
-              進行中
-            </button>
-            <button @click="myFilter='DONE'"
-              :class="myFilter==='DONE' ? 'bg-[#06C755] text-white shadow-sm' : 'bg-slate-100 text-slate-600'"
-              class="py-2 rounded-xl text-xs font-black transition">
-              已結束
-            </button>
+            <button @click="myFilter='ALL'" :class="myFilter==='ALL' ? 'bg-[#06C755] text-white shadow-sm' : 'bg-slate-100 text-slate-600'" class="py-2 rounded-xl text-xs font-black transition">全部</button>
+            <button @click="myFilter='ACTIVE'" :class="myFilter==='ACTIVE' ? 'bg-[#06C755] text-white shadow-sm' : 'bg-slate-100 text-slate-600'" class="py-2 rounded-xl text-xs font-black transition">進行中</button>
+            <button @click="myFilter='DONE'" :class="myFilter==='DONE' ? 'bg-[#06C755] text-white shadow-sm' : 'bg-slate-100 text-slate-600'" class="py-2 rounded-xl text-xs font-black transition">已結束</button>
           </div>
         </div>
 
@@ -344,53 +357,27 @@
         </div>
 
         <div v-else class="space-y-4">
-          <div v-for="item in filteredMyReservations" :key="item.reservationId"
-            class="card p-5 relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-1.5"
-              :class="statusBarClass(item.status)"></div>
-
+          <div v-for="item in filteredMyReservations" :key="item.reservationId" class="card p-5 relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-1.5" :class="statusBarClass(item.status)"></div>
             <div class="pl-2">
               <div class="flex justify-between items-start gap-3 mb-2">
                 <div class="pr-2">
                   <div class="text-lg font-black text-slate-800 leading-tight">{{ item.service || '未分類服務' }}</div>
                   <div class="text-xs text-slate-400 mt-1 font-mono">{{ item.reservationId || '-' }}</div>
                 </div>
-                <span class="px-3 py-1.5 rounded-full text-xs font-black shadow-sm"
-                  :class="statusBadgeClass(item.status)">
-                  {{ item.status || '待確認' }}
-                </span>
+                <span class="px-3 py-1.5 rounded-full text-xs font-black shadow-sm" :class="statusBadgeClass(item.status)">{{ item.status || '待確認' }}</span>
               </div>
-
               <div class="space-y-1.5 text-sm text-slate-600 mb-4">
                 <div><i class="far fa-calendar-alt w-4 text-center mr-1 text-slate-400"></i>{{ item.date || '-' }}</div>
                 <div><i class="far fa-clock w-4 text-center mr-1 text-slate-400"></i>{{ item.time || '-' }}</div>
                 <div><i class="fas fa-phone w-4 text-center mr-1 text-slate-400"></i>{{ item.phone || '-' }}</div>
               </div>
-
-              <div v-if="item.memo" class="bg-slate-50 border border-slate-100 rounded-xl p-3 text-sm text-slate-600 mb-4">
-                {{ item.memo }}
-              </div>
-
+              <div v-if="item.memo" class="bg-slate-50 border border-slate-100 rounded-xl p-3 text-sm text-slate-600 mb-4">{{ item.memo }}</div>
               <div class="grid grid-cols-3 gap-2">
-                <button @click="openReservationInfo(item)"
-                  class="py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-black">
-                  查看
-                </button>
-
-                <button @click="reuseReservation(item)"
-                  class="py-2.5 bg-blue-50 text-blue-600 rounded-xl text-xs font-black">
-                  再預約
-                </button>
-
-                <button v-if="canCancel(item.status)" @click="cancelReservation(item)"
-                  class="py-2.5 bg-rose-50 text-rose-500 border border-rose-200 rounded-xl text-xs font-black">
-                  取消
-                </button>
-
-                <button v-else
-                  class="py-2.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-black cursor-not-allowed">
-                  已鎖定
-                </button>
+                <button @click="openReservationInfo(item)" class="py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-black">查看</button>
+                <button @click="reuseReservation(item)" class="py-2.5 bg-blue-50 text-blue-600 rounded-xl text-xs font-black">再預約</button>
+                <button v-if="canCancel(item.status)" @click="cancelReservation(item)" class="py-2.5 bg-rose-50 text-rose-500 border border-rose-200 rounded-xl text-xs font-black">取消</button>
+                <button v-else class="py-2.5 bg-slate-100 text-slate-400 rounded-xl text-xs font-black cursor-not-allowed">已鎖定</button>
               </div>
             </div>
           </div>
@@ -400,74 +387,34 @@
       <!-- reservation detail -->
       <div v-else-if="view === 'reservationInfo'" class="p-4 pb-24">
         <div class="flex items-center mb-4">
-          <button @click="view='myReservations'"
-            class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
+          <button @click="view='myReservations'" class="mr-3 w-8 h-8 flex items-center justify-center bg-slate-200 rounded-full hover:bg-slate-300 transition">
             <i class="fas fa-arrow-left"></i>
           </button>
           <h2 class="text-xl font-black text-slate-800">預約詳情</h2>
         </div>
-
         <div class="card p-5 space-y-4">
           <div class="flex justify-between items-start gap-3">
             <div>
               <div class="text-xl font-black text-slate-800">{{ activeReservation.service || '未分類服務' }}</div>
               <div class="text-xs font-mono text-slate-400 mt-1">{{ activeReservation.reservationId || '-' }}</div>
             </div>
-            <span class="px-3 py-1.5 rounded-full text-xs font-black shadow-sm"
-              :class="statusBadgeClass(activeReservation.status)">
-              {{ activeReservation.status || '待確認' }}
-            </span>
+            <span class="px-3 py-1.5 rounded-full text-xs font-black shadow-sm" :class="statusBadgeClass(activeReservation.status)">{{ activeReservation.status || '待確認' }}</span>
           </div>
-
           <div class="grid grid-cols-1 gap-3">
-            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-              <div class="text-xs font-bold text-slate-400 mb-1">姓名</div>
-              <div class="font-bold text-slate-700">{{ activeReservation.name || '-' }}</div>
-            </div>
-
-            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-              <div class="text-xs font-bold text-slate-400 mb-1">電話</div>
-              <div class="font-bold text-slate-700">{{ activeReservation.phone || '-' }}</div>
-            </div>
-
-            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-              <div class="text-xs font-bold text-slate-400 mb-1">LINE ID</div>
-              <div class="font-mono text-slate-700 break-all">{{ activeReservation.lineId || '-' }}</div>
-            </div>
-
+            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">姓名</div><div class="font-bold text-slate-700">{{ activeReservation.name || '-' }}</div></div>
+            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">電話</div><div class="font-bold text-slate-700">{{ activeReservation.phone || '-' }}</div></div>
+            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">LINE ID</div><div class="font-mono text-slate-700 break-all">{{ activeReservation.lineId || '-' }}</div></div>
             <div class="grid grid-cols-2 gap-3">
-              <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-                <div class="text-xs font-bold text-slate-400 mb-1">預約日期</div>
-                <div class="font-bold text-slate-700">{{ activeReservation.date || '-' }}</div>
-              </div>
-
-              <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-                <div class="text-xs font-bold text-slate-400 mb-1">預約時間</div>
-                <div class="font-bold text-[#06C755]">{{ activeReservation.time || '-' }}</div>
-              </div>
+              <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">預約日期</div><div class="font-bold text-slate-700">{{ activeReservation.date || '-' }}</div></div>
+              <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">預約時間</div><div class="font-bold text-[#06C755]">{{ activeReservation.time || '-' }}</div></div>
             </div>
-
-            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-              <div class="text-xs font-bold text-slate-400 mb-1">建立時間</div>
-              <div class="font-mono text-slate-700">{{ activeReservation.createdAt || activeReservation.timestamp || '-' }}</div>
-            </div>
-
-            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4">
-              <div class="text-xs font-bold text-slate-400 mb-1">備註</div>
-              <div class="text-slate-700 whitespace-pre-wrap">{{ activeReservation.memo || '無備註' }}</div>
-            </div>
+            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">建立時間</div><div class="font-mono text-slate-700">{{ activeReservation.createdAt || activeReservation.timestamp || '-' }}</div></div>
+            <div class="bg-slate-50 rounded-xl border border-slate-100 p-4"><div class="text-xs font-bold text-slate-400 mb-1">備註</div><div class="text-slate-700 whitespace-pre-wrap">{{ activeReservation.memo || '無備註' }}</div></div>
           </div>
-
           <div class="grid grid-cols-2 gap-3 pt-2">
-            <button @click="reuseReservation(activeReservation)" class="py-3 ghost-btn text-sm">
-              再預約一次
-            </button>
-            <button v-if="canCancel(activeReservation.status)" @click="cancelReservation(activeReservation)" class="py-3 bg-rose-500 text-white rounded-xl font-bold text-sm">
-              取消預約
-            </button>
-            <button v-else class="py-3 bg-slate-200 text-slate-500 rounded-xl font-bold text-sm cursor-not-allowed">
-              已不可取消
-            </button>
+            <button @click="reuseReservation(activeReservation)" class="py-3 ghost-btn text-sm">再預約一次</button>
+            <button v-if="canCancel(activeReservation.status)" @click="cancelReservation(activeReservation)" class="py-3 bg-rose-500 text-white rounded-xl font-bold text-sm">取消預約</button>
+            <button v-else class="py-3 bg-slate-200 text-slate-500 rounded-xl font-bold text-sm cursor-not-allowed">已不可取消</button>
           </div>
         </div>
       </div>
@@ -478,7 +425,10 @@
           <i class="fas fa-check text-4xl text-[#06C755]"></i>
         </div>
         <h2 class="text-2xl font-black mb-2 text-slate-800">預約成功</h2>
-        <p class="text-sm text-slate-500 mb-8">你的預約資料已送出，可到「我的預約」查看狀態。</p>
+        <p class="text-sm text-slate-500 mb-2">你的預約資料已送出，可到「我的預約」查看狀態。</p>
+        <div v-if="lastBookedActivity" class="inline-block bg-green-50 border border-green-200 rounded-2xl px-4 py-2 text-sm font-bold text-green-700 mb-6">
+          {{ lastBookedActivity }}
+        </div>
         <button @click="view='home'" class="line-btn w-full py-3.5 shadow-lg text-lg mb-3">返回首頁</button>
         <button @click="goMyReservations" class="ghost-btn w-full py-3.5 text-lg">查看我的預約</button>
       </div>
@@ -487,7 +437,6 @@
 
   <script>
     const { createApp, ref, computed, onMounted } = Vue;
-
     const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
 
     createApp({
@@ -495,47 +444,28 @@
         const isBooting = ref(true);
         const isSubmitting = ref(false);
         const isLoadingReservations = ref(false);
+        const isLoadingActivities = ref(false);
         const error = ref('');
         const view = ref('home');
         const myFilter = ref('ALL');
-        const editSeedMode = ref(false);
+        const lastBookedActivity = ref('');
 
-        const userProfile = ref({
-          displayName: '',
-          userId: '',
-          pictureUrl: ''
-        });
-
-        const profile = ref({
-          name: '',
-          phone: '',
-          lineId: '',
-          note: ''
-        });
-
-        const serviceOptions = ref([
-          '體驗預約',
-          '課程諮詢',
-          '一對一說明',
-          '現場服務',
-          '其他需求'
-        ]);
+        const userProfile = ref({ displayName: '', userId: '', pictureUrl: '' });
+        const profile = ref({ name: '', phone: '', lineId: '', note: '' });
+        const activities = ref([]);
+        const selectedActivity = ref(null);
 
         const timeOptions = ref([
-          '09:00', '10:00', '11:00',
-          '13:00', '14:00', '15:00',
-          '16:00', '17:00', '18:00',
-          '19:00', '20:00'
+          '09:00','09:30','10:00','10:30','11:00','11:30',
+          '13:00','13:30','14:00','14:30','15:00','15:30',
+          '16:00','16:30','17:00','17:30','18:00','18:30',
+          '19:00','19:30','20:00'
         ]);
 
         const bookingForm = ref({
-          name: '',
-          phone: '',
-          lineId: '',
-          date: '',
-          time: '',
-          service: '',
-          memo: ''
+          activityId: '',
+          name: '', phone: '', lineId: '',
+          date: '', time: '', memo: ''
         });
 
         const myReservations = ref([]);
@@ -543,28 +473,18 @@
 
         const todayYmd = () => {
           const d = new Date();
-          const y = d.getFullYear();
-          const m = String(d.getMonth() + 1).padStart(2, '0');
-          const day = String(d.getDate()).padStart(2, '0');
-          return `${y}-${m}-${day}`;
+          return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
         };
 
-        const saveProfileToLocal = () => {
-          localStorage.setItem('booking_profile_v2', JSON.stringify(profile.value));
-        };
+        const saveProfileToLocal = () => localStorage.setItem('booking_profile_v2', JSON.stringify(profile.value));
 
         const loadProfileFromLocal = () => {
           try {
             const raw = localStorage.getItem('booking_profile_v2');
             if (!raw) return;
             const obj = JSON.parse(raw);
-            profile.value = {
-              name: obj.name || '',
-              phone: obj.phone || '',
-              lineId: obj.lineId || '',
-              note: obj.note || ''
-            };
-          } catch (e) {}
+            profile.value = { name: obj.name||'', phone: obj.phone||'', lineId: obj.lineId||'', note: obj.note||'' };
+          } catch(e) {}
         };
 
         const fillBookingFromProfile = () => {
@@ -575,23 +495,21 @@
 
         const fetchApi = async (action, payload = {}) => {
           payload.action = action;
-          const res = await fetch(WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-
+          const res = await fetch(WORKER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
           const text = await res.text();
+          if (!res.ok) throw new Error("Worker 回應異常: " + res.status);
+          try { return JSON.parse(text); } catch(e) { throw new Error("API 回傳不是 JSON"); }
+        };
 
-          if (!res.ok) {
-            throw new Error("Worker 回應狀態異常: " + res.status + " / " + text.slice(0, 200));
-          }
-
+        const loadActivities = async () => {
+          isLoadingActivities.value = true;
           try {
-            return JSON.parse(text);
-          } catch (err) {
-            console.error("API 回傳非 JSON 內容：", text);
-            throw new Error("API 回傳不是 JSON，請檢查 Worker 或 GAS 設定。");
+            const res = await fetchApi('getPublicReservationActivities');
+            activities.value = (res && res.success && Array.isArray(res.data)) ? res.data : [];
+          } catch(e) {
+            activities.value = [];
+          } finally {
+            isLoadingActivities.value = false;
           }
         };
 
@@ -599,38 +517,24 @@
           try {
             if (typeof liff === 'undefined') return;
             await liff.init({ liffId: '2009524128-bJMVabyM' });
-
-            if (!liff.isLoggedIn()) {
-              liff.login();
-              return;
-            }
-
+            if (!liff.isLoggedIn()) { liff.login(); return; }
             const p = await liff.getProfile();
-            userProfile.value = {
-              displayName: p.displayName || '',
-              userId: p.userId || '',
-              pictureUrl: p.pictureUrl || ''
-            };
-
+            userProfile.value = { displayName: p.displayName||'', userId: p.userId||'', pictureUrl: p.pictureUrl||'' };
             if (!profile.value.name && p.displayName) profile.value.name = p.displayName;
             if (!profile.value.lineId && p.userId) profile.value.lineId = p.userId;
-
             saveProfileToLocal();
-          } catch (e) {
-            console.warn('LIFF 初始化失敗：', e);
-          }
+          } catch(e) { console.warn('LIFF 初始化失敗：', e); }
         };
 
         const bootApp = async () => {
           error.value = '';
           isBooting.value = true;
-
           try {
             loadProfileFromLocal();
-            await initLiff();
+            await Promise.all([initLiff(), loadActivities()]);
             fillBookingFromProfile();
             view.value = 'home';
-          } catch (e) {
+          } catch(e) {
             error.value = e.message || '系統啟動失敗';
           } finally {
             isBooting.value = false;
@@ -638,48 +542,50 @@
         };
 
         const saveProfile = () => {
-          if (!profile.value.name || !profile.value.phone) {
-            alert('請先填寫姓名與電話');
-            return;
-          }
+          if (!profile.value.name || !profile.value.phone) { alert('請先填寫姓名與電話'); return; }
           saveProfileToLocal();
           fillBookingFromProfile();
           alert('基本資料已儲存');
           view.value = 'home';
         };
 
-        const goProfile = () => {
-          view.value = 'profile';
-        };
+        const goProfile = () => { view.value = 'profile'; };
 
         const goBooking = () => {
-          editSeedMode.value = false;
           fillBookingFromProfile();
+          if (!bookingForm.value.date) bookingForm.value.date = todayYmd();
           view.value = 'booking';
+        };
+
+        // 首頁快速點活動直接進表單
+        const quickBookActivity = (act) => {
+          selectActivity(act);
+          goBookingForm();
+        };
+
+        const selectActivity = (act) => {
+          bookingForm.value.activityId = act.activityId;
+          selectedActivity.value = act;
+        };
+
+        const goBookingForm = () => {
+          if (!bookingForm.value.activityId) { alert('請先選擇活動'); return; }
+          fillBookingFromProfile();
+          if (!bookingForm.value.date) bookingForm.value.date = todayYmd();
+          view.value = 'bookingForm';
         };
 
         const resetBookingForm = () => {
           fillBookingFromProfile();
-          bookingForm.value.date = '';
+          bookingForm.value.date = todayYmd();
           bookingForm.value.time = '';
-          bookingForm.value.service = '';
           bookingForm.value.memo = '';
-          editSeedMode.value = false;
         };
 
         const submitBooking = async () => {
-          if (!bookingForm.value.name || !bookingForm.value.phone) {
-            alert('請先確認姓名與電話');
-            return;
-          }
-          if (!bookingForm.value.service) {
-            alert('請選擇服務項目');
-            return;
-          }
-          if (!bookingForm.value.date || !bookingForm.value.time) {
-            alert('請選擇預約日期與時間');
-            return;
-          }
+          if (!bookingForm.value.name || !bookingForm.value.phone) { alert('請先確認姓名與電話'); return; }
+          if (!bookingForm.value.activityId) { alert('請返回選擇活動'); return; }
+          if (!bookingForm.value.date || !bookingForm.value.time) { alert('請選擇預約日期與時間'); return; }
 
           isSubmitting.value = true;
           try {
@@ -688,25 +594,24 @@
                 name: bookingForm.value.name,
                 phone: bookingForm.value.phone,
                 lineId: bookingForm.value.lineId || userProfile.value.userId || '',
+                activityId: bookingForm.value.activityId,
                 date: bookingForm.value.date,
                 time: bookingForm.value.time,
-                service: bookingForm.value.service,
                 memo: bookingForm.value.memo,
-                source: 'booking_html_v2'
+                source: 'booking_html_v3'
               }
             });
 
-            if (!res || !res.success) {
-              throw new Error((res && res.msg) || '預約失敗');
-            }
+            if (!res || !res.success) throw new Error((res && res.msg) || '預約失敗');
 
             profile.value.name = bookingForm.value.name;
             profile.value.phone = bookingForm.value.phone;
             profile.value.lineId = bookingForm.value.lineId || userProfile.value.userId || '';
             saveProfileToLocal();
 
+            lastBookedActivity.value = selectedActivity.value ? selectedActivity.value.title : '';
             view.value = 'success';
-          } catch (e) {
+          } catch(e) {
             alert(e.message || '預約失敗');
           } finally {
             isSubmitting.value = false;
@@ -719,166 +624,102 @@
             view.value = 'profile';
             return;
           }
-
           view.value = 'myReservations';
           isLoadingReservations.value = true;
-
           try {
             const res = await fetchApi('getReservations');
-            if (!res || !res.success) {
-              throw new Error((res && res.msg) || '讀取預約失敗');
-            }
+            if (!res || !res.success) throw new Error((res && res.msg) || '讀取預約失敗');
 
             const all = Array.isArray(res.data) ? res.data : [];
-            const myPhone = String(profile.value.phone || '').replace(/\D/g, '');
+            const myPhone = String(profile.value.phone || '').replace(/\D/g,'');
             const myLineId = String(profile.value.lineId || userProfile.value.userId || '').trim();
 
             myReservations.value = all.filter(item => {
-              const phone = String(item.phone || '').replace(/\D/g, '');
-              const lineId = String(item.lineId || '').trim();
-
-              let matched = false;
-              if (myLineId && lineId && myLineId === lineId) matched = true;
-              if (myPhone && phone && myPhone === phone) matched = true;
-              return matched;
+              const phone = String(item.phone||'').replace(/\D/g,'');
+              const lineId = String(item.lineId||'').trim();
+              return (myLineId && lineId && myLineId === lineId) || (myPhone && phone && myPhone === phone);
             }).map(item => ({
-              reservationId: item.reservationId || '',
-              createdAt: item.createdAt || item.timestamp || '',
-              updatedAt: item.updatedAt || '',
-              name: item.name || '',
-              phone: item.phone || '',
-              lineId: item.lineId || '',
-              date: item.date || item.reserveDate || '',
-              time: item.time || item.reserveTime || '',
-              service: item.service || '',
-              memo: item.memo || '',
-              status: item.status || '待確認',
-              source: item.source || 'web',
-              calendarEventId: item.calendarEventId || ''
+              reservationId: item.reservationId||'',
+              createdAt: item.createdAt||item.timestamp||'',
+              updatedAt: item.updatedAt||'',
+              name: item.name||'', phone: item.phone||'', lineId: item.lineId||'',
+              date: item.date||item.reserveDate||'', time: item.time||item.reserveTime||'',
+              service: item.service||'', memo: item.memo||'',
+              status: item.status||'待確認', source: item.source||'web',
+              calendarEventId: item.calendarEventId||''
             }));
-          } catch (e) {
+          } catch(e) {
             alert(e.message || '讀取失敗');
           } finally {
             isLoadingReservations.value = false;
           }
         };
 
-        const canCancel = (status) => {
-          return status === '待確認' || status === '已確認';
-        };
+        const canCancel = (status) => status === '待確認' || status === '已確認';
 
         const cancelReservation = async (item) => {
-          if (!canCancel(item.status)) {
-            alert('此狀態不可取消');
-            return;
-          }
+          if (!canCancel(item.status)) { alert('此狀態不可取消'); return; }
           if (!confirm('確定要取消這筆預約嗎？')) return;
-
           try {
             const res = await fetchApi('updateReservationStatus', {
-              reservationId: item.reservationId || '',
-              timestamp: item.createdAt || '',
-              phone: item.phone || '',
-              status: '已取消'
+              reservationId: item.reservationId||'', timestamp: item.createdAt||'', phone: item.phone||'', status: '已取消'
             });
-
-            if (!res || !res.success) {
-              throw new Error((res && res.msg) || '取消失敗');
-            }
-
+            if (!res || !res.success) throw new Error((res && res.msg) || '取消失敗');
             alert('預約已取消');
             await goMyReservations();
-          } catch (e) {
-            alert(e.message || '取消失敗');
-          }
+          } catch(e) { alert(e.message || '取消失敗'); }
         };
 
         const reuseReservation = (item) => {
+          // 找到對應活動
+          const act = activities.value.find(a => a.title === item.service);
+          if (act) {
+            bookingForm.value.activityId = act.activityId;
+            selectedActivity.value = act;
+          } else {
+            bookingForm.value.activityId = '';
+            selectedActivity.value = null;
+          }
           bookingForm.value.name = item.name || profile.value.name || '';
           bookingForm.value.phone = item.phone || profile.value.phone || '';
           bookingForm.value.lineId = item.lineId || profile.value.lineId || userProfile.value.userId || '';
-          bookingForm.value.service = item.service || '';
           bookingForm.value.memo = item.memo || '';
-          bookingForm.value.date = '';
+          bookingForm.value.date = todayYmd();
           bookingForm.value.time = '';
-          editSeedMode.value = true;
-          view.value = 'booking';
+          // 如果有活動直接進表單，否則先選活動
+          view.value = act ? 'bookingForm' : 'booking';
         };
 
-        const openReservationInfo = (item) => {
-          activeReservation.value = { ...item };
-          view.value = 'reservationInfo';
-        };
+        const openReservationInfo = (item) => { activeReservation.value = { ...item }; view.value = 'reservationInfo'; };
 
-        const statusBadgeClass = (status) => {
-          return {
-            '待確認': 'bg-amber-100 text-amber-700',
-            '已確認': 'bg-green-100 text-green-700',
-            '已完成': 'bg-blue-100 text-blue-700',
-            '已取消': 'bg-slate-200 text-slate-600'
-          }[status] || 'bg-slate-100 text-slate-600';
-        };
+        const statusBadgeClass = (status) => ({
+          '待確認':'bg-amber-100 text-amber-700','已確認':'bg-green-100 text-green-700',
+          '已完成':'bg-blue-100 text-blue-700','已取消':'bg-slate-200 text-slate-600'
+        }[status] || 'bg-slate-100 text-slate-600');
 
-        const statusBarClass = (status) => {
-          return {
-            '待確認': 'bg-amber-400',
-            '已確認': 'bg-green-500',
-            '已完成': 'bg-blue-500',
-            '已取消': 'bg-slate-400'
-          }[status] || 'bg-slate-300';
-        };
+        const statusBarClass = (status) => ({
+          '待確認':'bg-amber-400','已確認':'bg-green-500','已完成':'bg-blue-500','已取消':'bg-slate-400'
+        }[status] || 'bg-slate-300');
 
         const filteredMyReservations = computed(() => {
           if (myFilter.value === 'ALL') return myReservations.value;
-
-          if (myFilter.value === 'ACTIVE') {
-            return myReservations.value.filter(x => x.status === '待確認' || x.status === '已確認');
-          }
-
-          if (myFilter.value === 'DONE') {
-            return myReservations.value.filter(x => x.status === '已完成' || x.status === '已取消');
-          }
-
+          if (myFilter.value === 'ACTIVE') return myReservations.value.filter(x => x.status==='待確認'||x.status==='已確認');
+          if (myFilter.value === 'DONE') return myReservations.value.filter(x => x.status==='已完成'||x.status==='已取消');
           return myReservations.value;
         });
 
-        onMounted(() => {
-          bootApp();
-          if (!bookingForm.value.date) {
-            bookingForm.value.date = todayYmd();
-          }
-        });
+        onMounted(() => { bootApp(); });
 
         return {
-          isBooting,
-          isSubmitting,
-          isLoadingReservations,
-          error,
-          view,
-          myFilter,
-          editSeedMode,
-          userProfile,
-          profile,
-          bookingForm,
-          serviceOptions,
-          timeOptions,
-          myReservations,
-          activeReservation,
+          isBooting, isSubmitting, isLoadingReservations, isLoadingActivities,
+          error, view, myFilter, lastBookedActivity,
+          userProfile, profile, activities, selectedActivity,
+          bookingForm, timeOptions, myReservations, activeReservation,
           filteredMyReservations,
-
-          bootApp,
-          saveProfile,
-          goProfile,
-          goBooking,
-          goMyReservations,
-          resetBookingForm,
-          submitBooking,
-          canCancel,
-          cancelReservation,
-          reuseReservation,
-          openReservationInfo,
-          statusBadgeClass,
-          statusBarClass
+          bootApp, saveProfile, goProfile, goBooking, quickBookActivity,
+          selectActivity, goBookingForm, resetBookingForm, submitBooking,
+          goMyReservations, canCancel, cancelReservation, reuseReservation,
+          openReservationInfo, statusBadgeClass, statusBarClass
         };
       }
     }).mount('#app');
