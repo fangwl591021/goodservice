@@ -1,256 +1,279 @@
-<div id="reservation-workspace" class="workspace-hidden flex flex-col h-full bg-slate-50 w-full overflow-y-auto">
-  <div class="p-8">
+<div id="reservation-workspace" class="workspace-hidden flex-1 h-full w-full bg-[#f0f2f5] overflow-hidden">
+  <div class="flex h-full w-full">
 
-    <!-- 標題與操作列 -->
-    <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 mb-6 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-      <div class="flex items-center gap-3">
-        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-2xl font-black text-slate-800 tracking-wider">預約報名後台管理</h2>
-          <p class="text-xs text-slate-400 font-bold mt-1 tracking-widest uppercase">Reservation Manager</p>
-        </div>
+    <!-- 左側抽屜式選單（桌機） -->
+    <aside class="hidden md:flex w-[220px] bg-white border-r border-slate-200 flex-col shrink-0">
+      <div class="px-6 py-5 border-b border-slate-200">
+        <div class="text-xl font-black tracking-tight text-[#06C755]">預約管理站</div>
+        <div class="text-[11px] text-slate-400 font-bold mt-1">Sports-Island Style</div>
       </div>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="flex-1 py-4">
+        <button onclick="window.ReservationModule.setTab('dashboard')" id="res-nav-dashboard"
+          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
+          <i class="fas fa-chart-pie w-5 text-center"></i>
+          <span>營運統計</span>
+        </button>
+
+        <button onclick="window.ReservationModule.setTab('orders')" id="res-nav-orders"
+          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
+          <i class="fas fa-calendar-check w-5 text-center"></i>
+          <span>預約管理</span>
+        </button>
+
+        <button onclick="window.ReservationModule.setTab('insights')" id="res-nav-insights"
+          class="res-nav-item w-full flex items-center gap-3 px-5 h-12 text-sm font-bold text-slate-600 border-l-4 border-transparent hover:bg-slate-50 transition">
+          <i class="fas fa-lightbulb w-5 text-center"></i>
+          <span>預約洞察</span>
+        </button>
+      </div>
+
+      <div class="p-4 border-t border-slate-200">
         <button onclick="window.ReservationModule.loadReservations()"
-          class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold py-2.5 px-4 rounded-lg shadow-sm transition flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-            </path>
-          </svg>
-          重新整理
+          class="w-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold py-2.5 rounded-lg transition text-sm shadow-sm">
+          重新同步資料
         </button>
-
-        <button onclick="window.ReservationModule.exportCSV()"
-          class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold py-2.5 px-4 rounded-lg shadow-sm transition flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 10v6m0 0l-3-3m3 3l3-3M4 18v1a2 2 0 002 2h12a2 2 0 002-2v-1M4 6a2 2 0 012-2h3.5a1 1 0 01.8.4l1.4 1.9a1 1 0 00.8.4H18a2 2 0 012 2v2">
-            </path>
-          </svg>
-          匯出 CSV
-        </button>
-
-        <a href="booking.html" target="_blank"
-          class="bg-[#54C061] hover:bg-green-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-md transition flex items-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
-            </path>
-          </svg>
-          開啟前台預約頁面
-        </a>
       </div>
-    </div>
+    </aside>
 
-    <!-- 統計區 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">總預約數</div>
-          <div class="text-3xl font-black text-slate-700" id="res-stat-total">0</div>
-        </div>
-        <div class="bg-slate-50 p-3 rounded-full text-slate-400">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-            </path>
-          </svg>
-        </div>
-      </div>
+    <!-- 主內容 -->
+    <main class="flex-1 min-w-0 flex flex-col h-full overflow-hidden">
 
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-bold text-amber-500 uppercase tracking-wider mb-1">待確認</div>
-          <div class="text-3xl font-black text-amber-600" id="res-stat-pending">0</div>
-        </div>
-        <div class="bg-amber-50 p-3 rounded-full text-amber-400">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-      </div>
-
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-bold text-green-500 uppercase tracking-wider mb-1">已確認</div>
-          <div class="text-3xl font-black text-green-600" id="res-stat-confirmed">0</div>
-        </div>
-        <div class="bg-green-50 p-3 rounded-full text-green-400">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-        </div>
-      </div>
-
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">已完成</div>
-          <div class="text-3xl font-black text-blue-600" id="res-stat-done">0</div>
-        </div>
-        <div class="bg-blue-50 p-3 rounded-full text-blue-400">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5 13l4 4L19 7"></path>
-          </svg>
-        </div>
-      </div>
-
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
-        <div>
-          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">已取消</div>
-          <div class="text-3xl font-black text-slate-500" id="res-stat-cancelled">0</div>
-        </div>
-        <div class="bg-slate-50 p-3 rounded-full text-slate-400">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <!-- 篩選工具列 -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 mb-6">
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div>
-          <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">搜尋</label>
-          <input id="res-filter-keyword" type="text" placeholder="搜尋姓名、電話、LINE ID、服務、備註"
-            class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#54C061]"
-            oninput="window.ReservationModule.applyFilters()">
+      <!-- 頂部 -->
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+            <i class="fas fa-calendar-day text-lg"></i>
+          </div>
+          <div class="min-w-0">
+            <h2 id="res-page-title" class="text-lg md:text-xl font-black text-slate-800 truncate">預約管理</h2>
+            <div class="text-[11px] text-slate-400 font-bold tracking-wider uppercase">Reservation Dashboard</div>
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">狀態篩選</label>
-          <select id="res-filter-status"
-            class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#54C061]"
-            onchange="window.ReservationModule.applyFilters()">
-            <option value="ALL">全部狀態</option>
-            <option value="待確認">待確認</option>
-            <option value="已確認">已確認</option>
-            <option value="已完成">已完成</option>
-            <option value="已取消">已取消</option>
-          </select>
-        </div>
+        <div class="flex items-center gap-2 md:gap-3 shrink-0">
+          <button onclick="window.ReservationModule.exportCsv()"
+            class="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg font-bold text-sm hover:bg-blue-100 transition">
+            <i class="fas fa-file-export"></i> 匯出 CSV
+          </button>
 
-        <div>
-          <label class="block text-xs font-black text-slate-500 uppercase tracking-widest mb-2">預約日期</label>
-          <input id="res-filter-date" type="date"
-            class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#54C061]"
-            onchange="window.ReservationModule.applyFilters()">
-        </div>
+          <button onclick="window.ReservationModule.loadReservations()"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-600 border border-slate-200 rounded-lg font-bold text-sm hover:bg-slate-50 transition">
+            <i class="fas fa-sync-alt"></i> 同步
+          </button>
 
-        <div class="flex items-end">
-          <button onclick="window.ReservationModule.resetFilters()"
-            class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 px-4 rounded-lg transition">
-            清除篩選
+          <a href="booking.html" target="_blank"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[#54C061] text-white rounded-lg font-bold text-sm hover:bg-green-600 transition shadow-sm">
+            <i class="fas fa-up-right-from-square"></i> 前台頁
+          </a>
+        </div>
+      </header>
+
+      <!-- 手機版 tab -->
+      <div class="md:hidden bg-white border-b border-slate-200 px-4 py-3 shrink-0">
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="window.ReservationModule.setTab('dashboard')" id="res-tab-dashboard"
+            class="res-tab-btn px-3 py-2 rounded-xl text-xs font-black bg-slate-100 text-slate-600 transition">
+            統計
+          </button>
+          <button onclick="window.ReservationModule.setTab('orders')" id="res-tab-orders"
+            class="res-tab-btn px-3 py-2 rounded-xl text-xs font-black bg-slate-100 text-slate-600 transition">
+            預約
+          </button>
+          <button onclick="window.ReservationModule.setTab('insights')" id="res-tab-insights"
+            class="res-tab-btn px-3 py-2 rounded-xl text-xs font-black bg-slate-100 text-slate-600 transition">
+            洞察
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- 桌機表格 -->
-    <div class="hidden xl:block bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-      <table class="w-full text-left text-sm">
-        <thead class="bg-slate-50 text-slate-500 font-black tracking-widest border-b border-slate-200">
-          <tr>
-            <th class="p-4">建立時間</th>
-            <th class="p-4">預約日期與時段</th>
-            <th class="p-4">姓名 / 聯絡方式</th>
-            <th class="p-4">服務項目與備註</th>
-            <th class="p-4">訂單狀態</th>
-            <th class="p-4 text-right">操作</th>
-          </tr>
-        </thead>
-        <tbody id="res-admin-list" class="divide-y divide-slate-100">
-          <!-- 動態載入 -->
-        </tbody>
-      </table>
-    </div>
+      <!-- 內容 -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
-    <!-- 手機 / 平板卡片區 -->
-    <div id="res-admin-cards" class="xl:hidden space-y-4">
-      <!-- 動態載入 -->
-    </div>
+        <!-- 統計頁 -->
+        <section id="res-panel-dashboard" class="space-y-6">
+          <div id="res-stat-cards" class="grid grid-cols-2 xl:grid-cols-5 gap-4"></div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+                <i class="fas fa-ranking-star text-amber-500"></i>
+                <h3 class="font-black text-slate-800">熱門服務排行</h3>
+              </div>
+              <div id="res-top-services" class="p-5"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+                <i class="fas fa-clock text-orange-500"></i>
+                <h3 class="font-black text-slate-800">狀態分布</h3>
+              </div>
+              <div id="res-status-overview" class="p-5"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+                <i class="fas fa-globe text-sky-500"></i>
+                <h3 class="font-black text-slate-800">來源分布</h3>
+              </div>
+              <div id="res-source-overview" class="p-5"></div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+              <i class="fas fa-list-check text-green-500"></i>
+              <h3 class="font-black text-slate-800">最近預約</h3>
+            </div>
+            <div id="res-recent-list" class="p-5"></div>
+          </div>
+        </section>
+
+        <!-- 預約管理頁 -->
+        <section id="res-panel-orders" class="space-y-5 hidden">
+          <!-- 篩選器 -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+              <div class="xl:col-span-2">
+                <label class="block text-xs font-bold text-slate-500 mb-1">關鍵字搜尋</label>
+                <input id="res-filter-keyword" type="text"
+                  class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]"
+                  placeholder="姓名 / 電話 / LINE ID / 備註">
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">狀態</label>
+                <select id="res-filter-status"
+                  class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
+                  <option value="ALL">全部狀態</option>
+                  <option value="待確認">待確認</option>
+                  <option value="已確認">已確認</option>
+                  <option value="已完成">已完成</option>
+                  <option value="已取消">已取消</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">服務項目</label>
+                <select id="res-filter-service"
+                  class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
+                  <option value="ALL">全部服務</option>
+                </select>
+              </div>
+
+              <div class="flex items-end gap-2">
+                <button onclick="window.ReservationModule.resetFilters()"
+                  class="w-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-600 font-bold py-2.5 rounded-lg transition text-sm">
+                  清除條件
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">起始日期</label>
+                <input id="res-filter-from" type="date"
+                  class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">結束日期</label>
+                <input id="res-filter-to" type="date"
+                  class="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#06C755]">
+              </div>
+              <div class="flex items-end">
+                <div class="text-sm font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 w-full">
+                  篩選結果：<span id="res-filter-count" class="text-[#06C755]">0</span> 筆
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 手機卡片 -->
+          <div id="res-mobile-list" class="md:hidden space-y-4"></div>
+
+          <!-- 桌機表格 -->
+          <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
+            <table class="w-full text-left text-sm min-w-[1100px]">
+              <thead class="bg-slate-50 text-slate-500 font-black tracking-widest border-b border-slate-200">
+                <tr>
+                  <th class="p-4">建立時間</th>
+                  <th class="p-4">預約日期</th>
+                  <th class="p-4">姓名 / 電話</th>
+                  <th class="p-4">服務</th>
+                  <th class="p-4">來源</th>
+                  <th class="p-4">狀態</th>
+                  <th class="p-4 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="res-admin-list" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 洞察頁 -->
+        <section id="res-panel-insights" class="space-y-5 hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+                <i class="fas fa-calendar-week text-violet-500"></i>
+                <h3 class="font-black text-slate-800">日期分布</h3>
+              </div>
+              <div id="res-date-insights" class="p-5"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+                <i class="fas fa-user-clock text-emerald-500"></i>
+                <h3 class="font-black text-slate-800">時間帶分布</h3>
+              </div>
+              <div id="res-time-insights" class="p-5"></div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center gap-2">
+              <i class="fas fa-circle-info text-sky-500"></i>
+              <h3 class="font-black text-slate-800">營運建議</h3>
+            </div>
+            <div id="res-advice-box" class="p-5 space-y-3"></div>
+          </div>
+        </section>
+      </div>
+    </main>
   </div>
 
-  <!-- 詳細資料彈窗 -->
-  <div id="res-detail-modal" class="fixed inset-0 z-[850] bg-slate-900/50 hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-        <h3 class="text-lg font-black text-slate-800">預約詳細資料</h3>
-        <button onclick="window.ReservationModule.closeDetailModal()" class="text-slate-400 hover:text-red-500 transition">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">預約編號</div>
-          <div id="res-detail-id" class="font-mono font-bold text-slate-700 break-all">-</div>
+  <!-- 詳情彈窗 -->
+  <div id="res-detail-modal" class="fixed inset-0 z-[999] hidden bg-black/50 backdrop-blur-[2px] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+        <div>
+          <div class="text-lg font-black text-slate-800">預約詳情</div>
+          <div class="text-[11px] text-slate-400 font-bold uppercase">Reservation Detail</div>
         </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">建立時間</div>
-          <div id="res-detail-createdAt" class="font-bold text-slate-700">-</div>
-        </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">姓名</div>
-          <div id="res-detail-name" class="font-bold text-slate-800">-</div>
-        </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">電話</div>
-          <div id="res-detail-phone" class="font-bold text-sky-700">-</div>
-        </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">LINE ID</div>
-          <div id="res-detail-lineId" class="font-mono font-bold text-slate-700 break-all">-</div>
-        </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">預約日期 / 時段</div>
-          <div id="res-detail-datetime" class="font-bold text-green-700">-</div>
-        </div>
-
-        <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">服務項目</div>
-          <div id="res-detail-service" class="font-bold text-slate-800">-</div>
-        </div>
-
-        <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">備註</div>
-          <div id="res-detail-memo" class="text-slate-700 whitespace-pre-wrap break-words">-</div>
-        </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">資料來源</div>
-          <div id="res-detail-source" class="font-bold text-slate-700">-</div>
-        </div>
-
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-          <div class="text-[10px] font-black text-slate-400 uppercase mb-1">目前狀態</div>
-          <div id="res-detail-status" class="font-bold text-slate-700">-</div>
-        </div>
-      </div>
-
-      <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
         <button onclick="window.ReservationModule.closeDetailModal()"
-          class="px-5 py-2 font-bold text-slate-500 hover:bg-slate-200 rounded-lg transition text-sm">
-          關閉
+          class="w-10 h-10 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition flex items-center justify-center">
+          <i class="fas fa-times"></i>
         </button>
+      </div>
+
+      <div id="res-detail-body" class="p-6 max-h-[75vh] overflow-y-auto"></div>
+
+      <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row justify-between gap-3">
+        <button id="res-detail-delete-btn"
+          class="px-5 py-2.5 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl font-bold transition text-sm">
+          刪除此筆預約
+        </button>
+
+        <div class="flex gap-2 justify-end">
+          <button onclick="window.ReservationModule.closeDetailModal()"
+            class="px-5 py-2.5 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-xl font-bold transition text-sm">
+            關閉
+          </button>
+          <button id="res-detail-save-btn"
+            class="px-5 py-2.5 bg-[#06C755] text-white hover:bg-[#05b34c] rounded-xl font-bold transition text-sm shadow-sm">
+            儲存狀態
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -259,386 +282,589 @@
     window.ReservationModule = {
       list: [],
       filteredList: [],
-      inited: false,
+      currentTab: 'dashboard',
+      activeItem: null,
+      filtersBound: false,
 
-      init: function() {
-        if (this.inited) return;
-        this.inited = true;
+      init: function () {
+        this.bindFiltersOnce();
+        this.setTab('dashboard');
         this.loadReservations();
       },
 
-      esc: function(str) {
-        return String(str == null ? '' : str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;');
-      },
+      bindFiltersOnce: function () {
+        if (this.filtersBound) return;
+        this.filtersBound = true;
 
-      getStatusColorClass: function(status) {
-        var map = {
-          '待確認': 'bg-amber-50 text-amber-700 border-amber-200 focus:border-amber-400',
-          '已確認': 'bg-green-50 text-green-700 border-green-200 focus:border-green-400',
-          '已完成': 'bg-blue-50 text-blue-700 border-blue-200 focus:border-blue-400',
-          '已取消': 'bg-slate-50 text-slate-500 border-slate-200 focus:border-slate-400'
-        };
-        return map[status] || 'bg-slate-50 text-slate-700 border-slate-200';
-      },
-
-      getStatusBadge: function(status) {
-        var map = {
-          '待確認': '<span class="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-black rounded">待確認</span>',
-          '已確認': '<span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded">已確認</span>',
-          '已完成': '<span class="px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-black rounded">已完成</span>',
-          '已取消': '<span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-black rounded">已取消</span>'
-        };
-        return map[status] || '<span class="px-2 py-1 bg-slate-100 text-slate-500 text-[10px] font-black rounded">未分類</span>';
-      },
-
-      getReservationKeyPayload: function(item) {
-        if (item && item.reservationId) {
-          return {
-            reservationId: item.reservationId
-          };
-        }
-        return {
-          timestamp: item.timestamp || item.createdAt || '',
-          phone: item.phone || ''
-        };
-      },
-
-      loadReservations: function() {
-        var tbody = document.getElementById('res-admin-list');
-        var cards = document.getElementById('res-admin-cards');
-
-        if (tbody) {
-          tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold animate-pulse">連線讀取資料中...</td></tr>';
-        }
-        if (cards) {
-          cards.innerHTML = '<div class="p-8 text-center text-slate-400 font-bold animate-pulse bg-white rounded-xl border border-slate-100">連線讀取資料中...</div>';
-        }
-
-        if (typeof fetchApi !== 'function') {
-          if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-red-400">fetchApi 尚未載入</td></tr>';
-          return;
-        }
-
-        fetchApi('getReservations')
-          .then(res => {
-            if (res.success) {
-              this.list = Array.isArray(res.data) ? res.data : [];
-              this.applyFilters();
-            } else {
-              if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-red-400">載入失敗: ' + this.esc(res.msg || '未知錯誤') + '</td></tr>';
-              if (cards) cards.innerHTML = '<div class="p-8 text-center text-red-400 bg-white rounded-xl border border-slate-100">載入失敗: ' + this.esc(res.msg || '未知錯誤') + '</div>';
-            }
-          })
-          .catch(err => {
-            if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-red-400">網路錯誤，請稍後再試。</td></tr>';
-            if (cards) cards.innerHTML = '<div class="p-8 text-center text-red-400 bg-white rounded-xl border border-slate-100">網路錯誤，請稍後再試。</div>';
-            console.error(err);
+        var self = this;
+        ['res-filter-keyword', 'res-filter-status', 'res-filter-service', 'res-filter-from', 'res-filter-to']
+          .forEach(function (id) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('input', function () { self.renderAll(); });
+            el.addEventListener('change', function () { self.renderAll(); });
           });
       },
 
-      applyFilters: function() {
+      setTab: function (tab) {
+        this.currentTab = tab;
+
+        var map = ['dashboard', 'orders', 'insights'];
+        map.forEach(function (key) {
+          var panel = document.getElementById('res-panel-' + key);
+          if (panel) panel.classList.toggle('hidden', key !== tab);
+
+          var nav = document.getElementById('res-nav-' + key);
+          if (nav) {
+            if (key === tab) {
+              nav.classList.add('bg-[#f0fbf5]', 'text-[#06C755]', 'border-[#06C755]', 'font-black');
+            } else {
+              nav.classList.remove('bg-[#f0fbf5]', 'text-[#06C755]', 'border-[#06C755]', 'font-black');
+            }
+          }
+
+          var mobileTab = document.getElementById('res-tab-' + key);
+          if (mobileTab) {
+            if (key === tab) {
+              mobileTab.classList.remove('bg-slate-100', 'text-slate-600');
+              mobileTab.classList.add('bg-[#06C755]', 'text-white', 'shadow-sm');
+            } else {
+              mobileTab.classList.remove('bg-[#06C755]', 'text-white', 'shadow-sm');
+              mobileTab.classList.add('bg-slate-100', 'text-slate-600');
+            }
+          }
+        });
+
+        var titleMap = {
+          dashboard: '預約營運統計',
+          orders: '預約管理',
+          insights: '預約洞察'
+        };
+        var titleEl = document.getElementById('res-page-title');
+        if (titleEl) titleEl.innerText = titleMap[tab] || '預約管理';
+      },
+
+      loadReservations: function () {
+        var self = this;
+        var desktopTbody = document.getElementById('res-admin-list');
+        var mobileList = document.getElementById('res-mobile-list');
+
+        if (desktopTbody) {
+          desktopTbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold animate-pulse">載入中...</td></tr>';
+        }
+        if (mobileList) {
+          mobileList.innerHTML = '<div class="p-8 text-center text-slate-400 font-bold bg-white rounded-2xl border border-slate-200 animate-pulse">載入中...</div>';
+        }
+
+        if (typeof toggleLoader === 'function') toggleLoader(true);
+
+        fetchApi('getReservations')
+          .then(function (res) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+
+            if (!res || !res.success) {
+              self.list = [];
+              self.renderAll();
+              alert('載入失敗：' + ((res && res.msg) || '未知錯誤'));
+              return;
+            }
+
+            var raw = Array.isArray(res.data) ? res.data : [];
+            self.list = raw.map(function (item) {
+              return {
+                reservationId: item.reservationId || '',
+                createdAt: item.createdAt || item.timestamp || '',
+                updatedAt: item.updatedAt || item.createdAt || item.timestamp || '',
+                name: item.name || '',
+                phone: item.phone || '',
+                lineId: item.lineId || '',
+                date: item.date || item.reserveDate || '',
+                time: item.time || item.reserveTime || '',
+                service: item.service || '',
+                memo: item.memo || '',
+                status: item.status || '待確認',
+                source: item.source || 'web',
+                calendarEventId: item.calendarEventId || '',
+                timestamp: item.timestamp || item.createdAt || ''
+              };
+            });
+
+            self.renderAll();
+          })
+          .catch(function (err) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+            self.list = [];
+            self.renderAll();
+            alert('網路錯誤：' + err.message);
+          });
+      },
+
+      getFilteredList: function () {
         var keyword = (document.getElementById('res-filter-keyword')?.value || '').trim().toLowerCase();
         var status = document.getElementById('res-filter-status')?.value || 'ALL';
-        var date = document.getElementById('res-filter-date')?.value || '';
+        var service = document.getElementById('res-filter-service')?.value || 'ALL';
+        var fromDate = document.getElementById('res-filter-from')?.value || '';
+        var toDate = document.getElementById('res-filter-to')?.value || '';
 
-        this.filteredList = this.list.filter(item => {
-          var matchKeyword = true;
-          var matchStatus = true;
-          var matchDate = true;
+        var list = this.list.filter(function (item) {
+          var ok = true;
 
           if (keyword) {
             var text = [
-              item.reservationId,
-              item.name,
-              item.phone,
-              item.lineId,
-              item.service,
-              item.memo,
-              item.date,
-              item.time,
-              item.status
+              item.name, item.phone, item.lineId, item.memo, item.service, item.reservationId
             ].join(' ').toLowerCase();
-
-            matchKeyword = text.indexOf(keyword) > -1;
+            ok = ok && text.indexOf(keyword) > -1;
           }
 
-          if (status !== 'ALL') {
-            matchStatus = item.status === status;
-          }
+          if (status !== 'ALL') ok = ok && item.status === status;
+          if (service !== 'ALL') ok = ok && item.service === service;
+          if (fromDate) ok = ok && String(item.date || '') >= fromDate;
+          if (toDate) ok = ok && String(item.date || '') <= toDate;
 
-          if (date) {
-            matchDate = item.date === date;
-          }
-
-          return matchKeyword && matchStatus && matchDate;
+          return ok;
         });
 
-        this.render();
+        return list;
       },
 
-      resetFilters: function() {
-        document.getElementById('res-filter-keyword').value = '';
-        document.getElementById('res-filter-status').value = 'ALL';
-        document.getElementById('res-filter-date').value = '';
-        this.applyFilters();
+      renderAll: function () {
+        this.renderServiceFilter();
+        this.filteredList = this.getFilteredList();
+        this.renderStats();
+        this.renderDashboard();
+        this.renderOrders();
+        this.renderInsights();
       },
 
-      render: function() {
+      renderServiceFilter: function () {
+        var el = document.getElementById('res-filter-service');
+        if (!el) return;
+
+        var current = el.value || 'ALL';
+        var services = {};
+        this.list.forEach(function (item) {
+          if (item.service) services[item.service] = true;
+        });
+
+        var html = '<option value="ALL">全部服務</option>';
+        Object.keys(services).sort().forEach(function (name) {
+          html += '<option value="' + ReservationModule.escapeHtml(name) + '">' + ReservationModule.escapeHtml(name) + '</option>';
+        });
+
+        el.innerHTML = html;
+        if ([].slice.call(el.options).some(function (opt) { return opt.value === current; })) {
+          el.value = current;
+        }
+      },
+
+      renderStats: function () {
+        var total = this.list.length;
+        var pending = this.list.filter(function (x) { return x.status === '待確認'; }).length;
+        var confirmed = this.list.filter(function (x) { return x.status === '已確認'; }).length;
+        var completed = this.list.filter(function (x) { return x.status === '已完成'; }).length;
+        var cancelled = this.list.filter(function (x) { return x.status === '已取消'; }).length;
+        var todayStr = this.todayYmd_();
+        var todayCount = this.list.filter(function (x) { return x.date === todayStr; }).length;
+
+        var cards = [
+          { label: '總預約數', value: total, color: 'text-slate-800', bg: 'bg-white', icon: 'fa-clipboard-list', iconBg: 'bg-slate-100 text-slate-500' },
+          { label: '今日預約', value: todayCount, color: 'text-blue-600', bg: 'bg-white', icon: 'fa-calendar-day', iconBg: 'bg-blue-50 text-blue-500' },
+          { label: '待確認', value: pending, color: 'text-amber-600', bg: 'bg-white', icon: 'fa-hourglass-half', iconBg: 'bg-amber-50 text-amber-500' },
+          { label: '已確認', value: confirmed, color: 'text-green-600', bg: 'bg-white', icon: 'fa-circle-check', iconBg: 'bg-green-50 text-green-500' },
+          { label: '已完成/取消', value: completed + cancelled, color: 'text-purple-600', bg: 'bg-white', icon: 'fa-chart-line', iconBg: 'bg-purple-50 text-purple-500' }
+        ];
+
+        var html = cards.map(function (card) {
+          return `
+            <div class="${card.bg} rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">${card.label}</div>
+                <div class="text-3xl font-black ${card.color}">${card.value}</div>
+              </div>
+              <div class="w-14 h-14 rounded-2xl ${card.iconBg} flex items-center justify-center shadow-inner">
+                <i class="fas ${card.icon} text-xl"></i>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        var statCards = document.getElementById('res-stat-cards');
+        if (statCards) statCards.innerHTML = html;
+      },
+
+      renderDashboard: function () {
+        var topServices = this.rankBy_(this.list, 'service', 5);
+        var sourceRanks = this.rankBy_(this.list, 'source', 5);
+        var statusRanks = this.rankBy_(this.list, 'status', 10);
+
+        document.getElementById('res-top-services').innerHTML = this.renderRankList_(topServices, '目前尚無服務資料');
+        document.getElementById('res-source-overview').innerHTML = this.renderRankList_(sourceRanks, '目前尚無來源資料');
+        document.getElementById('res-status-overview').innerHTML = this.renderRankList_(statusRanks, '目前尚無狀態資料');
+
+        var recent = this.list.slice(0, 8);
+        var recentHtml = '';
+        if (!recent.length) {
+          recentHtml = '<div class="text-center py-10 text-slate-400 font-bold">目前沒有預約資料</div>';
+        } else {
+          recentHtml = recent.map(function (item, idx) {
+            return `
+              <div class="flex items-center justify-between gap-3 py-3 ${idx < recent.length - 1 ? 'border-b border-slate-100' : ''}">
+                <div class="min-w-0">
+                  <div class="font-bold text-slate-800 truncate">${ReservationModule.escapeHtml(item.name)} <span class="text-slate-400 font-normal">/ ${ReservationModule.escapeHtml(item.service || '未分類')}</span></div>
+                  <div class="text-xs text-slate-500 mt-1">${ReservationModule.escapeHtml(item.date || '')} ${ReservationModule.escapeHtml(item.time || '')} ・ ${ReservationModule.escapeHtml(item.phone || '')}</div>
+                </div>
+                <div>${ReservationModule.statusBadge_(item.status)}</div>
+              </div>
+            `;
+          }).join('');
+        }
+        document.getElementById('res-recent-list').innerHTML = recentHtml;
+      },
+
+      renderOrders: function () {
+        var list = this.filteredList || [];
+        document.getElementById('res-filter-count').innerText = list.length;
+
+        // desktop
         var tbody = document.getElementById('res-admin-list');
-        var cards = document.getElementById('res-admin-cards');
-        tbody.innerHTML = '';
-        cards.innerHTML = '';
+        if (tbody) {
+          if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-10 text-center text-slate-400 font-bold">沒有符合條件的預約資料</td></tr>';
+          } else {
+            tbody.innerHTML = list.map(function (item, idx) {
+              return `
+                <tr class="hover:bg-slate-50 transition">
+                  <td class="p-4 align-top">
+                    <div class="text-xs font-mono text-slate-500">${ReservationModule.escapeHtml(item.createdAt || '-')}</div>
+                    <div class="text-[10px] text-slate-400 mt-1">${ReservationModule.escapeHtml(item.reservationId || '-')}</div>
+                  </td>
 
-        var pending = 0, confirmed = 0, done = 0, cancelled = 0;
+                  <td class="p-4 align-top">
+                    <div class="font-black text-slate-800">${ReservationModule.escapeHtml(item.date || '-')}</div>
+                    <div class="text-xs text-[#06C755] font-bold mt-1">${ReservationModule.escapeHtml(item.time || '-')}</div>
+                  </td>
 
-        this.list.forEach(item => {
-          if (item.status === '待確認') pending++;
-          if (item.status === '已確認') confirmed++;
-          if (item.status === '已完成') done++;
-          if (item.status === '已取消') cancelled++;
-        });
+                  <td class="p-4 align-top">
+                    <div class="font-bold text-slate-800">${ReservationModule.escapeHtml(item.name || '-')}</div>
+                    <div class="text-xs text-sky-600 font-mono mt-1">${ReservationModule.escapeHtml(item.phone || '-')}</div>
+                    ${item.lineId ? `<div class="text-[11px] text-slate-400 mt-1">LINE：${ReservationModule.escapeHtml(item.lineId)}</div>` : ''}
+                  </td>
 
-        document.getElementById('res-stat-total').innerText = this.list.length;
-        document.getElementById('res-stat-pending').innerText = pending;
-        document.getElementById('res-stat-confirmed').innerText = confirmed;
-        document.getElementById('res-stat-done').innerText = done;
-        document.getElementById('res-stat-cancelled').innerText = cancelled;
+                  <td class="p-4 align-top">
+                    <div class="inline-block px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">${ReservationModule.escapeHtml(item.service || '未分類')}</div>
+                    ${item.memo ? `<div class="text-xs text-slate-500 mt-2 max-w-[260px] break-words">${ReservationModule.escapeHtml(item.memo)}</div>` : '<div class="text-xs text-slate-300 italic mt-2">無備註</div>'}
+                  </td>
 
-        if (this.filteredList.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold">目前沒有符合條件的預約紀錄</td></tr>';
-          cards.innerHTML = '<div class="bg-white rounded-xl shadow-sm border border-slate-100 p-8 text-center text-slate-400 font-bold">目前沒有符合條件的預約紀錄</div>';
-          return;
+                  <td class="p-4 align-top">
+                    <span class="inline-block px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100">${ReservationModule.escapeHtml(item.source || 'web')}</span>
+                  </td>
+
+                  <td class="p-4 align-top">
+                    <select onchange="window.ReservationModule.quickStatusChange(${idx}, this.value)"
+                      class="text-xs font-black px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                      <option value="待確認" ${item.status === '待確認' ? 'selected' : ''}>待確認</option>
+                      <option value="已確認" ${item.status === '已確認' ? 'selected' : ''}>已確認</option>
+                      <option value="已完成" ${item.status === '已完成' ? 'selected' : ''}>已完成</option>
+                      <option value="已取消" ${item.status === '已取消' ? 'selected' : ''}>已取消</option>
+                    </select>
+                  </td>
+
+                  <td class="p-4 text-right align-top">
+                    <div class="flex justify-end gap-2">
+                      <button onclick="window.ReservationModule.openDetailByIndex(${idx})"
+                        class="px-3 py-2 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-lg font-bold text-xs transition">
+                        詳情
+                      </button>
+                      <button onclick="window.ReservationModule.deleteByIndex(${idx})"
+                        class="px-3 py-2 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg font-bold text-xs transition">
+                        刪除
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('');
+          }
         }
 
-        this.filteredList.forEach((item, idx) => {
-          var safeName = this.esc(item.name || '');
-          var safePhone = this.esc(item.phone || '');
-          var safeLineId = this.esc(item.lineId || '');
-          var safeDate = this.esc(item.date || '');
-          var safeTime = this.esc(item.time || '');
-          var safeService = this.esc(item.service || '');
-          var safeMemo = this.esc(item.memo || '');
-          var safeCreatedAt = this.esc(item.createdAt || item.timestamp || '');
-          var safeStatus = this.esc(item.status || '');
-          var safeReservationId = this.esc(item.reservationId || '');
-          var colorClass = this.getStatusColorClass(item.status);
+        // mobile
+        var mobile = document.getElementById('res-mobile-list');
+        if (mobile) {
+          if (!list.length) {
+            mobile.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-400 font-bold">沒有符合條件的預約資料</div>';
+          } else {
+            mobile.innerHTML = list.map(function (item, idx) {
+              return `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                  <div class="p-4 border-b border-slate-100 flex justify-between items-start gap-3">
+                    <div class="min-w-0">
+                      <div class="font-black text-slate-800 text-base">${ReservationModule.escapeHtml(item.name || '-')}</div>
+                      <div class="text-xs text-slate-500 mt-1">${ReservationModule.escapeHtml(item.date || '-')} ${ReservationModule.escapeHtml(item.time || '-')}</div>
+                      <div class="text-xs text-sky-600 font-mono mt-1">${ReservationModule.escapeHtml(item.phone || '-')}</div>
+                    </div>
+                    <div>${ReservationModule.statusBadge_(item.status)}</div>
+                  </div>
 
-          var keyArg = item.reservationId
-            ? "'" + this.esc(item.reservationId) + "', '', "
-            : "'" + this.esc(item.timestamp || item.createdAt || '') + "', '" + this.esc(item.phone || '') + "', ";
+                  <div class="px-4 py-3 space-y-2 text-sm">
+                    <div class="flex justify-between gap-2">
+                      <span class="text-slate-400 font-bold">服務</span>
+                      <span class="font-bold text-slate-700 text-right">${ReservationModule.escapeHtml(item.service || '未分類')}</span>
+                    </div>
+                    <div class="flex justify-between gap-2">
+                      <span class="text-slate-400 font-bold">來源</span>
+                      <span class="font-bold text-slate-700 text-right">${ReservationModule.escapeHtml(item.source || 'web')}</span>
+                    </div>
+                    <div class="flex justify-between gap-2">
+                      <span class="text-slate-400 font-bold">建立時間</span>
+                      <span class="font-mono text-slate-600 text-right">${ReservationModule.escapeHtml(item.createdAt || '-')}</span>
+                    </div>
+                    ${item.memo ? `
+                      <div class="pt-2 border-t border-slate-100">
+                        <div class="text-slate-400 font-bold text-xs mb-1">備註</div>
+                        <div class="text-slate-600 text-sm break-words">${ReservationModule.escapeHtml(item.memo)}</div>
+                      </div>
+                    ` : ''}
+                  </div>
 
-          /* 桌機表格 */
-          var tr = document.createElement('tr');
-          tr.className = "hover:bg-slate-50 transition";
-          tr.innerHTML = `
-            <td class="p-4 text-[11px] text-slate-400 font-mono align-top pt-5">
-              ${safeCreatedAt}
-              <div class="mt-2 text-[10px] text-slate-300">${safeReservationId || '-'}</div>
-            </td>
-            <td class="p-4 align-top pt-4">
-              <div class="font-black text-slate-700 text-base">${safeDate}</div>
-              <div class="text-xs font-bold text-[#54C061] mt-1">${safeTime}</div>
-            </td>
-            <td class="p-4 align-top pt-4">
-              <div class="font-bold text-slate-800 flex items-center gap-2">
-                ${safeName}
-                ${safeLineId ? `<span class="bg-[#06C755] text-white text-[9px] px-1.5 py-0.5 rounded shadow-sm" title="LINE ID: ${safeLineId}">LINE</span>` : ''}
-              </div>
-              <div class="text-xs text-sky-600 font-mono mt-1">${safePhone}</div>
-              ${safeLineId ? `<div class="text-[10px] text-slate-400 font-mono mt-1 break-all">${safeLineId}</div>` : ''}
-            </td>
-            <td class="p-4 align-top pt-4">
-              <div class="font-bold text-slate-700 bg-slate-100 inline-block px-2 py-1 rounded text-xs">${safeService}</div>
-              ${safeMemo ? `<div class="text-xs text-slate-500 mt-2 p-2 bg-white border border-slate-100 rounded-lg max-w-xs break-words">${safeMemo}</div>` : '<div class="text-xs text-slate-300 mt-2 italic">無備註</div>'}
-            </td>
-            <td class="p-4 align-top pt-4">
-              <select onchange="window.ReservationModule.updateStatus(${keyArg}this.value)" class="text-xs font-black px-3 py-1.5 rounded-lg border-2 outline-none cursor-pointer transition ${colorClass}">
+                  <div class="px-4 pb-4 space-y-2">
+                    <select onchange="window.ReservationModule.quickStatusChange(${idx}, this.value)"
+                      class="w-full text-sm font-black px-3 py-2.5 rounded-xl border border-slate-300 outline-none">
+                      <option value="待確認" ${item.status === '待確認' ? 'selected' : ''}>待確認</option>
+                      <option value="已確認" ${item.status === '已確認' ? 'selected' : ''}>已確認</option>
+                      <option value="已完成" ${item.status === '已完成' ? 'selected' : ''}>已完成</option>
+                      <option value="已取消" ${item.status === '已取消' ? 'selected' : ''}>已取消</option>
+                    </select>
+
+                    <div class="grid grid-cols-2 gap-2">
+                      <button onclick="window.ReservationModule.openDetailByIndex(${idx})"
+                        class="w-full py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm">
+                        查看詳情
+                      </button>
+                      <button onclick="window.ReservationModule.deleteByIndex(${idx})"
+                        class="w-full py-2.5 bg-rose-50 text-rose-500 border border-rose-200 rounded-xl font-bold text-sm">
+                        刪除
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+      },
+
+      renderInsights: function () {
+        var dateRanks = this.rankBy_(this.list, 'date', 10);
+        var timeRanks = this.rankByTime_(this.list);
+
+        document.getElementById('res-date-insights').innerHTML = this.renderRankList_(dateRanks, '目前尚無日期資料');
+        document.getElementById('res-time-insights').innerHTML = this.renderRankList_(timeRanks, '目前尚無時間資料');
+
+        var pending = this.list.filter(function (x) { return x.status === '待確認'; }).length;
+        var total = this.list.length;
+        var pendingRate = total ? Math.round((pending / total) * 100) : 0;
+
+        var topService = this.rankBy_(this.list, 'service', 1)[0];
+        var topDate = dateRanks[0];
+        var topTime = timeRanks[0];
+
+        var advice = [];
+        advice.push('目前總預約數為 <b>' + total + '</b> 筆，待確認比例約 <b>' + pendingRate + '%</b>。');
+        if (topService) advice.push('最熱門服務是 <b>' + this.escapeHtml(topService.label) + '</b>，共 <b>' + topService.count + '</b> 筆。');
+        if (topDate) advice.push('最集中的預約日期是 <b>' + this.escapeHtml(topDate.label) + '</b>。');
+        if (topTime) advice.push('最熱門時間帶是 <b>' + this.escapeHtml(topTime.label) + '</b>。');
+        if (pendingRate >= 40) advice.push('建議優先追蹤「待確認」訂單，比例偏高，容易流失。');
+        if (pendingRate < 40) advice.push('目前確認率表現不錯，可考慮進一步做服務分眾追蹤。');
+
+        document.getElementById('res-advice-box').innerHTML = advice.map(function (txt) {
+          return '<div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm text-slate-700 leading-relaxed">' + txt + '</div>';
+        }).join('');
+      },
+
+      openDetailByIndex: function (idx) {
+        var item = this.filteredList[idx];
+        if (!item) return;
+
+        this.activeItem = item;
+        var body = document.getElementById('res-detail-body');
+        var modal = document.getElementById('res-detail-modal');
+
+        body.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">預約編號</div>
+              <div class="font-mono text-sm text-slate-700">${this.escapeHtml(item.reservationId || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">建立時間</div>
+              <div class="font-mono text-sm text-slate-700">${this.escapeHtml(item.createdAt || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">姓名</div>
+              <div class="font-bold text-slate-800">${this.escapeHtml(item.name || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">電話</div>
+              <div class="font-mono text-sky-600">${this.escapeHtml(item.phone || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">LINE ID</div>
+              <div class="text-slate-700">${this.escapeHtml(item.lineId || '無')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">來源</div>
+              <div class="text-slate-700 font-bold">${this.escapeHtml(item.source || 'web')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">預約日期</div>
+              <div class="font-bold text-slate-800">${this.escapeHtml(item.date || '-')}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">預約時間</div>
+              <div class="font-bold text-[#06C755]">${this.escapeHtml(item.time || '-')}</div>
+            </div>
+
+            <div class="md:col-span-2 bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">服務項目</div>
+              <div class="font-bold text-slate-800">${this.escapeHtml(item.service || '未分類')}</div>
+            </div>
+
+            <div class="md:col-span-2 bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-1">備註</div>
+              <div class="text-slate-700 break-words whitespace-pre-wrap">${this.escapeHtml(item.memo || '無備註')}</div>
+            </div>
+
+            <div class="md:col-span-2 bg-slate-50 rounded-2xl p-4 border border-slate-200">
+              <div class="text-xs font-bold text-slate-400 mb-2">狀態設定</div>
+              <select id="res-detail-status"
+                class="w-full border border-slate-300 rounded-xl px-3 py-3 text-sm font-black outline-none focus:border-[#06C755]">
                 <option value="待確認" ${item.status === '待確認' ? 'selected' : ''}>待確認</option>
                 <option value="已確認" ${item.status === '已確認' ? 'selected' : ''}>已確認</option>
                 <option value="已完成" ${item.status === '已完成' ? 'selected' : ''}>已完成</option>
                 <option value="已取消" ${item.status === '已取消' ? 'selected' : ''}>已取消</option>
               </select>
-            </td>
-            <td class="p-4 text-right align-top pt-4">
-              <div class="flex justify-end gap-2">
-                <button onclick="window.ReservationModule.openDetailByIndex(${idx})" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg font-bold transition text-xs shadow-sm">查看</button>
-                <button onclick="window.ReservationModule.deleteRes(${keyArg})" class="px-3 py-1.5 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg font-bold transition text-xs shadow-sm">刪除</button>
-              </div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-
-          /* 手機卡片 */
-          var card = document.createElement('div');
-          card.className = "bg-white rounded-xl shadow-sm border border-slate-100 p-4";
-          card.innerHTML = `
-            <div class="flex justify-between items-start gap-3 mb-3">
-              <div class="flex-1">
-                <div class="font-black text-slate-800 text-lg">${safeName}</div>
-                <div class="text-xs text-slate-400 font-mono mt-1">${safeCreatedAt}</div>
-                ${safeReservationId ? `<div class="text-[10px] text-slate-300 font-mono mt-1 break-all">${safeReservationId}</div>` : ''}
-              </div>
-              <div>${this.getStatusBadge(item.status)}</div>
             </div>
+          </div>
+        `;
 
-            <div class="grid grid-cols-1 gap-3 text-sm">
-              <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
-                <div class="text-[10px] font-black text-slate-400 uppercase mb-1">預約日期 / 時段</div>
-                <div class="font-bold text-slate-700">${safeDate}</div>
-                <div class="text-xs font-bold text-[#54C061] mt-1">${safeTime}</div>
-              </div>
+        document.getElementById('res-detail-save-btn').onclick = function () {
+          var newStatus = document.getElementById('res-detail-status').value;
+          window.ReservationModule.saveDetailStatus(newStatus);
+        };
 
-              <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
-                <div class="text-[10px] font-black text-slate-400 uppercase mb-1">聯絡方式</div>
-                <div class="font-bold text-sky-700">${safePhone || '-'}</div>
-                ${safeLineId ? `<div class="text-[11px] text-slate-500 font-mono mt-1 break-all">${safeLineId}</div>` : ''}
-              </div>
+        document.getElementById('res-detail-delete-btn').onclick = function () {
+          window.ReservationModule.deleteActiveItem();
+        };
 
-              <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
-                <div class="text-[10px] font-black text-slate-400 uppercase mb-1">服務項目</div>
-                <div class="font-bold text-slate-700">${safeService || '-'}</div>
-                ${safeMemo ? `<div class="text-xs text-slate-500 mt-2 whitespace-pre-wrap break-words">${safeMemo}</div>` : '<div class="text-xs text-slate-300 mt-2 italic">無備註</div>'}
-              </div>
-
-              <div>
-                <select onchange="window.ReservationModule.updateStatus(${keyArg}this.value)" class="w-full text-xs font-black px-3 py-2.5 rounded-lg border-2 outline-none cursor-pointer transition ${colorClass}">
-                  <option value="待確認" ${item.status === '待確認' ? 'selected' : ''}>待確認</option>
-                  <option value="已確認" ${item.status === '已確認' ? 'selected' : ''}>已確認</option>
-                  <option value="已完成" ${item.status === '已完成' ? 'selected' : ''}>已完成</option>
-                  <option value="已取消" ${item.status === '已取消' ? 'selected' : ''}>已取消</option>
-                </select>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <button onclick="window.ReservationModule.openDetailByIndex(${idx})" class="w-full px-3 py-2.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg font-bold transition text-xs shadow-sm">查看詳情</button>
-                <button onclick="window.ReservationModule.deleteRes(${keyArg})" class="w-full px-3 py-2.5 bg-white border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg font-bold transition text-xs shadow-sm">刪除</button>
-              </div>
-            </div>
-          `;
-          cards.appendChild(card);
-        });
+        modal.classList.remove('hidden');
       },
 
-      updateStatus: function(reservationId, phone, newStatus) {
-        toggleLoader(true);
-
-        var payload = { status: newStatus };
-        if (reservationId) {
-          if (String(reservationId).indexOf('RES-') === 0) {
-            payload.reservationId = reservationId;
-          } else {
-            payload.timestamp = reservationId;
-            payload.phone = phone || '';
-          }
-        }
-
-        fetchApi('updateReservationStatus', payload)
-          .then(res => {
-            toggleLoader(false);
-            if (res.success) {
-              showToast('狀態已更新');
-              this.loadReservations();
-            } else {
-              alert(res.msg || '更新失敗');
-            }
-          })
-          .catch(err => {
-            toggleLoader(false);
-            alert('網路錯誤');
-            console.error(err);
-          });
+      closeDetailModal: function () {
+        document.getElementById('res-detail-modal').classList.add('hidden');
+        this.activeItem = null;
       },
 
-      deleteRes: function(reservationId, phone) {
-        if (!confirm('⚠️ 警告：確定要刪除這筆預約嗎？此操作無法還原。')) return;
-
-        toggleLoader(true);
-
-        var payload = {};
-        if (reservationId) {
-          if (String(reservationId).indexOf('RES-') === 0) {
-            payload.reservationId = reservationId;
-          } else {
-            payload.timestamp = reservationId;
-            payload.phone = phone || '';
-          }
-        }
-
-        fetchApi('deleteReservation', payload)
-          .then(res => {
-            toggleLoader(false);
-            if (res.success) {
-              showToast('預約已刪除');
-              this.loadReservations();
-            } else {
-              alert(res.msg || '刪除失敗');
-            }
-          })
-          .catch(err => {
-            toggleLoader(false);
-            alert('網路錯誤');
-            console.error(err);
-          });
+      saveDetailStatus: function (status) {
+        var item = this.activeItem;
+        if (!item) return;
+        this.updateStatus(item, status, true);
       },
 
-      openDetailByIndex: function(idx) {
+      deleteActiveItem: function () {
+        var item = this.activeItem;
+        if (!item) return;
+        this.deleteReservationItem(item, true);
+      },
+
+      quickStatusChange: function (idx, status) {
         var item = this.filteredList[idx];
         if (!item) return;
-
-        document.getElementById('res-detail-id').innerText = item.reservationId || '-';
-        document.getElementById('res-detail-createdAt').innerText = item.createdAt || item.timestamp || '-';
-        document.getElementById('res-detail-name').innerText = item.name || '-';
-        document.getElementById('res-detail-phone').innerText = item.phone || '-';
-        document.getElementById('res-detail-lineId').innerText = item.lineId || '-';
-        document.getElementById('res-detail-datetime').innerText = (item.date || '-') + ' / ' + (item.time || '-');
-        document.getElementById('res-detail-service').innerText = item.service || '-';
-        document.getElementById('res-detail-memo').innerText = item.memo || '無備註';
-        document.getElementById('res-detail-source').innerText = item.source || '-';
-        document.getElementById('res-detail-status').innerText = item.status || '-';
-
-        var modal = document.getElementById('res-detail-modal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        this.updateStatus(item, status, false);
       },
 
-      closeDetailModal: function() {
-        var modal = document.getElementById('res-detail-modal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+      deleteByIndex: function (idx) {
+        var item = this.filteredList[idx];
+        if (!item) return;
+        this.deleteReservationItem(item, false);
       },
 
-      exportCSV: function() {
-        var rows = this.filteredList.length ? this.filteredList : this.list;
-        if (!rows.length) {
+      updateStatus: function (item, status, fromModal) {
+        var self = this;
+        if (typeof toggleLoader === 'function') toggleLoader(true);
+
+        fetchApi('updateReservationStatus', {
+          reservationId: item.reservationId || '',
+          timestamp: item.createdAt || item.timestamp || '',
+          phone: item.phone || '',
+          status: status
+        })
+          .then(function (res) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+
+            if (res && res.success) {
+              if (typeof showToast === 'function') showToast('狀態已更新');
+              if (fromModal) self.closeDetailModal();
+              self.loadReservations();
+            } else {
+              alert('更新失敗：' + ((res && res.msg) || '未知錯誤'));
+            }
+          })
+          .catch(function (err) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+            alert('更新失敗：' + err.message);
+          });
+      },
+
+      deleteReservationItem: function (item, fromModal) {
+        var self = this;
+        if (!confirm('確定要刪除這筆預約嗎？此操作無法還原。')) return;
+
+        if (typeof toggleLoader === 'function') toggleLoader(true);
+
+        fetchApi('deleteReservation', {
+          reservationId: item.reservationId || '',
+          timestamp: item.createdAt || item.timestamp || '',
+          phone: item.phone || ''
+        })
+          .then(function (res) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+
+            if (res && res.success) {
+              if (typeof showToast === 'function') showToast('預約已刪除');
+              if (fromModal) self.closeDetailModal();
+              self.loadReservations();
+            } else {
+              alert('刪除失敗：' + ((res && res.msg) || '未知錯誤'));
+            }
+          })
+          .catch(function (err) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+            alert('刪除失敗：' + err.message);
+          });
+      },
+
+      exportCsv: function () {
+        var list = this.filteredList && this.filteredList.length ? this.filteredList : this.list;
+        if (!list.length) {
           alert('目前沒有可匯出的資料');
           return;
         }
 
-        var csv = '\uFEFF';
-        csv += [
-          'reservationId',
-          'createdAt',
-          'updatedAt',
-          'name',
-          'phone',
-          'lineId',
-          'date',
-          'time',
-          'service',
-          'memo',
-          'status',
-          'source'
-        ].join(',') + '\n';
+        var rows = [
+          ['預約編號', '建立時間', '更新時間', '姓名', '電話', 'LINE ID', '預約日期', '預約時間', '服務項目', '備註', '狀態', '來源']
+        ];
 
-        rows.forEach(item => {
-          var line = [
+        list.forEach(function (item) {
+          rows.push([
             item.reservationId || '',
-            item.createdAt || item.timestamp || '',
+            item.createdAt || '',
             item.updatedAt || '',
             item.name || '',
             item.phone || '',
@@ -649,30 +875,125 @@
             item.memo || '',
             item.status || '',
             item.source || ''
-          ].map(v => {
-            var s = String(v == null ? '' : v).replace(/"/g, '""');
-            return '"' + s + '"';
-          }).join(',');
-          csv += line + '\n';
+          ]);
         });
 
+        var csv = '\uFEFF' + rows.map(function (row) {
+          return row.map(function (cell) {
+            var val = String(cell == null ? '' : cell).replace(/"/g, '""');
+            return '"' + val + '"';
+          }).join(',');
+        }).join('\n');
+
         var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        var url = URL.createObjectURL(blob);
         var link = document.createElement('a');
-        link.href = url;
-        link.download = 'reservations_' + new Date().toISOString().slice(0, 10) + '.csv';
+        link.href = URL.createObjectURL(blob);
+        link.download = 'reservations_' + this.todayYmd_() + '.csv';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+      },
+
+      resetFilters: function () {
+        var ids = ['res-filter-keyword', 'res-filter-from', 'res-filter-to'];
+        ids.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+
+        var status = document.getElementById('res-filter-status');
+        var service = document.getElementById('res-filter-service');
+        if (status) status.value = 'ALL';
+        if (service) service.value = 'ALL';
+
+        this.renderAll();
+      },
+
+      rankBy_: function (list, key, limit) {
+        var map = {};
+        list.forEach(function (item) {
+          var val = String(item[key] || '').trim() || '未分類';
+          map[val] = (map[val] || 0) + 1;
+        });
+
+        return Object.keys(map)
+          .map(function (k) { return { label: k, count: map[k] }; })
+          .sort(function (a, b) { return b.count - a.count; })
+          .slice(0, limit || 10);
+      },
+
+      rankByTime_: function (list) {
+        var map = {};
+        list.forEach(function (item) {
+          var time = String(item.time || '').trim();
+          var label = '未設定';
+          if (time) {
+            var hour = parseInt(time.split(':')[0], 10);
+            if (!isNaN(hour)) {
+              if (hour < 12) label = '上午';
+              else if (hour < 18) label = '下午';
+              else label = '晚上';
+            }
+          }
+          map[label] = (map[label] || 0) + 1;
+        });
+
+        return Object.keys(map)
+          .map(function (k) { return { label: k, count: map[k] }; })
+          .sort(function (a, b) { return b.count - a.count; });
+      },
+
+      renderRankList_: function (items, emptyText) {
+        if (!items || !items.length) {
+          return '<div class="text-center py-10 text-slate-400 font-bold">' + this.escapeHtml(emptyText || '目前沒有資料') + '</div>';
+        }
+
+        return items.map(function (item, idx) {
+          return `
+            <div class="flex items-center justify-between gap-3 py-3 ${idx < items.length - 1 ? 'border-b border-slate-100' : ''}">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-black shrink-0">${idx + 1}</div>
+                <div class="truncate font-bold text-slate-700">${ReservationModule.escapeHtml(item.label)}</div>
+              </div>
+              <div class="text-[#06C755] font-black">${item.count}</div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      statusBadge_: function (status) {
+        var cls = {
+          '待確認': 'bg-amber-100 text-amber-700 border border-amber-200',
+          '已確認': 'bg-green-100 text-green-700 border border-green-200',
+          '已完成': 'bg-blue-100 text-blue-700 border border-blue-200',
+          '已取消': 'bg-slate-100 text-slate-500 border border-slate-200'
+        };
+        return '<span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-black ' + (cls[status] || 'bg-slate-100 text-slate-600 border border-slate-200') + '">' + this.escapeHtml(status || '-') + '</span>';
+      },
+
+      todayYmd_: function () {
+        var d = new Date();
+        var y = d.getFullYear();
+        var m = String(d.getMonth() + 1).padStart(2, '0');
+        var day = String(d.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + day;
+      },
+
+      escapeHtml: function (str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
       }
     };
 
-    /* 載入後自動初始化 */
-    setTimeout(function() {
+    // 避免動態載入時 DOM 尚未完成
+    setTimeout(function () {
       if (window.ReservationModule) {
         window.ReservationModule.init();
       }
-    }, 300);
+    }, 80);
   </script>
 </div>
