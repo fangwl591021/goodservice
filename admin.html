@@ -75,8 +75,9 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-2">模組權限設定</label>
-                        <input type="text" id="adm-perms" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="1234">
-                        <p class="text-[10px] text-slate-400 mt-1">1:圖文 2:Flex 3:日曆 4:網址 5:Admin 6:預約</p>
+                        <input type="text" id="adm-perms" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="123456">
+                        <!-- 🌟 提示字眼已根據視覺順序更新 -->
+                        <p class="text-[10px] text-slate-400 mt-1">1:圖文 2:Flex 3:預約 4:日曆 5:網址 6:Admin</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-2">無限制配額 (L欄)</label>
@@ -158,7 +159,7 @@
                 document.getElementById('adm-expire').value = '';
                 document.getElementById('adm-rmQuota').value = '1';
                 document.getElementById('adm-flexQuota').value = '3';
-                document.getElementById('adm-perms').value = '1234';
+                document.getElementById('adm-perms').value = '123456'; // 新預設全開
                 document.getElementById('adm-unlimited').value = '';
                 document.getElementById('adm-account').disabled = false;
                 document.getElementById('admin-modal-title').innerText = "新增用戶";
@@ -180,7 +181,7 @@
                 document.getElementById('adm-perms').value = u.permissions;
                 document.getElementById('adm-unlimited').value = u.unlimited === 'OK' ? 'OK' : '';
                 
-                document.getElementById('adm-account').disabled = true; // 編輯模式不允許更改登入帳號 ID
+                document.getElementById('adm-account').disabled = true;
                 document.getElementById('admin-modal-title').innerText = "編輯用戶";
                 document.getElementById('admin-user-modal').classList.remove('hidden');
             },
@@ -196,7 +197,7 @@
                     rmQuota: parseInt(document.getElementById('adm-rmQuota').value) || 1,
                     flexQuota: parseInt(document.getElementById('adm-flexQuota').value) || 3,
                     permissions: document.getElementById('adm-perms').value,
-                    unlimited: document.getElementById('adm-unlimited').value // L 欄資料
+                    unlimited: document.getElementById('adm-unlimited').value
                 };
 
                 if (!userData.account || !userData.password) {
