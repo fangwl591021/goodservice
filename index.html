@@ -235,14 +235,13 @@
         </div>
       </div>
       
-      <!-- 🚀 新增：透過 JavaScript 動態載入外部模組的佔位區塊 -->
+      <!-- 🚀 動態載入外部模組的佔位區塊 -->
       <div id="dynamic-module-menu"></div>
       <div id="dynamic-module-v1"></div>
       <div id="dynamic-module-v2"></div>
       <div id="dynamic-module-v3"></div>
       <div id="dynamic-module-capture"></div>
       <div id="dynamic-module-admin"></div>
-
     </main>
 
     <aside class="app-panel">
@@ -262,7 +261,6 @@
         
         <div class="hidden sm:flex items-center ml-8 bg-slate-900 rounded-md border border-slate-700 px-3 py-1 shadow-inner">
            <span class="text-[10px] text-slate-400 font-black mr-2 uppercase">對外網址</span>
-           <!-- 修正行事曆對外連結，改讀取 GitHub 的 query.html -->
            <input type="text" id="public-calendar-url" value="query.html" class="bg-transparent border-none text-slate-300 text-[11px] font-mono w-[280px] outline-none" readonly>
            <button onclick="copyCalendarUrl()" class="ml-2 text-[#54C061] hover:text-green-400 text-[10px] font-bold px-2 border-l border-slate-700 transition">複製</button>
            <a href="query.html" id="new-tab-calendar-link" target="_blank" class="ml-1 text-sky-400 hover:text-sky-300 text-[10px] font-bold px-2 border-l border-slate-700 transition">開新分頁</a>
@@ -292,13 +290,12 @@
          <div class="animate-spin rounded-full h-10 w-10 border-4 border-[#54C061] border-t-transparent mb-4"></div>
          <span class="text-xs font-bold text-slate-400 tracking-widest">系統連線中...</span>
       </div>
-      <!-- 修正 iframe 來源，改讀取 GitHub 上的 query.html -->
       <iframe id="calendar-iframe" data-src="query.html" class="w-full h-full border-none relative z-20 opacity-0 transition-opacity duration-500" onload="if(this.src && this.src !== 'about:blank') { this.style.opacity='1'; document.getElementById('calendar-loader').style.display='none'; }"></iframe>
     </div>
   </div>
 
   <script>
-    // 🚨 請再次確保這裡填入了您的 Cloudflare Worker 網址
+    // ✅ 已寫入您的 Cloudflare Worker 網址
     const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
 
     // 通用 API 呼叫函數
@@ -308,7 +305,10 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).then(res => res.json());
+        }).then(res => {
+            if (!res.ok) throw new Error("Worker 回應狀態異常: " + res.status);
+            return res.json();
+        });
     }
 
     var currentUser = null, currentCat = '';
@@ -319,9 +319,9 @@
     window.currentCategoryCount = 0;
     window.currentCategoryLimit = 0;
 
-    // 🚀 新增：動態從 GitHub 載入其他模組 HTML
+    // 🚀 動態從 GitHub 載入其他模組 HTML
     async function loadAllModules() {
-        // 判斷當前環境，解決在編輯器預覽 (blob URL) 中相對路徑解析失敗的問題
+        // 判斷當前環境，解決相對路徑解析失敗的問題 (Blob/預覽器相容)
         let baseUrl = '';
         if (window.location.protocol === 'blob:' || window.location.hostname.includes('usercontent')) {
             baseUrl = 'https://fangwl591021.github.io/goodservice/';
@@ -329,7 +329,7 @@
 
         const modules = [
             { id: 'dynamic-module-menu', url: baseUrl + 'menu.html' },
-            { id: 'dynamic-module-v1', url: baseUrl + 'v1.html' }, // 注意：請將 GitHub 上的 vi.html 改名為 v1.html
+            { id: 'dynamic-module-v1', url: baseUrl + 'v1.html' },
             { id: 'dynamic-module-v2', url: baseUrl + 'v2.html' },
             { id: 'dynamic-module-v3', url: baseUrl + 'v3.html' },
             { id: 'dynamic-module-capture', url: baseUrl + 'capture.html' },
@@ -344,7 +344,7 @@
                     const container = document.getElementById(mod.id);
                     container.innerHTML = html;
                     
-                    // 重新解析並執行載入 HTML 裡面的 <script> 標籤，讓功能生效
+                    // 重新解析並執行載入 HTML 裡面的 <script> 標籤
                     Array.from(container.querySelectorAll("script")).forEach(oldScript => {
                         const newScript = document.createElement("script");
                         Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
@@ -409,7 +409,7 @@
       var publicUrlInput = document.getElementById('public-calendar-url');
       var newTabLink = document.getElementById('new-tab-calendar-link');
       
-      var baseUrl = iframe.getAttribute('data-src').split('?')[0]; // 通常就是 query.html
+      var baseUrl = iframe.getAttribute('data-src').split('?')[0]; 
       
       document.getElementById('calendar-loader').style.display = 'flex';
       iframe.style.opacity = '0';
