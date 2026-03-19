@@ -15,8 +15,8 @@
 
           <!-- 文字內容區 -->
           <div id="v2-mock-text-box" style="display:flex; flex-direction:column; width:100%; padding: 0 20px; align-items: center;">
-            <div id="v2-mock-title" style="font-size:18px; font-weight:bold; color:#FFFFFF; word-break: break-all; text-align: start; width:100%;">請輸入姓名或公司名稱</div>
-            <div id="v2-mock-desc" style="font-size:12px; text-align:start; margin-top:8px; opacity:0.95; line-height:1.5; color:#FFFFFF; white-space:pre-wrap; word-break: break-all; width:100%;">✨ 一行建議16個字...</div>
+            <div id="v2-mock-title" style="font-size:18px; font-weight:bold; color:#FFFFFF; word-break: break-all; text-align: left; width:100%;">請輸入姓名或公司名稱</div>
+            <div id="v2-mock-desc" style="font-size:12px; text-align:left; margin-top:8px; opacity:0.95; line-height:1.5; color:#FFFFFF; white-space:pre-wrap; word-break: break-all; width:100%;">✨ 一行建議16個字...</div>
           </div>
 
           <div id="v2-mock-social-container" style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:20px; width: 100%; min-height:36px;"></div>
@@ -24,28 +24,54 @@
           <div style="height:10px; width:100%; flex-shrink:0;"></div>
         </div>
       </div>
-      <p style="margin-top:16px; font-size:10px; color:#94a3b8; text-align:center; font-style:italic;">Production v7.4<br>AlignItems Bug Fixed</p>
+      <p style="margin-top:16px; font-size:10px; color:#94a3b8; text-align:center; font-style:italic;">Production v7.5<br>Independent Alignments Added</p>
     </div>
     
     <!-- 2. 編輯表單區 -->
     <div class="flex-1 overflow-y-auto p-10 bg-white no-scrollbar">
       <div style="max-width:620px; margin:0 auto;">
         <h2 style="font-size:24px; font-weight:bold; color:#1e293b; margin-bottom:4px;">Flex 名片範本編輯器 (V2)</h2>
-        <p style="font-size:11px; color:#94a3b8; font-weight:bold; text-transform:uppercase; border-bottom:1px solid #e5e7eb; padding-bottom:16px; margin-bottom:32px;">Production Ready v7.4 - Fixed Format</p>
+        <p style="font-size:11px; color:#94a3b8; font-weight:bold; text-transform:uppercase; border-bottom:1px solid #e5e7eb; padding-bottom:16px; margin-bottom:32px;">Production Ready v7.5 - Independent Alignment</p>
         
         <div style="display:flex; flex-direction:column; gap:40px;">
           <!-- 1. 樣式與文字設定 -->
           <section style="background:#f8fafc; padding:24px; border-radius:16px; border:2px solid #e2e8f0;">
              <h3 style="font-size:12px; font-weight:900; color:#54C061; margin-bottom:20px; text-transform:uppercase;">1. 樣式與文字設定</h3>
-             <div class="grid grid-cols-2 gap-4 mb-4">
-                <input type="text" id="v2-f-title" class="input-field font-bold" placeholder="姓名/公司" oninput="generateFlexJson_v2()">
-                <select id="v2-f-title-align" class="input-field font-bold" onchange="generateFlexJson_v2()">
-                  <option value="start" selected>靠左</option>
-                  <option value="center">置中</option>
-                </select>
+             
+             <div class="mb-4">
+                <label class="block text-[11px] font-bold text-slate-500 mb-1">大頭貼/Logo 網址</label>
+                <input type="text" id="v2-f-logo-url" class="input-field" placeholder="大頭貼/Logo 網址" oninput="generateFlexJson_v2()">
              </div>
-             <textarea id="v2-f-desc" class="input-field h-32 mb-4" placeholder="說明文字..." oninput="generateFlexJson_v2()"></textarea>
-             <input type="text" id="v2-f-logo-url" class="input-field" placeholder="大頭貼/Logo 網址" oninput="generateFlexJson_v2()">
+
+             <div class="grid grid-cols-3 gap-4 mb-4">
+                <div class="col-span-2">
+                   <label class="block text-[11px] font-bold text-slate-500 mb-1">標題 (姓名/公司)</label>
+                   <input type="text" id="v2-f-title" class="input-field font-bold" placeholder="姓名/公司" oninput="generateFlexJson_v2()">
+                </div>
+                <div>
+                   <label class="block text-[11px] font-bold text-slate-500 mb-1">標題對齊</label>
+                   <select id="v2-f-title-align" class="input-field font-bold" onchange="generateFlexJson_v2()">
+                     <option value="start" selected>靠左</option>
+                     <option value="center">置中</option>
+                     <option value="end">靠右</option>
+                   </select>
+                </div>
+             </div>
+
+             <div class="grid grid-cols-3 gap-4 mb-4 items-start">
+                <div class="col-span-2">
+                   <label class="block text-[11px] font-bold text-slate-500 mb-1">說明文字</label>
+                   <textarea id="v2-f-desc" class="input-field h-32" placeholder="說明文字..." oninput="generateFlexJson_v2()"></textarea>
+                </div>
+                <div>
+                   <label class="block text-[11px] font-bold text-slate-500 mb-1">說明對齊</label>
+                   <select id="v2-f-desc-align" class="input-field font-bold" onchange="generateFlexJson_v2()">
+                     <option value="start" selected>靠左</option>
+                     <option value="center">置中</option>
+                     <option value="end">靠右</option>
+                   </select>
+                </div>
+             </div>
           </section>
 
           <!-- 2. 社群圖示 -->
@@ -75,7 +101,9 @@
   const V2_DEF_DATA = {
     logo: "https://aiwe.cc/wp-content/uploads/2026/02/6e1716a9965b002e6c25ab6f9d383e60.jpg",
     title: "請輸入姓名或公司名稱", 
-    desc: "✨ 一行建議16個字\n✨ 可以簡介公司或是活動內容\n✨ 四到六排的高度較為適中，不建議太長\n✨ 多分享、多收穫"
+    desc: "✨ 一行建議16個字\n✨ 可以簡介公司或是活動內容\n✨ 四到六排的高度較為適中，不建議太長\n✨ 多分享、多收穫",
+    titleAlign: "start",
+    descAlign: "start"
   };
   const V2_ICONS = { 
     "YT": "https://aiwe.cc/wp-content/uploads/2026/02/87e6f8054bd3672f2885e38bddb112e2.png", 
@@ -143,14 +171,15 @@
     const title = getEl('v2-f-title')?.value || V2_DEF_DATA.title;
     const desc = getEl('v2-f-desc')?.value || V2_DEF_DATA.desc;
     const tAlign = getEl('v2-f-title-align')?.value || 'start';
+    const dAlign = getEl('v2-f-desc-align')?.value || 'start'; // 新增：獨立說明對齊
     const logo = getEl('v2-f-logo-url')?.value || V2_DEF_DATA.logo;
 
     // 同步更新左側視覺模擬器
     const mockTitle = getEl('v2-mock-title');
     const mockDesc = getEl('v2-mock-desc');
     const mockLogo = getEl('v2-mock-logo');
-    if(mockTitle) { mockTitle.innerText = title; mockTitle.style.textAlign = (tAlign === 'start' ? 'start' : 'center'); }
-    if(mockDesc) { mockDesc.innerText = desc; mockDesc.style.textAlign = (tAlign === 'start' ? 'start' : 'center'); }
+    if(mockTitle) { mockTitle.innerText = title; mockTitle.style.textAlign = tAlign === 'start' ? 'left' : (tAlign === 'end' ? 'right' : 'center'); }
+    if(mockDesc) { mockDesc.innerText = desc; mockDesc.style.textAlign = dAlign === 'start' ? 'left' : (dAlign === 'end' ? 'right' : 'center'); }
     if(mockLogo) mockLogo.src = logo;
 
     const socialCont = getEl('v2-mock-social-container');
@@ -159,7 +188,7 @@
     const barsCont = getEl('v2-mock-bars-container');
     if(barsCont) barsCont.innerHTML = v2Bars.map(b => `<div style="background:#fff; color:#333; width:100%; text-align:center; padding:10px; border-radius:50px; font-weight:bold; font-size:12px; margin-bottom:10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">${b.t}</div>`).join('');
 
-    // ★ 構建 100% 吻合您提供的無錯誤 JSON 結構 ★
+    // ★ 構建 100% 獨立對齊的 JSON 結構 ★
     let bodyContents = [
       {
         "type": "box",
@@ -181,8 +210,7 @@
       {
         "type": "box",
         "layout": "vertical",
-        // 核心修復：Box 層級使用 valid property (center), 文字對齊交給內部 text
-        "alignItems": "center", 
+        "alignItems": "center", // Box 層級維持 center，文字對齊交由內部屬性控制
         "margin": "sm",
         "contents": [
           {
@@ -191,7 +219,7 @@
             "weight": "bold",
             "size": "lg",
             "color": "#ffffff",
-            "align": tAlign,
+            "align": tAlign, // 標題對齊
             "adjustMode": "shrink-to-fit"
           },
           {
@@ -199,7 +227,7 @@
             "text": desc,
             "size": "sm",
             "color": "#ffffff",
-            "align": tAlign,
+            "align": dAlign, // 獨立說明對齊
             "wrap": true,
             "margin": "sm"
           }
@@ -288,6 +316,73 @@
     const out = document.getElementById('json-output'); 
     if(out) out.value = JSON.stringify(flex, null, 2);
   }
+
+  window.loadFlexMenuV2_Data = function(name, json) {
+    document.getElementById('save-filename').value = name;
+    
+    const body = json.body;
+    if (body) {
+      const contents = body.contents || [];
+      const headerBox = contents.find(c => c.type === 'box' && c.width === '100px');
+      const textBox = contents.find(c => c.type === 'box' && c.alignItems === 'center' && c.paddingAll === '0px');
+      const socialBox = contents.find(c => c.type === 'box' && c.layout === 'horizontal');
+      const btnBox = contents.find(c => c.type === 'box' && c.layout === 'vertical' && c.spacing === 'none');
+
+      if (headerBox && headerBox.contents && headerBox.contents[0]) {
+        document.getElementById('v2-f-logo-url').value = headerBox.contents[0].url || "";
+      }
+
+      if (textBox && textBox.contents) {
+        const titleComp = textBox.contents.find(c => c.weight === 'bold');
+        const descComp = textBox.contents.find(c => !c.weight || c.weight !== 'bold');
+        document.getElementById('v2-f-title').value = titleComp?.text || "";
+        document.getElementById('v2-f-title-align').value = titleComp?.align || "start";
+        document.getElementById('v2-f-desc').value = descComp?.text || "";
+        document.getElementById('v2-f-desc-align').value = descComp?.align || "start";
+      }
+
+      v2Socials = [];
+      if (socialBox && socialBox.contents) {
+        socialBox.contents.forEach(icon => {
+          const type = Object.keys(V2_ICONS).find(k => V2_ICONS[k] === icon.url) || "FB";
+          v2Socials.push({ type: type, u: icon.action?.uri || "" });
+        });
+      }
+
+      v2Bars = [];
+      if (btnBox && btnBox.contents) {
+        btnBox.contents.forEach(box => {
+          const btnTxt = box.contents?.[0];
+          if (btnTxt) {
+             v2Bars.push({ t: btnTxt.text, u: box.action?.uri || "" });
+          }
+        });
+      }
+    }
+    renderV2BarsUI();
+    renderV2SocialUI();
+    generateFlexJson_v2();
+  };
+
+  window.loadFlexTemplate_v2 = function() {
+     document.getElementById('v2-f-title').value = V2_DEF_DATA.title;
+     document.getElementById('v2-f-desc').value = V2_DEF_DATA.desc;
+     document.getElementById('v2-f-logo-url').value = V2_DEF_DATA.logo;
+     document.getElementById('v2-f-title-align').value = 'start';
+     document.getElementById('v2-f-desc-align').value = 'start';
+     
+     v2Bars = [{t:"New Button", u:"https://line.me"}];
+     v2Socials = [
+       {type:"YT", u:"https://youtube.com"},
+       {type:"FB", u:"https://facebook.com"},
+       {type:"LINE", u:"https://line.me"},
+       {type:"TEL", u:"tel:0912345678"}
+     ];
+     
+     renderV2BarsUI();
+     renderV2SocialUI();
+     generateFlexJson_v2();
+  };
 
   // 確保載入時初次渲染一次
   setTimeout(() => { 
