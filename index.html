@@ -235,6 +235,8 @@
         </div>
       </div>
       
+      <!-- 提醒：若您是部屬在 GitHub Pages，下方 <?!= ... ?> 這些 GAS 語法將無法運作！
+           請直接將對應 HTML 檔案的內容複製貼上替換掉這些標籤。 -->
       <?!= HtmlService.createHtmlOutputFromFile('menu').getContent(); ?>
       <?!= HtmlService.createHtmlOutputFromFile('v1').getContent(); ?>
       <? try { ?> <?!= HtmlService.createHtmlOutputFromFile('v2').getContent(); ?> <? } catch(e) {} ?>
@@ -270,7 +272,6 @@
       </button>
     </header>
 
-    <!-- ★ 新增：日曆 ID 設定工具列 ★ -->
     <div class="bg-white border-b border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between shrink-0 shadow-sm z-10 relative">
       <div class="flex items-center space-x-3">
         <label class="text-xs font-black text-slate-600 uppercase tracking-widest">Google 日曆 ID</label>
@@ -295,11 +296,23 @@
   </div>
 
   <script>
+    // 🚨 【關鍵修改】請將這行改成您的 Cloudflare Worker 網址
+    const WORKER_URL = "請填寫您的_Cloudflare_Worker_網址";
+
+    // 新增：通用 API 呼叫函數
+    function fetchApi(action, payload = {}) {
+        payload.action = action;
+        return fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(res => res.json());
+    }
+
     var currentUser = null, currentCat = '';
     var currentWorkspace = 'richmenu';
     var lastUploadedBase64 = "";
 
-    // ★ 新增：全域記錄目前的檔案列表與配額，用於儲存時檢核
     window.currentFileList = [];
     window.currentCategoryCount = 0;
     window.currentCategoryLimit = 0;
@@ -335,7 +348,6 @@
       }
     }
 
-    // ★ 新增：重新載入行事曆並動態套用 ID 參數
     function reloadCalendar() {
       var pop = document.getElementById('calendar-pop');
       if (!pop || pop.classList.contains('translate-y-full')) return;
@@ -345,13 +357,11 @@
       var publicUrlInput = document.getElementById('public-calendar-url');
       var newTabLink = document.getElementById('new-tab-calendar-link');
       
-      // 取得原始乾淨的基礎網址
       var baseUrl = iframe.getAttribute('data-src').split('?')[0];
       
       document.getElementById('calendar-loader').style.display = 'flex';
       iframe.style.opacity = '0';
       
-      // 組合帶有參數的全新網址
       var targetUrl = baseUrl + "?p=query";
       if (cid) {
           targetUrl += "&cid=" + encodeURIComponent(cid);
@@ -361,7 +371,6 @@
       publicUrlInput.value = targetUrl;
       if (newTabLink) newTabLink.href = targetUrl;
       
-      // 存入本機記憶，下次開啟就不用重填
       localStorage.setItem('saved_calendar_id', cid);
     }
 
@@ -371,7 +380,6 @@
       if (pop) {
         pop.classList.remove('translate-y-full');
         
-        // 嘗試讀取本機記憶的 Calendar ID
         if (!window.calendarIdInit) {
             var savedCid = localStorage.getItem('saved_calendar_id');
             if (savedCid) document.getElementById('input-calendar-id').value = savedCid;
@@ -380,7 +388,7 @@
 
         var iframe = document.getElementById('calendar-iframe');
         if (iframe && (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href)) {
-          reloadCalendar(); // 統一交給 reloadCalendar 執行載入邏輯
+          reloadCalendar(); 
         }
       }
     }
@@ -400,10 +408,13 @@
       showToast("網址已複製！");
     }
 
+    // ★ 替換原本的 google.script.run
     function doLogin() {
       var u = document.getElementById('login-user').value, p = document.getElementById('login-pass').value; if(!u || !p) return; 
       toggleLoader(true);
-      google.script.run.withSuccessHandler(function(res) {
+      
+      fetchApi('login', { username: u, password: p })
+      .then(function(res) {
         toggleLoader(false);
         if (res.success) { 
           currentUser = res.user; 
@@ -426,7 +437,11 @@
         } else {
           alert(res.msg);
         }
-      }).loginUser(u, p);
+      })
+      .catch(function(err) {
+        toggleLoader(false);
+        alert('網路連線發生錯誤，請稍後再試。');
+      });
     }
 
     function openWorkspace(type) {
@@ -473,7 +488,6 @@
       if(window.AdminModule) window.AdminModule.loadUsers();
     }
 
-    // ★ 修正：點擊「建立新專案」時檢核配額上限
     function handleCreateNew() {
       if (window.currentCategoryCount >= window.currentCategoryLimit) {
         alert('已達檔案數量上限 (' + window.currentCategoryLimit + ' 個)！如需增加配額請聯繫管理員。');
@@ -505,21 +519,23 @@
     
     function closeSubSidebar() { document.body.classList.remove('sub-sidebar-open'); }
 
-    // ★ 修正：渲染檔案列表時，計算並顯示目前配額
+    // ★ 替換原本的 google.script.run
     function renderProjectList(type) {
       var container = document.getElementById('project-list-container');
       container.innerHTML = '<div class="p-10 text-center text-slate-300 text-[10px] font-bold uppercase animate-pulse">Loading...</div>';
-      google.script.run.withSuccessHandler(function(files) {
-        if (!files) files = [];
+
+      var actionName = (type === 'richmenu') ? 'getMyMenus' : 'getAllFlexProjects';
+
+      fetchApi(actionName, { username: currentUser.username })
+      .then(function(files) {
+        if (!files || !Array.isArray(files)) files = [];
         
-        // 紀錄全域變數供儲存時核驗
         window.currentFileList = files.map(function(f) { return f.filename; });
         window.currentCategoryCount = files.length;
         
         var limitStr = currentUser.username === 'admin' ? '∞' : (type === 'richmenu' ? currentUser.rmQuota : currentUser.flexQuota);
         window.currentCategoryLimit = limitStr === '∞' ? 9999 : Number(limitStr);
         
-        // 更新側邊欄 UI
         document.getElementById('file-limit-tag').innerText = window.currentCategoryCount + ' / ' + limitStr;
         document.getElementById('file-limit-icon').innerText = limitStr;
 
@@ -530,23 +546,30 @@
           div.innerHTML = '<div class="font-bold text-slate-700">' + f.filename + '</div><div class="text-[10px] text-slate-400 font-mono">' + f.time + '</div>';
           container.appendChild(div);
         });
-      })[type === 'richmenu' ? 'getMyMenus' : 'getAllFlexProjects'](currentUser.username);
+      })
+      .catch(function(err) {
+        container.innerHTML = '<div class="p-10 text-center text-red-500 text-xs font-bold">載入失敗，請重試</div>';
+      });
     }
 
+    // ★ 替換原本的 google.script.run
     function loadProject(f, type) {
       document.getElementById('save-filename').value = f.filename;
       if (type === 'richmenu') {
         openWorkspace('richmenu');
         toggleLoader(true);
-        google.script.run.withSuccessHandler(function(b64) {
+        
+        fetchApi('getMenuImageBase64', { url: f.image })
+        .then(function(resData) {
           toggleLoader(false); 
+          var b64 = resData.base64 || "";
           lastUploadedBase64 = b64;
           if(window.MenuModule) {
              window.MenuModule.load(f.filename, encodeURIComponent(f.json), b64);
              var config = JSON.parse(f.json);
              document.getElementById('rich-menu-chatbar').value = config.chatBarText || "選單";
           }
-        }).getMenuImageBase64(f.image);
+        }).catch(err => { toggleLoader(false); alert('圖片載入失敗'); });
       } else {
         var json = JSON.parse(f.json);
         document.getElementById('json-output').value = JSON.stringify(json, null, 2);
@@ -556,7 +579,7 @@
       }
     }
 
-    // ★ 修正：儲存時如果是一筆「全新的檔案」，需要再次審核配額是否已滿
+    // ★ 替換原本的 google.script.run
     function doSaveMenu() {
       var name = document.getElementById('save-filename').value; if (!name) return alert("請輸入名稱");
       
@@ -576,12 +599,24 @@
       }
 
       toggleLoader(true);
-      var data = { username: currentUser.username, company: "Company", filename: name, json: jsonText, image: (currentWorkspace === "richmenu" && window.MenuModule.isImageChanged) ? window.MenuModule.currentDriveUrl : "" };
-      google.script.run.withSuccessHandler(function(res) { 
-        toggleLoader(false); if(res.success) { showToast("儲存成功"); renderProjectList(currentCat); } else alert(res.msg); 
-      })[currentWorkspace === "richmenu" ? "saveRichMenu" : (currentWorkspace === "v1" ? "saveFlexV1" : (currentWorkspace === "v3" ? "saveFlexV3" : "saveFlexV2"))](data);
+      var payloadData = { username: currentUser.username, company: "Company", filename: name, json: jsonText, image: (currentWorkspace === "richmenu" && window.MenuModule && window.MenuModule.isImageChanged) ? window.MenuModule.currentDriveUrl : "" };
+      
+      var actionMap = { "richmenu": "saveRichMenu", "v1": "saveFlexV1", "v2": "saveFlexV2", "v3": "saveFlexV3" };
+      var actionToCall = actionMap[currentWorkspace];
+
+      fetchApi(actionToCall, { data: payloadData })
+      .then(function(res) { 
+        toggleLoader(false); 
+        if(res.success) { 
+          showToast("儲存成功"); 
+          renderProjectList(currentCat); 
+        } else {
+          alert(res.msg); 
+        }
+      }).catch(function(err){ toggleLoader(false); alert('儲存失敗'); });
     }
 
+    // ★ 替換原本的 google.script.run
     function doUploadRichMenu() {
       var token = document.getElementById('rich-menu-token').value;
       var chatBar = document.getElementById('rich-menu-chatbar').value || "選單";
@@ -598,11 +633,12 @@
       if (!confirm("確定要發布此選單嗎？這會覆蓋當前官方帳號的預設選單。")) return;
 
       toggleLoader(true);
-      google.script.run.withSuccessHandler(function(res) {
+      fetchApi('publishRichMenuToLine', { token: token, jsonText: jsonText, base64Data: lastUploadedBase64 })
+      .then(function(res) {
         toggleLoader(false);
         if (res.success) showToast("發布成功！ID: " + res.richMenuId);
         else alert("失敗：" + res.msg);
-      }).publishRichMenuToLine(token, jsonText, lastUploadedBase64);
+      }).catch(function(err){ toggleLoader(false); alert('上傳連線失敗'); });
     }
 
     function copyJsonText() { 
@@ -617,6 +653,7 @@
       showToast("JSON 已複製"); 
     }
 
+    // ★ 替換原本的 google.script.run
     document.getElementById("img-upload").onchange = function(e) { 
       var f = e.target.files[0]; if(!f || !window.MenuModule) return;
       if(f.size > 1024 * 1024) { alert("圖片超過 1MB！"); return; }
@@ -633,10 +670,12 @@
             window.MenuModule.load("New", JSON.stringify({size:{width:2500,height:calculatedHeight},areas:[], chatBarText: document.getElementById('rich-menu-chatbar').value}), localBase64);
             window.MenuModule.isImageChanged = true;
           }
-          google.script.run.withSuccessHandler(function(uploadRes) {
+          
+          fetchApi('uploadImageToDrive', { base64Data: localBase64, filename: f.name })
+          .then(function(uploadRes) {
             toggleLoader(false);
             if (uploadRes.success) { window.MenuModule.currentDriveUrl = uploadRes.url; } 
-          }).uploadImageToDrive(localBase64, f.name);
+          }).catch(function(err){ toggleLoader(false); alert('圖片上傳雲端失敗'); });
         };
         tempImg.src = localBase64;
       }; 
