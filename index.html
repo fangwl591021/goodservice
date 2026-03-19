@@ -55,14 +55,14 @@
     body.sidebar-collapsed .nav-cat-btn .chevron { display: none; }
 
     /* 元件樣式 */
-    .nav-cat-btn { padding: 18px 24px; border-bottom: 1px solid #F0F0F0; cursor: pointer; font-size: 14px; font-weight: bold; color: #475569; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+    .nav-cat-btn { padding: 18px 24px; border-bottom: 1px solid #F0F0F0; cursor: pointer; font-size: 15px; font-weight: 500; color: #475569; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
     .nav-cat-btn:hover { background: #F8F9FA; color: var(--line-green); }
-    .nav-cat-btn.active { background: #F0FDF4; color: var(--line-green); border-right: 4px solid var(--line-green); }
-    .project-item { padding: 14px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer; font-size: 13px; transition: all 0.2s; position: relative; }
+    .nav-cat-btn.active { background: #F0FDF4; color: var(--line-green); border-right: 4px solid var(--line-green); font-weight: bold; }
+    .project-item { padding: 14px 20px; border-bottom: 1px solid #F3F4F6; cursor: pointer; font-size: 15px; transition: all 0.2s; position: relative; }
     .project-item:hover { background: #FFFFFF; border-left: 4px solid var(--line-green); }
-    .input-field { width: 100%; border: 2px solid #CBD5E0; border-radius: 6px; padding: 10px; font-size: 14px; outline: none; }
+    .input-field { width: 100%; border: 2px solid #CBD5E0; border-radius: 6px; padding: 10px; font-size: 15px; outline: none; }
     .input-field:focus { border-color: var(--line-green); }
-    .btn-line { background-color: var(--line-green); color: #FFF; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-line { background-color: var(--line-green); color: #FFF; font-weight: 500; border-radius: 6px; border: none; cursor: pointer; transition: 0.2s; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .template-card { background: white; border: 2px solid #E5E7EB; border-radius: 1.5rem; padding: 2.5rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
     .template-card:hover { border-color: var(--line-green); transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
@@ -75,7 +75,7 @@
     function toggleLoader(show) { var el = document.getElementById('loader'); if(el) el.classList.toggle('workspace-hidden', !show); }
     function showToast(m) {
       var t = document.createElement('div');
-      t.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-3 rounded-full font-bold shadow-2xl z-[800] text-sm";
+      t.className = "fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-3 rounded-full font-medium shadow-2xl z-[800] text-base";
       t.innerText = m; document.body.appendChild(t);
       setTimeout(function(){ if(t && t.parentNode) t.parentNode.removeChild(t); }, 2000);
     }
@@ -85,16 +85,16 @@
 
   <div id="loader" class="fixed inset-0 z-[700] bg-white/95 flex flex-col items-center justify-center">
     <div class="animate-spin rounded-full h-12 w-12 border-[4px] border-[#54C061] border-t-transparent mb-4"></div>
-    <p class="font-bold text-slate-800 text-xs tracking-widest uppercase">載入系統模組中...</p>
+    <p class="font-medium text-slate-800 text-sm tracking-widest uppercase">載入系統模組中...</p>
   </div>
 
   <div id="auth-layer" class="fixed inset-0 z-[600] bg-white flex items-center justify-center workspace-hidden">
     <section class="w-[400px] flex flex-col items-center p-8">
-      <h2 class="text-3xl font-bold text-slate-800 mb-6 uppercase">Rich Menu Pro</h2>
+      <h2 class="text-2xl font-bold text-slate-800 mb-6 uppercase">Rich Menu Pro</h2>
       <div id="auth-form" class="w-full space-y-4">
         <input type="text" id="login-user" class="input-field" placeholder="帳號">
         <input type="password" id="login-pass" class="input-field" placeholder="密碼">
-        <button onclick="doLogin()" class="w-full btn-line py-4 text-xl shadow-lg">進入系統</button>
+        <button onclick="doLogin()" class="w-full btn-line py-3 text-lg shadow-md">進入系統</button>
       </div>
     </section>
   </div>
@@ -107,51 +107,51 @@
         </button>
         <div class="flex items-center mr-10 select-none">
           <div class="w-3 h-3 bg-[#54C061] rounded-full mr-2"></div>
-          <span class="font-black text-xl text-slate-800 uppercase tracking-tight">CONSOLE</span>
+          <span class="font-bold text-xl text-slate-800 uppercase tracking-tight">CONSOLE</span>
         </div>
         
         <div class="flex items-center space-x-3">
-          <span id="label-project-name" class="text-xs font-black text-slate-500 uppercase tracking-widest">檔案名稱</span>
-          <input type="text" id="save-filename" placeholder="未命名專案..." class="text-base font-bold border-b-2 border-gray-300 focus:border-[#54C061] outline-none py-1 w-56 bg-transparent transition-colors">
+          <span id="label-project-name" class="text-sm font-medium text-slate-500 uppercase tracking-widest">檔案名稱</span>
+          <input type="text" id="save-filename" placeholder="未命名專案..." class="text-base font-medium border-b-2 border-gray-300 focus:border-[#54C061] outline-none py-1 w-56 bg-transparent transition-colors">
         </div>
       </div>
 
       <div class="flex items-center space-x-4">
-        <span id="user-info" class="text-xs text-slate-500 mr-2 font-bold uppercase"></span>
+        <span id="user-info" class="text-sm text-slate-500 mr-2 font-medium uppercase"></span>
         
         <div id="richmenu-tools" class="workspace-hidden flex items-center space-x-6">
           <div class="flex flex-col">
-            <span class="text-xs font-black text-blue-600 uppercase mb-1">選單橫標 (Chat Bar)</span>
-            <input type="text" id="rich-menu-chatbar" value="選單" placeholder="最多14字" maxlength="14" class="text-sm font-bold border-b-2 border-slate-300 focus:border-[#54C061] outline-none w-36 bg-transparent pb-0.5 transition-colors">
+            <span class="text-sm font-medium text-blue-600 uppercase mb-1">選單橫標 (Chat Bar)</span>
+            <input type="text" id="rich-menu-chatbar" value="選單" placeholder="最多14字" maxlength="14" class="text-base font-medium border-b-2 border-slate-300 focus:border-[#54C061] outline-none w-36 bg-transparent pb-0.5 transition-colors">
           </div>
           
           <div class="flex flex-col">
-            <span class="text-xs font-black text-blue-600 uppercase mb-1">LINE Access Token</span>
-            <input type="password" id="rich-menu-token" placeholder="貼上 Token..." class="text-sm border-b-2 border-slate-300 focus:border-[#54C061] outline-none w-56 bg-transparent pb-0.5 transition-colors font-mono">
+            <span class="text-sm font-medium text-blue-600 uppercase mb-1">LINE Access Token</span>
+            <input type="password" id="rich-menu-token" placeholder="貼上 Token..." class="text-base border-b-2 border-slate-300 focus:border-[#54C061] outline-none w-56 bg-transparent pb-0.5 transition-colors font-mono">
           </div>
           
           <div class="flex space-x-3 ml-2">
-            <button onclick="document.getElementById('img-upload').click()" class="px-4 py-2 border-2 border-gray-300 rounded-md text-xs font-bold text-slate-600 hover:bg-gray-50 transition-all uppercase whitespace-nowrap">選擇圖片</button>
-            <button onclick="doSaveMenu()" class="px-5 py-2 bg-slate-100 text-slate-700 rounded-md text-xs font-bold uppercase hover:bg-slate-200 transition-all whitespace-nowrap">儲存專案</button>
-            <button onclick="doUploadRichMenu()" class="px-6 py-2 bg-[#54C061] text-white rounded-md text-xs font-black uppercase shadow-md hover:bg-green-600 transition-all whitespace-nowrap">上傳並生效</button>
+            <button onclick="document.getElementById('img-upload').click()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-slate-600 hover:bg-gray-50 transition-all uppercase whitespace-nowrap">選擇圖片</button>
+            <button onclick="doSaveMenu()" class="px-5 py-2 bg-slate-100 text-slate-700 rounded-md text-sm font-medium uppercase hover:bg-slate-200 transition-all whitespace-nowrap">儲存專案</button>
+            <button onclick="doUploadRichMenu()" class="px-6 py-2 bg-[#54C061] text-white rounded-md text-sm font-medium uppercase shadow hover:bg-green-600 transition-all whitespace-nowrap">上傳並生效</button>
           </div>
           <input type="file" id="img-upload" class="hidden" accept="image/*">
         </div>
 
         <div id="flex-tools" class="workspace-hidden flex items-center space-x-3">
-          <button onclick="doSaveMenu()" class="btn-line px-8 py-2 text-sm font-black uppercase shadow-sm">儲存檔案</button>
-          <button onclick="copyJsonText()" class="px-6 py-2 border-2 border-slate-300 rounded-md text-sm font-bold text-slate-600 uppercase hover:bg-slate-50 transition-all">Copy JSON</button>
+          <button onclick="doSaveMenu()" class="btn-line px-8 py-2 text-base font-medium uppercase shadow-sm">儲存檔案</button>
+          <button onclick="copyJsonText()" class="px-6 py-2 border border-slate-300 rounded-md text-base font-medium text-slate-600 uppercase hover:bg-slate-50 transition-all">Copy JSON</button>
         </div>
         
-        <button onclick="location.reload()" class="text-slate-400 hover:text-red-500 font-bold text-sm uppercase ml-6 border-l border-slate-200 pl-6">Logout</button>
+        <button onclick="location.reload()" class="text-slate-500 hover:text-red-500 font-medium text-base uppercase ml-6 border-l border-slate-200 pl-6">Logout</button>
       </div>
     </header>
 
     <aside class="app-sidebar no-scrollbar flex flex-col">
       <div class="p-6 border-b border-gray-100 mb-2 flex flex-col items-center justify-center transition-all sidebar-header-box">
-        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 sidebar-text w-full text-left">Quota / 檔案配額</p>
-        <p id="file-limit-tag" class="text-lg font-bold text-[#54C061] sidebar-text w-full text-left">0 / ∞</p>
-        <div id="file-limit-icon" class="sidebar-icon text-[#54C061] font-black text-xl" title="配額">∞</div>
+        <p class="text-sm font-medium text-slate-500 uppercase tracking-widest mb-1 sidebar-text w-full text-left">Quota / 檔案配額</p>
+        <p id="file-limit-tag" class="text-xl font-bold text-[#54C061] sidebar-text w-full text-left">0 / ∞</p>
+        <div id="file-limit-icon" class="sidebar-icon text-[#54C061] font-bold text-2xl" title="配額">∞</div>
       </div>
       
       <div id="nav-richmenu" class="nav-cat-btn group flex items-center justify-between" onclick="openSubSidebar('richmenu')" title="圖文選單工具">
@@ -170,7 +170,7 @@
         <svg class="w-4 h-4 sidebar-text chevron text-slate-400 group-hover:text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"></path></svg>
       </div>
 
-      <!-- 🌟 已重排：預約報名系統改為第 3 項 -->
+      <!-- 預約報名系統改為第 3 項 -->
       <div id="nav-reservation" class="nav-cat-btn group flex items-center justify-between" onclick="openReservationWorkspace()" title="預約報名系統">
         <div class="flex items-center gap-4 px-2">
           <svg class="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#54C061] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
@@ -206,40 +206,40 @@
 
     <aside class="app-sub-sidebar">
       <div id="sub-sidebar-header" class="p-5 border-b border-gray-100 bg-white flex justify-between items-center">
-        <h3 id="sub-sidebar-title" class="font-bold text-slate-800 text-sm uppercase">專案列表</h3>
+        <h3 id="sub-sidebar-title" class="font-bold text-slate-800 text-base uppercase">專案列表</h3>
         <button onclick="closeSubSidebar()" class="text-slate-400 hover:text-red-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2"></path></svg></button>
       </div>
       <div id="sub-sidebar-action" class="p-5 border-b border-gray-100">
-        <button id="btn-add-new" onclick="handleCreateNew()" class="w-full bg-white border-2 border-[#54C061] text-[#54C061] py-2 rounded-md text-xs font-bold uppercase hover:bg-green-50 transition">＋ 建立新專案</button>
+        <button id="btn-add-new" onclick="handleCreateNew()" class="w-full bg-white border border-[#54C061] text-[#54C061] py-2 rounded-md text-sm font-medium uppercase hover:bg-green-50 transition">＋ 建立新專案</button>
       </div>
       <div id="project-list-container" class="flex-1 overflow-y-auto no-scrollbar bg-slate-50/30"></div>
     </aside>
 
     <main class="app-main">
       <div id="template-selector" class="workspace-hidden flex flex-col items-center justify-center min-h-full p-20">
-        <h2 class="text-3xl font-black text-slate-800 mb-2 text-center uppercase tracking-tighter">選擇 FLEX 版型</h2>
-        <p class="text-slate-400 text-sm font-bold mb-12 uppercase tracking-widest">請點擊下方區塊開始編輯</p>
+        <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center uppercase tracking-tighter">選擇 FLEX 版型</h2>
+        <p class="text-slate-500 text-base font-medium mb-12 uppercase tracking-widest">請點擊下方區塊開始編輯</p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl w-full">
           <div onclick="createNewFlex('v1')" class="template-card">
             <div class="icon-box"><svg class="w-8 h-8 text-[#54C061]" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm10 2a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1V9a1 1 0 00-1-1h-2z"></path></svg></div>
-            <h3 class="text-xl font-black text-slate-800 mb-2">影片導購 (V1)</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter mb-6 text-center leading-relaxed">適合放置 YouTube 或<br>影片內容引導與按鈕</p>
-            <span class="text-[10px] font-black text-[#54C061] uppercase border-b-2 border-[#54C061] pb-1">立即建立 →</span>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">影片導購 (V1)</h3>
+            <p class="text-slate-500 text-sm font-medium uppercase tracking-tighter mb-6 text-center leading-relaxed">適合放置 YouTube 或<br>影片內容引導與按鈕</p>
+            <span class="text-sm font-medium text-[#54C061] uppercase border-b border-[#54C061] pb-1">立即建立 →</span>
           </div>
 
           <div onclick="createNewFlex('v2')" class="template-card">
             <div class="icon-box"><svg class="w-8 h-8 text-[#54C061]" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path></svg></div>
-            <h3 class="text-xl font-black text-slate-800 mb-2">個人名片 (V2)</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter mb-6 text-center leading-relaxed">標準數位名片結構<br>含社群圖示與聯絡按鈕</p>
-            <span class="text-[10px] font-black text-[#54C061] uppercase border-b-2 border-[#54C061] pb-1">立即建立 →</span>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">個人名片 (V2)</h3>
+            <p class="text-slate-500 text-sm font-medium uppercase tracking-tighter mb-6 text-center leading-relaxed">標準數位名片結構<br>含社群圖示與聯絡按鈕</p>
+            <span class="text-sm font-medium text-[#54C061] uppercase border-b border-[#54C061] pb-1">立即建立 →</span>
           </div>
 
           <div onclick="createNewFlex('v3')" class="template-card">
             <div class="icon-box"><svg class="w-8 h-8 text-[#54C061]" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"></path></svg></div>
-            <h3 class="text-xl font-black text-slate-800 mb-2">商品目錄 (V3)</h3>
-            <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter mb-6 text-center leading-relaxed">列表式商品陳列規格<br>支援多項購買連結與價格</p>
-            <span class="text-[10px] font-black text-[#54C061] uppercase border-b-2 border-[#54C061] pb-1">立即建立 →</span>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">商品目錄 (V3)</h3>
+            <p class="text-slate-500 text-sm font-medium uppercase tracking-tighter mb-6 text-center leading-relaxed">列表式商品陳列規格<br>支援多項購買連結與價格</p>
+            <span class="text-sm font-medium text-[#54C061] uppercase border-b border-[#54C061] pb-1">立即建立 →</span>
           </div>
         </div>
       </div>
@@ -257,8 +257,8 @@
 
     <aside class="app-panel">
       <div id="panel-editor-ui" class="h-full flex flex-col border-b border-gray-100 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 bg-[#F9FAFB] text-sm font-black text-slate-600 uppercase tracking-widest">屬性設定</div>
-        <div id="editor-ui" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar flex items-center justify-center text-slate-400 text-sm font-bold italic text-center">請載入專案進行設定</div>
+        <div class="px-6 py-4 border-b border-gray-100 bg-[#F9FAFB] text-base font-medium text-slate-600 uppercase tracking-widest">屬性設定</div>
+        <div id="editor-ui" class="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar flex items-center justify-center text-slate-500 text-base font-medium italic text-center">請載入專案進行設定</div>
       </div>
       <textarea id="json-output" style="position: absolute; left: -9999px; opacity: 0;" aria-hidden="true"></textarea>
     </aside>
@@ -268,13 +268,13 @@
     <header class="h-[64px] bg-slate-800 text-white flex items-center justify-between px-6 shrink-0">
       <div class="flex items-center space-x-3">
         <svg class="w-6 h-6 text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-        <span class="font-black tracking-widest uppercase text-sm">行事曆工具 (Calendar Tool)</span>
+        <span class="font-bold tracking-widest uppercase text-base">行事曆工具 (Calendar Tool)</span>
         
         <div class="hidden sm:flex items-center ml-8 bg-slate-900 rounded-md border border-slate-700 px-3 py-1 shadow-inner">
-           <span class="text-[10px] text-slate-400 font-black mr-2 uppercase">對外網址</span>
-           <input type="text" id="public-calendar-url" value="query.html" class="bg-transparent border-none text-slate-300 text-[11px] font-mono w-[280px] outline-none" readonly>
-           <button onclick="copyCalendarUrl()" class="ml-2 text-[#54C061] hover:text-green-400 text-[10px] font-bold px-2 border-l border-slate-700 transition">複製</button>
-           <a href="query.html" id="new-tab-calendar-link" target="_blank" class="ml-1 text-sky-400 hover:text-sky-300 text-[10px] font-bold px-2 border-l border-slate-700 transition">開新分頁</a>
+           <span class="text-sm text-slate-500 font-medium mr-2 uppercase">對外網址</span>
+           <input type="text" id="public-calendar-url" value="query.html" class="bg-transparent border-none text-slate-300 text-sm font-mono w-[280px] outline-none" readonly>
+           <button onclick="copyCalendarUrl()" class="ml-2 text-[#54C061] hover:text-green-400 text-sm font-medium px-2 border-l border-slate-700 transition">複製</button>
+           <a href="query.html" id="new-tab-calendar-link" target="_blank" class="ml-1 text-sky-400 hover:text-sky-300 text-sm font-medium px-2 border-l border-slate-700 transition">開新分頁</a>
         </div>
       </div>
       <button onclick="closeCalendarPop()" class="text-slate-300 hover:text-white transition bg-slate-700 hover:bg-rose-500 rounded-full p-2">
@@ -284,14 +284,14 @@
 
     <div class="bg-white border-b border-slate-200 px-6 py-3 flex flex-wrap items-center justify-between shrink-0 shadow-sm z-10 relative">
       <div class="flex items-center space-x-3">
-        <label class="text-xs font-black text-slate-600 uppercase tracking-widest">Google 日曆 ID</label>
-        <input type="text" id="input-calendar-id" placeholder="例如: xxx@group.calendar.google.com (預設抓取本人)" class="border-2 border-slate-200 rounded-md px-3 py-1.5 text-sm outline-none focus:border-[#54C061] font-mono w-80 text-slate-700 transition">
-        <button onclick="reloadCalendar()" class="bg-[#54C061] hover:bg-green-600 text-white text-xs font-bold px-4 py-1.5 rounded-md shadow-sm transition-colors flex items-center gap-1">
+        <label class="text-sm font-medium text-slate-600 uppercase tracking-widest">Google 日曆 ID</label>
+        <input type="text" id="input-calendar-id" placeholder="例如: xxx@group.calendar.google.com (預設抓取本人)" class="border border-slate-200 rounded-md px-3 py-1.5 text-base outline-none focus:border-[#54C061] font-mono w-80 text-slate-700 transition">
+        <button onclick="reloadCalendar()" class="bg-[#54C061] hover:bg-green-600 text-white text-sm font-medium px-4 py-1.5 rounded-md shadow-sm transition-colors flex items-center gap-1">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
           套用並載入
         </button>
       </div>
-      <div class="text-[11px] text-slate-500 font-bold bg-slate-50 px-3 py-1.5 rounded-md border border-slate-100 mt-2 sm:mt-0">
+      <div class="text-sm text-slate-500 font-medium bg-slate-50 px-3 py-1.5 rounded-md border border-slate-100 mt-2 sm:mt-0">
         💡 提示：需先將 Google 行事曆設為「公開」外部才可看見
       </div>
     </div>
@@ -299,7 +299,7 @@
     <div class="flex-1 w-full bg-slate-50 relative overflow-hidden">
       <div id="calendar-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 z-10">
          <div class="animate-spin rounded-full h-10 w-10 border-4 border-[#54C061] border-t-transparent mb-4"></div>
-         <span class="text-xs font-bold text-slate-400 tracking-widest">系統連線中...</span>
+         <span class="text-sm font-medium text-slate-500 tracking-widest">系統連線中...</span>
       </div>
       <iframe id="calendar-iframe" data-src="query.html" class="w-full h-full border-none relative z-20 opacity-0 transition-opacity duration-500" onload="if(this.src && this.src !== 'about:blank') { this.style.opacity='1'; document.getElementById('calendar-loader').style.display='none'; }"></iframe>
     </div>
@@ -387,7 +387,6 @@
 
     function applyPermissions(perms) {
       const pStr = String(perms || "");
-      // 🌟 已重排權限對應代碼
       const menus = [
         { id: 'nav-richmenu', val: '1' },
         { id: 'nav-custom', val: '2' },
@@ -496,7 +495,6 @@
           applyPermissions(currentUser.permissions);
 
           var pStr = String(currentUser.permissions || "");
-          // 🌟 登入後依照最高權限向下尋找優先開啟的視窗
           if (pStr.includes('6')) openAdminWorkspace();
           else if (pStr.includes('1')) openWorkspace('richmenu');
           else if (pStr.includes('2')) openWorkspace('selector');
@@ -566,6 +564,10 @@
     function openReservationWorkspace() {
       closeSubSidebar();
       openWorkspace('reservation');
+      
+      if (window.ReservationModule && typeof window.ReservationModule.syncAll === 'function') {
+        window.ReservationModule.syncAll();
+      }
     }
 
     function handleCreateNew() {
@@ -601,7 +603,7 @@
 
     function renderProjectList(type) {
       var container = document.getElementById('project-list-container');
-      container.innerHTML = '<div class="p-10 text-center text-slate-300 text-[10px] font-bold uppercase animate-pulse">Loading...</div>';
+      container.innerHTML = '<div class="p-10 text-center text-slate-400 text-sm font-medium uppercase animate-pulse">Loading...</div>';
 
       var actionName = (type === 'richmenu') ? 'getMyMenus' : 'getAllFlexProjects';
 
@@ -622,12 +624,12 @@
         files.forEach(function(f) {
           var div = document.createElement('div'); div.className = "project-item";
           div.onclick = function() { closeSubSidebar(); loadProject(f, type); };
-          div.innerHTML = '<div class="font-bold text-slate-700">' + f.filename + '</div><div class="text-[10px] text-slate-400 font-mono">' + f.time + '</div>';
+          div.innerHTML = '<div class="text-slate-700">' + f.filename + '</div><div class="text-sm text-slate-400 font-mono">' + f.time + '</div>';
           container.appendChild(div);
         });
       })
       .catch(function(err) {
-        container.innerHTML = '<div class="p-10 text-center text-red-500 text-xs font-bold">載入失敗，請重試</div>';
+        container.innerHTML = '<div class="p-10 text-center text-red-500 text-sm font-medium">載入失敗，請重試</div>';
       });
     }
 
