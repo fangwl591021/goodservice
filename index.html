@@ -170,6 +170,15 @@
         <svg class="w-4 h-4 sidebar-text chevron text-slate-400 group-hover:text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"></path></svg>
       </div>
 
+      <!-- 🌟 新增：預約報名系統 (權限 6) -->
+      <div id="nav-reservation" class="nav-cat-btn group flex items-center justify-between" onclick="openReservationWorkspace()" title="預約報名系統">
+        <div class="flex items-center gap-4 px-2">
+          <svg class="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#54C061] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+          <span class="sidebar-text">預約報名系統</span>
+        </div>
+        <svg class="w-4 h-4 sidebar-text chevron text-slate-400 group-hover:text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"></path></svg>
+      </div>
+
       <div id="nav-calendar" class="nav-cat-btn group flex items-center justify-between" onclick="openCalendarPop()" title="行事曆工具">
         <div class="flex items-center gap-4 px-2">
           <svg class="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#54C061] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
@@ -235,13 +244,15 @@
         </div>
       </div>
       
-      <!-- 🚀 動態載入外部模組的佔位區塊 -->
+      <!-- 🚀 動態從 GitHub 載入其他模組 HTML 的佔位區塊 -->
       <div id="dynamic-module-menu"></div>
       <div id="dynamic-module-v1"></div>
       <div id="dynamic-module-v2"></div>
       <div id="dynamic-module-v3"></div>
       <div id="dynamic-module-capture"></div>
       <div id="dynamic-module-admin"></div>
+      <div id="dynamic-module-reservation"></div> <!-- 🌟 新增：預約系統模組的佔位區 -->
+
     </main>
 
     <aside class="app-panel">
@@ -327,7 +338,7 @@
             baseUrl = 'https://fangwl591021.github.io/goodservice/';
         }
 
-        // 🌟 關鍵修復：加入時間戳記，強制所有裝置與帳號都抓取最新檔案，不使用舊快取
+        // 加入時間戳記破除快取，確保永遠抓到最新的 HTML 檔案
         const ts = new Date().getTime();
 
         const modules = [
@@ -336,7 +347,8 @@
             { id: 'dynamic-module-v2', url: baseUrl + 'v2.html?v=' + ts },
             { id: 'dynamic-module-v3', url: baseUrl + 'v3.html?v=' + ts },
             { id: 'dynamic-module-capture', url: baseUrl + 'capture.html?v=' + ts },
-            { id: 'dynamic-module-admin', url: baseUrl + 'admin.html?v=' + ts }
+            { id: 'dynamic-module-admin', url: baseUrl + 'admin.html?v=' + ts },
+            { id: 'dynamic-module-reservation', url: baseUrl + 'reservation.html?v=' + ts } // 🌟 載入預約模組
         ];
 
         for (let mod of modules) {
@@ -379,7 +391,8 @@
         { id: 'nav-custom', val: '2' },
         { id: 'nav-calendar', val: '3' },
         { id: 'nav-capture', val: '4' },
-        { id: 'nav-admin', val: '5' }
+        { id: 'nav-admin', val: '5' },
+        { id: 'nav-reservation', val: '6' } // 🌟 預約報名系統權限
       ];
 
       menus.forEach(menu => {
@@ -424,7 +437,6 @@
       
       iframe.src = targetUrl;
       
-      // 計算出絕對網址方便使用者複製
       var absoluteUrl = new URL(targetUrl, window.location.href).href;
       publicUrlInput.value = absoluteUrl;
       if (newTabLink) newTabLink.href = absoluteUrl;
@@ -485,10 +497,11 @@
           if (pStr.includes('5')) openAdminWorkspace();
           else if (pStr.includes('1')) openWorkspace('richmenu');
           else if (pStr.includes('2')) openWorkspace('selector');
+          else if (pStr.includes('6')) openReservationWorkspace(); // 🌟 如果只有預約權限，自動跳轉預約系統
           else if (pStr.includes('3')) openCalendarPop();
           else if (pStr.includes('4')) openCaptureWorkspace();
           else {
-            var ids = ['template-selector', 'menu-workspace', 'flex-workspace-v1', 'flex-workspace-v2', 'v3-workspace', 'capture-workspace', 'admin-workspace'];
+            var ids = ['template-selector', 'menu-workspace', 'flex-workspace-v1', 'flex-workspace-v2', 'v3-workspace', 'capture-workspace', 'admin-workspace', 'reservation-workspace'];
             ids.forEach(id => { var el = document.getElementById(id); if(el) el.classList.add('workspace-hidden'); });
           }
         } else {
@@ -503,17 +516,21 @@
 
     function openWorkspace(type) {
       currentWorkspace = type;
-      var ids = ['template-selector', 'menu-workspace', 'flex-workspace-v1', 'flex-workspace-v2', 'v3-workspace', 'capture-workspace', 'admin-workspace'];
+      // 🌟 將預約模組加入切換名單
+      var ids = ['template-selector', 'menu-workspace', 'flex-workspace-v1', 'flex-workspace-v2', 'v3-workspace', 'capture-workspace', 'admin-workspace', 'reservation-workspace'];
       ids.forEach(id => { var el = document.getElementById(id); if(el) el.classList.add('workspace-hidden'); });
       document.getElementById('richmenu-tools').classList.add('workspace-hidden');
       document.getElementById('flex-tools').classList.add('workspace-hidden');
       document.getElementById('panel-editor-ui').classList.add('workspace-hidden');
 
-      if (type === 'capture' || type === 'admin') {
+      // 🌟 將預約模組設定為全螢幕工作區 (Full Workspace)
+      if (type === 'capture' || type === 'admin' || type === 'reservation') {
         document.body.classList.add('full-workspace');
         var el = document.getElementById(type + '-workspace');
         if(el) el.classList.remove('workspace-hidden');
-        document.getElementById('save-filename').value = type === 'admin' ? "系統帳號管理" : "網址擷取工具";
+        if (type === 'admin') document.getElementById('save-filename').value = "系統帳號管理";
+        else if (type === 'capture') document.getElementById('save-filename').value = "網址擷取工具";
+        else if (type === 'reservation') document.getElementById('save-filename').value = "預約報名系統";
       } else {
         document.body.classList.remove('full-workspace');
       }
@@ -543,6 +560,12 @@
       closeSubSidebar();
       openWorkspace('admin');
       if(window.AdminModule) window.AdminModule.loadUsers();
+    }
+
+    // 🌟 新增切換預約系統的函式
+    function openReservationWorkspace() {
+      closeSubSidebar();
+      openWorkspace('reservation');
     }
 
     function handleCreateNew() {
