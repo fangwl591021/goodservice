@@ -118,10 +118,18 @@
     document.getElementById('voomImageSection').classList.add('hidden');
     document.getElementById('voomImageGrid').innerHTML = '';
 
-    google.script.run
-      .withSuccessHandler(onVoomSuccess)
-      .withFailureHandler(onVoomFailure)
-      .getLineVoomMedia(urlInput);
+    // 【修正】使用全域定義的 fetchApi 取代 google.script.run
+    if (typeof fetchApi === 'function') {
+      fetchApi('getLineVoomMedia', { url: urlInput })
+        .then(function(data) {
+          onVoomSuccess(data);
+        })
+        .catch(function(error) {
+          onVoomFailure(error);
+        });
+    } else {
+      showVoomError('系統尚未準備完成，無法連線後端 API，請重新整理網頁。');
+    }
   }
 
   function onVoomSuccess(data) {
