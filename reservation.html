@@ -247,7 +247,7 @@
       <input type="hidden" id="cm-id">
       <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">活動名稱 *</label><input id="cm-name" class="res-input text-sm"></div>
       <div><label class="block text-xs font-bold text-slate-500 mb-1">類型</label>
-        <select id="cm-type" class="res-input text-sm"><option>單日課程</option><option>多日營隊</option><option>常態課後</option></select>
+        <select id="cm-type" class="res-input text-sm"><option>單日活動</option><option>梯次活動</option><option>常態活動</option></select>
       </div>
       <div><label class="block text-xs font-bold text-slate-500 mb-1">時段類型</label>
         <select id="cm-timeslot" class="res-input text-sm"><option>全日</option><option>上午</option><option>下午</option><option>晚間</option></select>
@@ -523,7 +523,7 @@ window.ReservationModule = (function () {
       'cm-price':c?c.price:0,'cm-capacity':c?c.capacity:20,'cm-ebprice':c?c.earlyBirdPrice:0,
       'cm-ebdate':c?c.earlyBirdDate:'','cm-sessions':c?c.totalSessions:1,'cm-image':c?c.image:'','cm-desc':c?c.description:'' };
     Object.keys(fields).forEach(function(id){ var el=document.getElementById(id); if(el) el.value=fields[id]; });
-    if (c) document.getElementById('cm-type').value = c.type || '單日課程';
+    if (c) document.getElementById('cm-type').value = c.type || '單日活動';
     if (c) document.getElementById('cm-timeslot').value = c.timeSlotType || '全日';
     var m = document.getElementById('res-course-modal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
