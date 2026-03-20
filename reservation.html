@@ -35,7 +35,6 @@
     <div class="flex-1 py-3 overflow-y-auto">
       <button class="res-nav-item" id="res-nav-dashboard" onclick="window.ReservationModule.setTab('dashboard')"><i class="fas fa-chart-pie w-4 text-center"></i> 營運統計</button>
       <button class="res-nav-item" id="res-nav-orders"    onclick="window.ReservationModule.setTab('orders')">  <i class="fas fa-receipt w-4 text-center"></i>    訂單管理</button>
-      <button class="res-nav-item" id="res-nav-add"       onclick="window.ReservationModule.setTab('add')">    <i class="fas fa-plus-circle w-4 text-center"></i> 新增報名</button>
       <button class="res-nav-item" id="res-nav-courses"   onclick="window.ReservationModule.setTab('courses')"><i class="fas fa-calendar-check w-4 text-center"></i> 活動管理</button>
       <button class="res-nav-item" id="res-nav-members"   onclick="window.ReservationModule.setTab('members')"><i class="fas fa-users w-4 text-center"></i>        會員管理</button>
       <button class="res-nav-item" id="res-nav-attend"    onclick="window.ReservationModule.setTab('attend')"> <i class="fas fa-user-check w-4 text-center"></i>   簽到管理</button>
@@ -71,7 +70,6 @@
       <div class="flex gap-2 text-sm min-w-max">
         <button id="res-tab-dashboard" onclick="window.ReservationModule.setTab('dashboard')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">統計</button>
         <button id="res-tab-orders"    onclick="window.ReservationModule.setTab('orders')"    class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">訂單</button>
-        <button id="res-tab-add"       onclick="window.ReservationModule.setTab('add')"       class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">新增</button>
         <button id="res-tab-courses"   onclick="window.ReservationModule.setTab('courses')"   class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">活動</button>
         <button id="res-tab-members"   onclick="window.ReservationModule.setTab('members')"   class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">會員</button>
         <button id="res-tab-attend"    onclick="window.ReservationModule.setTab('attend')"    class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">簽到</button>
@@ -144,52 +142,6 @@
             </tr></thead>
             <tbody id="res-order-list"></tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- ===== 新增報名 ===== -->
-      <div id="res-panel-add" class="hidden">
-        <div class="max-w-2xl mx-auto space-y-4">
-          <div class="res-card">
-            <div class="px-6 py-4 border-b flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-bold text-base">1</div>
-              <div class="font-bold text-slate-800 text-lg">選擇活動 <span class="text-red-400">*</span></div>
-            </div>
-            <div class="p-4">
-              <select id="add-course-sel" class="res-input text-base" onchange="window.ReservationModule.onCourseChange()">
-                <option value="">-- 請選擇活動 --</option>
-              </select>
-              <div id="add-course-info" class="hidden mt-3 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800 font-medium space-y-1.5"></div>
-            </div>
-          </div>
-          <div class="res-card">
-            <div class="px-6 py-4 border-b flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-bold text-base">2</div>
-              <div class="font-bold text-slate-800 text-lg">學員資料 <span class="text-red-400">*</span></div>
-            </div>
-            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label class="res-label">學員姓名 *</label><input id="add-name" class="res-input text-base" placeholder="真實姓名"></div>
-              <div><label class="res-label">身分證字號 *</label><input id="add-nid" class="res-input text-base uppercase" placeholder="A123456789"></div>
-              <div><label class="res-label">聯絡電話 *</label><input id="add-phone" class="res-input text-base" type="tel" placeholder="0912345678"></div>
-              <div><label class="res-label">LINE userId（選填）</label><input id="add-uid" class="res-input text-base font-mono" placeholder="U開頭的LINE userId"></div>
-            </div>
-          </div>
-          <div class="res-card">
-            <div class="px-6 py-4 border-b flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-bold text-base">3</div>
-              <div class="font-bold text-slate-800 text-lg">備註 / 確認金額</div>
-            </div>
-            <div class="p-4 space-y-3">
-              <textarea id="add-note" rows="3" placeholder="特殊狀況或備注..." class="res-input text-base resize-none"></textarea>
-              <div class="flex items-center justify-between bg-slate-50 rounded-xl px-5 py-4 border">
-                <span class="text-base font-medium text-slate-600">應繳金額</span>
-                <span id="add-amount" class="text-2xl font-bold text-[#06C755]">$0</span>
-              </div>
-            </div>
-          </div>
-          <button onclick="window.ReservationModule.submitAdd()" class="res-btn-g w-full py-4 text-lg justify-center">
-            <i class="fas fa-check"></i> 確認建立報名訂單
-          </button>
         </div>
       </div>
 
