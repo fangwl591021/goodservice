@@ -309,6 +309,8 @@
           </select>
         </div>
       </div>
+
+      <!-- 一般活動欄位 -->
       <div id="cm-normal-fields">
         <div class="mb-4"><label class="res-label">活動名稱 *</label><input id="cm-name" class="res-input text-base" placeholder="活動名稱"></div>
         <div class="grid grid-cols-2 gap-4 mb-4">
@@ -323,10 +325,23 @@
           <div><label class="res-label">早鳥價</label><input id="cm-ebprice" type="number" class="res-input text-base"></div>
           <div><label class="res-label">早鳥截止日</label><input id="cm-ebdate" type="date" class="res-input text-base"></div>
           <div><label class="res-label">總堂數</label><input id="cm-sessions" type="number" value="1" class="res-input text-base"></div>
-          <div><label class="res-label">圖片網址</label><input id="cm-image" class="res-input text-base" placeholder="https://..."></div>
+          
+          <!-- 🌟 新增：一般活動的圖片上傳按鈕 -->
+          <div class="col-span-2 md:col-span-1">
+            <label class="res-label">圖片網址</label>
+            <div class="flex gap-2">
+              <input id="cm-image" class="res-input text-base flex-1" placeholder="https://...">
+              <button type="button" onclick="document.getElementById('cm-image-upload').click()" class="res-btn-w shrink-0 px-3 bg-white text-sm whitespace-nowrap">
+                <i class="fas fa-upload mr-1"></i>上傳
+              </button>
+              <input type="file" id="cm-image-upload" class="hidden" accept="image/*" onchange="window.ReservationModule.uploadCourseImage('cm-image', this)">
+            </div>
+          </div>
         </div>
         <div><label class="res-label">活動說明</label><textarea id="cm-desc" rows="4" class="res-input text-base resize-none"></textarea></div>
       </div>
+
+      <!-- 梯次活動大主題欄位 -->
       <div id="cm-camp-fields" class="hidden space-y-4">
         <div class="bg-green-50 border border-green-200 rounded-xl p-5">
           <label class="res-label text-green-800"><i class="fas fa-flag mr-1"></i> 活動大主題 *</label>
@@ -338,7 +353,18 @@
           <div><label class="res-label">活動地點</label><input id="cm-camp-location" class="res-input text-base"></div>
           <div><label class="res-label">教練/老師</label><input id="cm-camp-instructor" class="res-input text-base"></div>
           <div><label class="res-label">總堂數</label><input id="cm-camp-sessions" type="number" value="5" class="res-input text-base"></div>
-          <div class="col-span-2"><label class="res-label">主題圖片網址</label><input id="cm-camp-image" class="res-input text-base" placeholder="https://... (建議尺寸 800×400)"></div>
+          
+          <!-- 🌟 新增：梯次主題的圖片上傳按鈕 -->
+          <div class="col-span-2">
+            <label class="res-label">主題圖片網址</label>
+            <div class="flex gap-2">
+              <input id="cm-camp-image" class="res-input text-base flex-1" placeholder="https://... (建議尺寸 800×400)">
+              <button type="button" onclick="document.getElementById('cm-camp-image-upload').click()" class="res-btn-w shrink-0 px-3 bg-white text-sm whitespace-nowrap">
+                <i class="fas fa-upload mr-1"></i>上傳
+              </button>
+              <input type="file" id="cm-camp-image-upload" class="hidden" accept="image/*" onchange="window.ReservationModule.uploadCourseImage('cm-camp-image', this)">
+            </div>
+          </div>
         </div>
         <div><label class="res-label">活動說明 <span class="text-slate-400 font-normal text-xs ml-1">(顯示於前台梯次卡片)</span></label><textarea id="cm-camp-desc" rows="4" class="res-input text-base resize-none" placeholder="活動內容介紹、注意事項..."></textarea></div>
         <div id="cm-camp-batches"></div>
@@ -349,6 +375,8 @@
           <i class="fas fa-info-circle mr-1"></i> 儲存後系統將自動為每個「梯次 × 項目」建立獨立活動。
         </div>
       </div>
+
+      <!-- 梯次活動單筆編輯模式 -->
       <div id="cm-camp-edit-fields" class="hidden">
         <div class="bg-green-50 border border-green-200 rounded-xl p-5 mb-4">
           <div class="text-base font-medium text-green-800 mb-3"><i class="fas fa-flag mr-1"></i> 單筆梯次活動編輯</div>
@@ -933,6 +961,53 @@ window.ReservationModule = (function () {
     document.getElementById('cm-type').disabled = false;
   }
 
+  // 🌟 新增：圖片壓縮與上傳 (Base64 -> GAS -> Drive URL)
+  function uploadCourseImage(targetInputId, fileInput) {
+    var file = fileInput.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+       alert('圖片檔案過大，請選擇 2MB 以下的圖片以加速上傳');
+       fileInput.value = '';
+       return;
+    }
+
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        var MAX_WIDTH = 800;
+        var scaleSize = MAX_WIDTH / img.width;
+        if (scaleSize > 1) scaleSize = 1;
+        
+        canvas.width = img.width * scaleSize;
+        canvas.height = img.height * scaleSize;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        var base64Data = canvas.toDataURL('image/jpeg', 0.85);
+
+        callAPI('SI_UPLOAD_IMAGE', { base64Data: base64Data, filename: file.name })
+          .then(function(res) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+            document.getElementById(targetInputId).value = res.url;
+            fileInput.value = '';
+            if (typeof showToast === 'function') showToast("圖片上傳成功！");
+          })
+          .catch(function(err) {
+            if (typeof toggleLoader === 'function') toggleLoader(false);
+            alert("上傳失敗：" + err.message);
+            fileInput.value = '';
+          });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
   function saveCourse() {
     var type = document.getElementById('cm-type').value;
     var isEditing = !!editingCourseId;
@@ -1253,7 +1328,8 @@ window.ReservationModule = (function () {
     refreshAttendCourseSelect:refreshAttendCourseSelect, onAttendCourseChange:onAttendCourseChange,
     loadAttendList:loadAttendList, setAttendStatus:setAttendStatus, saveAttendance:saveAttendance,
     goAttend:goAttend, copyFrontLink:copyFrontLink, saveSettings:saveSettings,
-    copyCourse:copyCourse, copyCampTheme:copyCampTheme, copyLiffLink:copyLiffLink
+    copyCourse:copyCourse, copyCampTheme:copyCampTheme, copyLiffLink:copyLiffLink,
+    uploadCourseImage:uploadCourseImage
   };
 })();
 
