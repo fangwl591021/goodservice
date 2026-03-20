@@ -39,7 +39,6 @@
       <button class="res-nav-item" id="res-nav-courses"   onclick="window.ReservationModule.setTab('courses')"><i class="fas fa-calendar-check w-4 text-center"></i> 活動管理</button>
       <button class="res-nav-item" id="res-nav-members"   onclick="window.ReservationModule.setTab('members')"><i class="fas fa-users w-4 text-center"></i>        會員管理</button>
       <button class="res-nav-item" id="res-nav-attend"    onclick="window.ReservationModule.setTab('attend')"> <i class="fas fa-user-check w-4 text-center"></i>   簽到管理</button>
-      <button class="res-nav-item mt-2 border-t pt-2" id="res-nav-settings" onclick="window.ReservationModule.setTab('settings')"><i class="fas fa-cog w-4 text-center"></i> 系統設定</button>
     </div>
     <div class="p-4 border-t border-slate-100">
       <button onclick="window.ReservationModule.syncAll()" class="res-btn-w w-full text-sm py-2.5">
@@ -59,6 +58,9 @@
         <button onclick="window.ReservationModule.syncAll()" class="res-btn-w text-sm">
           <i class="fas fa-sync-alt mr-1"></i> 同步
         </button>
+        <a id="res-front-link" href="#" target="_blank" class="res-btn-g text-sm shadow-sm bg-blue-500 hover:bg-blue-600 ml-2">
+            <i class="fas fa-external-link-alt"></i> 前往專屬前台
+        </a>
       </div>
     </header>
 
@@ -71,7 +73,6 @@
         <button id="res-tab-courses"   onclick="window.ReservationModule.setTab('courses')"   class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">活動</button>
         <button id="res-tab-members"   onclick="window.ReservationModule.setTab('members')"   class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">會員</button>
         <button id="res-tab-attend"    onclick="window.ReservationModule.setTab('attend')"    class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">簽到</button>
-        <button id="res-tab-settings"  onclick="window.ReservationModule.setTab('settings')"  class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">設定</button>
       </div>
     </div>
 
@@ -79,6 +80,27 @@
 
       <!-- ===== 營運統計 ===== -->
       <div id="res-panel-dashboard">
+        
+        <!-- 🌟 將網址與設定移到首頁最顯眼處 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold text-blue-800 mb-2"><i class="fas fa-link mr-1"></i> 您的專屬前台網址</h3>
+                <p class="text-xs text-blue-600 mb-3">請複製此網址綁定到您的 LINE 圖文選單，客戶點擊才會進入您的專屬活動頁。</p>
+                <div class="flex gap-2">
+                    <input id="dash-liff-link" class="res-input text-xs font-mono bg-white flex-1" readonly>
+                    <button onclick="window.ReservationModule.copyLiffLink()" class="res-btn-g text-xs px-4 shrink-0 bg-blue-500 hover:bg-blue-600 border-none shadow-none"><i class="far fa-copy mr-1"></i> 複製</button>
+                </div>
+            </div>
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold text-indigo-800 mb-2"><i class="fas fa-headset mr-1"></i> 客服小幫手連結設定</h3>
+                <p class="text-xs text-indigo-600 mb-3">請填寫您的 LINE 官方帳號加入連結，客戶點擊客服時會導向此網址。</p>
+                <div class="flex gap-2">
+                    <input id="dash-service-link" class="res-input text-xs font-mono bg-white flex-1" placeholder="例如: https://lin.ee/xxxx">
+                    <button onclick="window.ReservationModule.saveSettings()" class="res-btn-g text-xs px-4 shrink-0 bg-indigo-500 hover:bg-indigo-600 border-none shadow-none"><i class="fas fa-save mr-1"></i> 儲存</button>
+                </div>
+            </div>
+        </div>
+
         <div id="res-stat-cards" class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6"></div>
         <div class="res-card">
           <div class="px-5 py-4 border-b font-medium text-slate-700 text-base">各活動營收概覽</div>
@@ -176,6 +198,7 @@
           <button onclick="window.ReservationModule.openCourseModal(null)" class="res-btn-g"><i class="fas fa-plus"></i> 新增活動</button>
         </div>
 
+        <!-- 一般活動列表 -->
         <div class="font-medium text-lg text-slate-700 mb-3 border-l-4 border-blue-500 pl-3">一般活動</div>
         <div class="res-card overflow-x-auto mb-8">
           <table class="res-table">
@@ -187,6 +210,7 @@
           </table>
         </div>
 
+        <!-- 梯次活動群組 -->
         <div class="font-medium text-lg text-slate-700 mb-3 border-l-4 border-green-500 pl-3">梯次活動 <span class="text-sm text-slate-500 font-normal ml-2">(依主題/梯次摺疊)</span></div>
         <div id="res-camp-groups"></div>
       </div>
@@ -227,27 +251,6 @@
             </tr></thead>
             <tbody id="res-attend-list"></tbody>
           </table>
-        </div>
-      </div>
-
-      <!-- ===== 🌟 系統設定 ===== -->
-      <div id="res-panel-settings" class="hidden">
-        <div class="max-w-2xl mx-auto mt-6">
-          <div class="res-card p-6 md:p-8">
-            <h3 class="font-bold text-xl mb-4 text-slate-800 flex items-center gap-2"><i class="fas fa-link text-[#06C755]"></i> 您的專屬前台網址</h3>
-            <p class="text-sm text-slate-500 mb-4">請將此網址設定於您的 LINE 官方帳號圖文選單中，客戶點擊後即可進行預約。</p>
-            <div class="flex gap-2">
-              <input id="setting-front-link" type="text" class="res-input font-mono text-sm bg-slate-50 text-slate-500 border-slate-200" readonly>
-              <button onclick="window.ReservationModule.copyFrontLink()" class="res-btn-g shrink-0 px-6"><i class="far fa-copy"></i> 複製</button>
-            </div>
-            
-            <hr class="my-8 border-slate-100">
-            
-            <h3 class="font-bold text-xl mb-4 text-slate-800 flex items-center gap-2"><i class="fas fa-headset text-indigo-500"></i> 客服小幫手連結</h3>
-            <p class="text-sm text-slate-500 mb-4">當客戶在報名紀錄中點擊聯絡客服，或需要退費時，將會被導向這個網址 (通常是您的 LINE 官方帳號聊天連結)。</p>
-            <input id="setting-service-link" type="text" class="res-input text-base font-mono mb-6" placeholder="例如: https://lin.ee/xxxx">
-            <button onclick="window.ReservationModule.saveSettings()" class="res-btn-g w-full py-4 text-lg justify-center shadow-md">儲存系統設定</button>
-          </div>
         </div>
       </div>
 
@@ -439,8 +442,8 @@ window.ReservationModule = (function () {
   var campBatchData = [];
   var expandedBatches = {};
   var attendList = [];
-  var tabs = ['dashboard','orders','add','courses','members','attend','settings'];
-  var titles = { dashboard:'營運統計', orders:'訂單管理', add:'新增報名', courses:'活動管理', members:'會員管理', attend:'簽到管理', settings:'系統設定' };
+  var tabs = ['dashboard','orders','add','courses','members','attend'];
+  var titles = { dashboard:'營運統計', orders:'訂單管理', add:'新增報名', courses:'活動管理', members:'會員管理', attend:'簽到管理' };
 
   function callAPI(action, payload, userProfile) {
     var acc = window.currentUser ? window.currentUser.username : '';
@@ -500,14 +503,14 @@ window.ReservationModule = (function () {
   function syncAll() {
     var linkBtn = document.getElementById('res-front-link');
     var acc = window.currentUser ? window.currentUser.username : '';
-    if (linkBtn && acc) linkBtn.href = "booking.html?accountId=" + encodeURIComponent(acc);
+    // 🌟 LIFF URL 為主要入口點
+    var liffUrl = "https://liff.line.me/2009524128-bJMVabyM?accountId=" + encodeURIComponent(acc);
+    
+    if (linkBtn && acc) linkBtn.href = liffUrl;
 
-    var settingsInput = document.getElementById('setting-front-link');
+    var settingsInput = document.getElementById('dash-liff-link');
     if (settingsInput && acc) {
-        // 設定專屬網址，假設與目前相同的起源路徑
-        var loc = window.location;
-        var dir = loc.pathname.substring(0, loc.pathname.lastIndexOf('/'));
-        settingsInput.value = loc.protocol + '//' + loc.host + dir + "/booking.html?accountId=" + encodeURIComponent(acc);
+        settingsInput.value = liffUrl;
     }
     
     if (typeof toggleLoader === 'function') toggleLoader(true);
@@ -515,8 +518,8 @@ window.ReservationModule = (function () {
       courses = data.courses || [];
       orders = (data.orders || []).slice().reverse();
       members = data.users || [];
-      var sLink = document.getElementById('setting-service-link');
-      if (sLink && data.serviceLink) sLink.value = data.serviceLink; // 帶入客服連結
+      var sLink = document.getElementById('dash-service-link');
+      if (sLink && data.serviceLink) sLink.value = data.serviceLink;
       
       renderDashboard();
       renderOrders();
@@ -531,11 +534,11 @@ window.ReservationModule = (function () {
   }
 
   function saveSettings() {
-    var sLink = document.getElementById('setting-service-link').value.trim();
+    var sLink = document.getElementById('dash-service-link').value.trim();
     if (typeof toggleLoader === 'function') toggleLoader(true);
     callAPI('SI_UPDATE_MERCHANT_SETTINGS', { serviceLink: sLink }).then(function() {
       if (typeof toggleLoader === 'function') toggleLoader(false);
-      if (typeof showToast === 'function') showToast('設定已儲存！');
+      if (typeof showToast === 'function') showToast('客服連結設定已儲存！');
       else alert('設定已儲存！');
     }).catch(function(e) {
       if (typeof toggleLoader === 'function') toggleLoader(false);
@@ -543,8 +546,8 @@ window.ReservationModule = (function () {
     });
   }
 
-  function copyFrontLink() {
-    var copyText = document.getElementById("setting-front-link");
+  function copyLiffLink() {
+    var copyText = document.getElementById("dash-liff-link");
     if (!copyText || !copyText.value) return;
     copyText.select();
     copyText.setSelectionRange(0, 99999);
@@ -1227,7 +1230,7 @@ window.ReservationModule = (function () {
   }
 
   function copyFrontLink() {
-    var copyText = document.getElementById("setting-front-link");
+    var copyText = document.getElementById("dash-liff-link");
     if (!copyText || !copyText.value) return;
     copyText.select();
     copyText.setSelectionRange(0, 99999);
@@ -1236,10 +1239,24 @@ window.ReservationModule = (function () {
     else alert("網址已複製！");
   }
 
+  function saveSettings() {
+    var sLink = document.getElementById('dash-service-link').value.trim();
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    callAPI('SI_UPDATE_MERCHANT_SETTINGS', { serviceLink: sLink }).then(function() {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      if (typeof showToast === 'function') showToast('客服連結設定已儲存！');
+      else alert('設定已儲存！');
+    }).catch(function(e) {
+      if (typeof toggleLoader === 'function') toggleLoader(false);
+      alert('儲存失敗：' + e.message);
+    });
+  }
+
   function init() {
-    var link = document.getElementById('res-front-link');
-    if (link && window.currentUser) {
-        link.href = "booking.html?accountId=" + encodeURIComponent(window.currentUser.username);
+    var linkBtn = document.getElementById('res-front-link');
+    var acc = window.currentUser ? window.currentUser.username : '';
+    if (linkBtn && acc) {
+        linkBtn.href = "https://liff.line.me/2009524128-bJMVabyM?accountId=" + encodeURIComponent(acc);
     }
     setTab('dashboard');
     syncAll();
