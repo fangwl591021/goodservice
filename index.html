@@ -170,7 +170,6 @@
         <svg class="w-4 h-4 sidebar-text chevron text-slate-400 group-hover:text-[#54C061]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"></path></svg>
       </div>
 
-      <!-- 預約報名系統改為第 3 項 -->
       <div id="nav-reservation" class="nav-cat-btn group flex items-center justify-between" onclick="openReservationWorkspace()" title="預約報名系統">
         <div class="flex items-center gap-4 px-2">
           <svg class="w-5 h-5 flex-shrink-0 text-slate-500 group-hover:text-[#54C061] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
@@ -309,27 +308,24 @@
     const WORKER_URL = "https://goodservice.fangwl591021.workers.dev";
 
     function fetchApi(action, payload = {}) {
-    payload.action = action;
-
-    return fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).then(async (res) => {
-        const text = await res.text();
-
-        if (!res.ok) {
-            throw new Error("Worker 回應狀態異常: " + res.status + " / " + text.slice(0, 200));
-        }
-
-        try {
-            return JSON.parse(text);
-        } catch (err) {
-            console.error("API 回傳非 JSON 內容：", text);
-            throw new Error("API 回傳的不是 JSON，通常是 GAS_URL 錯誤、Apps Script 權限未公開，或 Worker 指到了 HTML 頁面。");
-        }
-    });
-}
+        payload.action = action;
+        return fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(async (res) => {
+            const text = await res.text();
+            if (!res.ok) {
+                throw new Error("Worker 回應狀態異常: " + res.status + " / " + text.slice(0, 200));
+            }
+            try {
+                return JSON.parse(text);
+            } catch (err) {
+                console.error("API 回傳非 JSON 內容：", text);
+                throw new Error("API 回傳的不是 JSON，通常是 GAS_URL 錯誤、Apps Script 權限未公開，或 Worker 指到了 HTML 頁面。");
+            }
+        });
+    }
 
     var currentUser = null, currentCat = '';
     var currentWorkspace = 'richmenu';
@@ -339,6 +335,7 @@
     window.currentCategoryCount = 0;
     window.currentCategoryLimit = 0;
 
+    // 🚀 核心優化：改用 Promise.all 平行載入所有模組
     async function loadAllModules() {
         let baseUrl = '';
         if (window.location.protocol === 'blob:' || window.location.hostname.includes('usercontent')) {
@@ -357,7 +354,7 @@
             { id: 'dynamic-module-reservation', url: baseUrl + 'reservation.html?v=' + ts }
         ];
 
-        for (let mod of modules) {
+        await Promise.all(modules.map(async (mod) => {
             try {
                 const res = await fetch(mod.url);
                 if (res.ok) {
@@ -375,7 +372,7 @@
             } catch (err) {
                 console.error("無法取得模組: " + mod.url, err);
             }
-        }
+        }));
         
         document.getElementById('loader').classList.add('workspace-hidden');
         document.getElementById('auth-layer').classList.remove('workspace-hidden');
