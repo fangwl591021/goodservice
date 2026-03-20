@@ -57,6 +57,12 @@
                 </div>
                 <div><label class="block text-xs font-bold text-slate-500 mb-1">聯絡電話</label><input type="text" id="adm-phone" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none"></div>
                 
+                <!-- 🌟 新增客服連結欄位 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">專屬客服連結 (LINE 網址)</label>
+                    <input type="text" id="adm-serviceLink" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none font-mono" placeholder="例如: https://lin.ee/xypNcJS">
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block text-xs font-bold text-slate-500 mb-1">狀態</label>
                         <select id="adm-status" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none">
@@ -75,8 +81,8 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-2">模組權限設定</label>
-                        <input type="text" id="adm-perms" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="1234">
-                        <p class="text-[10px] text-slate-400 mt-1">1:圖文 2:Flex 3:日曆 4:網址 5:Admin 6:預約</p>
+                        <input type="text" id="adm-perms" class="w-full border-2 border-slate-200 rounded-lg p-2 text-sm focus:border-[#54C061] outline-none" value="123456">
+                        <p class="text-[10px] text-slate-400 mt-1">1:圖文 2:Flex 3:預約 4:日曆 5:網址 6:Admin</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-2">無限制配額 (L欄)</label>
@@ -154,11 +160,12 @@
                 document.getElementById('adm-account').value = '';
                 document.getElementById('adm-password').value = '';
                 document.getElementById('adm-phone').value = '';
+                document.getElementById('adm-serviceLink').value = ''; // 🌟 清空客服連結
                 document.getElementById('adm-status').value = 'ACTIVE';
                 document.getElementById('adm-expire').value = '';
                 document.getElementById('adm-rmQuota').value = '1';
                 document.getElementById('adm-flexQuota').value = '3';
-                document.getElementById('adm-perms').value = '1234';
+                document.getElementById('adm-perms').value = '123456';
                 document.getElementById('adm-unlimited').value = '';
                 document.getElementById('adm-account').disabled = false;
                 document.getElementById('admin-modal-title').innerText = "新增用戶";
@@ -173,6 +180,7 @@
                 document.getElementById('adm-account').value = u.account;
                 document.getElementById('adm-password').value = u.password;
                 document.getElementById('adm-phone').value = u.phone;
+                document.getElementById('adm-serviceLink').value = u.serviceLink || ''; // 🌟 帶入客服連結
                 document.getElementById('adm-status').value = u.status.toUpperCase() === 'ACTIVE' ? 'ACTIVE' : 'SUSPEND';
                 document.getElementById('adm-expire').value = u.expireDate;
                 document.getElementById('adm-rmQuota').value = u.rmQuota || 1;
@@ -180,7 +188,7 @@
                 document.getElementById('adm-perms').value = u.permissions;
                 document.getElementById('adm-unlimited').value = u.unlimited === 'OK' ? 'OK' : '';
                 
-                document.getElementById('adm-account').disabled = true; // 編輯模式不允許更改登入帳號 ID
+                document.getElementById('adm-account').disabled = true;
                 document.getElementById('admin-modal-title').innerText = "編輯用戶";
                 document.getElementById('admin-user-modal').classList.remove('hidden');
             },
@@ -191,12 +199,13 @@
                     account: document.getElementById('adm-account').value,
                     password: document.getElementById('adm-password').value,
                     phone: document.getElementById('adm-phone').value,
+                    serviceLink: document.getElementById('adm-serviceLink').value, // 🌟 儲存客服連結
                     status: document.getElementById('adm-status').value,
                     expireDate: document.getElementById('adm-expire').value,
                     rmQuota: parseInt(document.getElementById('adm-rmQuota').value) || 1,
                     flexQuota: parseInt(document.getElementById('adm-flexQuota').value) || 3,
                     permissions: document.getElementById('adm-perms').value,
-                    unlimited: document.getElementById('adm-unlimited').value // L 欄資料
+                    unlimited: document.getElementById('adm-unlimited').value
                 };
 
                 if (!userData.account || !userData.password) {
