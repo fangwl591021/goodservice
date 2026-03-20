@@ -47,8 +47,8 @@
             <div v-if="error" class="p-6">
                 <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm">
                     <p class="font-bold mb-1">系統提示</p>
-                    <p class="text-sm">{{ error }}</p>
-                    <button @click="window.location.reload()" class="mt-4 text-xs bg-red-100 px-3 py-1.5 rounded-full font-bold">重新啟動</button>
+                    <p class="text-sm whitespace-pre-wrap">{{ error }}</p>
+                    <button @click="window.location.reload()" class="mt-4 text-xs bg-red-100 px-3 py-1.5 rounded-full font-bold hover:bg-red-200 transition">重新啟動</button>
                 </div>
             </div>
 
@@ -66,7 +66,8 @@
                         <span class="text-[10px] font-bold">報名紀錄</span>
                         <div v-if="isAuthLoading" class="absolute inset-0 bg-white/50 rounded-xl cursor-not-allowed"></div>
                     </button>
-                    <a href="https://lin.ee/xypNcJS" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
+                    <!-- 動態客服連結 -->
+                    <a :href="merchantServiceLink" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
                         <i class="fab fa-line text-xl mb-1"></i>
                         <span class="text-[10px] font-bold">客服小幫手</span>
                     </a>
@@ -80,9 +81,8 @@
                 <div class="p-4 space-y-4 pt-6">
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="text-lg font-black text-gray-800 border-l-4 border-[#06C755] pl-2 leading-none">選擇活動類型</h2>
-                        <!-- ★ 修改3：更新課程按鈕放大 -->
-                        <button @click="loadCourses" :disabled="isCoursesLoading" class="flex items-center text-[13px] text-gray-700 bg-white border border-gray-300 px-4 py-2 rounded-full shadow hover:bg-gray-50 active:scale-95 transition font-bold">
-                            <i class="fas fa-sync-alt mr-1.5 text-[#06C755]" :class="{'fa-spin': isCoursesLoading}"></i> {{ isCoursesLoading ? '同步中' : '更新課程' }}
+                        <button @click="loadCourses" :disabled="isCoursesLoading" class="flex items-center text-[11px] text-gray-600 bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm hover:bg-gray-50 active:scale-95 transition font-bold">
+                            <i class="fas fa-sync-alt mr-1.5 text-[#06C755]" :class="{'fa-spin': isCoursesLoading}"></i> {{ isCoursesLoading ? '同步中' : '更新活動' }}
                         </button>
                     </div>
 
@@ -103,12 +103,12 @@
                             
                             <div v-if="isCoursesLoading || isAuthLoading" class="text-center py-8">
                                 <div class="loader mx-auto mb-3 border-t-[#06C755] w-8 h-8 border-4"></div>
-                                <p class="text-sm font-bold text-gray-400 tracking-widest">載入課程中...</p>
+                                <p class="text-sm font-bold text-gray-400 tracking-widest">載入活動中...</p>
                             </div>
 
                             <div v-else-if="filteredCourses.length === 0 && Object.keys(groupedCampCourses).length === 0" class="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300 shadow-sm">
                                 <i class="fas fa-box-open text-4xl text-gray-200 mb-3 block"></i>
-                                <p class="text-sm text-gray-500 font-bold">目前沒有開放此類型的課程</p>
+                                <p class="text-sm text-gray-500 font-bold">目前沒有開放此類型的活動</p>
                             </div>
 
                             <template v-else>
@@ -124,7 +124,6 @@
                                                 <div v-if="splitCourseName(c.name).subName" class="text-[13px] text-gray-500 mt-1 font-bold bg-gray-50 inline-block px-2 py-0.5 rounded">
                                                     {{ splitCourseName(c.name).subName }}</div>
                                             </div>
-                                            <!-- ★ 修改1：金額為0時顯示「免費活動」標籤 -->
                                             <div class="flex flex-col items-end shrink-0">
                                                 <span v-if="isEarlyBird(c)" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ c.price }}</span>
                                                 <span v-if="getActualPrice(c) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
@@ -164,8 +163,7 @@
                                             <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end gap-2 z-30">
                                                 <h3 class="font-black text-[22px] text-white leading-tight drop-shadow-lg flex-1">{{ themeName }}</h3>
                                                 <div class="flex flex-col items-end">
-                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題營隊</span>
-                                                    <!-- ★ 修改1：營隊最低價為0時顯示「免費活動」 -->
+                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題活動</span>
                                                     <span v-if="getCampThemeMinPrice(themeName) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
                                                     <span v-else class="text-white font-black text-xl drop-shadow-md leading-none">${{ getCampThemeMinPrice(themeName) }}<span class="text-xs font-medium ml-0.5 opacity-90">起</span></span>
                                                 </div>
@@ -212,7 +210,6 @@
                                                     <div class="text-xs text-green-800 font-bold">
                                                         <i class="fas fa-clock mr-1"></i> {{ getCampSelectedCourse(themeName).startDate }} ~ {{ getCampSelectedCourse(themeName).endDate }}
                                                     </div>
-                                                    <!-- ★ 修改1：營隊選中課程金額為0時顯示「免費活動」 -->
                                                     <div class="flex flex-col items-end">
                                                         <span v-if="isEarlyBird(getCampSelectedCourse(themeName))" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ getCampSelectedCourse(themeName).price }}</span>
                                                         <span v-if="getActualPrice(getCampSelectedCourse(themeName)) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
@@ -242,7 +239,6 @@
                                                 <div class="flex gap-2 mb-1.5"><span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-green-50 text-green-500 border-green-100">其他梯次活動</span></div>
                                                 <h3 class="font-bold text-[17px] text-gray-800 leading-tight">{{ splitCourseName(c.name).mainName }}</h3>
                                             </div>
-                                            <!-- ★ 修改1：其他梯次活動金額為0時顯示「免費活動」 -->
                                             <div class="flex flex-col items-end shrink-0">
                                                 <span v-if="isEarlyBird(c)" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ c.price }}</span>
                                                 <span v-if="getActualPrice(c) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
@@ -283,11 +279,11 @@
                         <h3 class="text-blue-800 font-bold text-sm mb-2"><i class="fas fa-user-circle mr-1"></i> 家長/本人資料 (必填)</h3>
                         <div><label class="form-label">真實姓名</label><input type="text" v-model="regForm.name" required class="form-input shadow-sm"></div>
                         <div>
-                            <label class="form-label">身分證字號 <span class="text-red-500 font-normal text-[11px] ml-1">(此欄位選填)</span></label>
+                            <label class="form-label text-gray-700">身分證字號 <span class="text-red-500 font-normal text-[12px] ml-1">(此欄位選填)</span></label>
                             <input type="text" v-model="regForm.nationalId" class="form-input uppercase shadow-sm" :readonly="!!(userInfo && userInfo.nationalId)">
                         </div>
                         <div>
-                            <label class="form-label">出生年月日 <span class="text-red-500 font-normal text-[11px] ml-1">(此欄位選填)</span></label>
+                            <label class="form-label text-gray-700">出生年月日 <span class="text-red-500 font-normal text-[12px] ml-1">(此欄位選填)</span></label>
                             <input type="date" v-model="regForm.birthday" class="form-input shadow-sm">
                         </div>
                         <div><label class="form-label">聯絡電話</label><input type="tel" v-model="regForm.phone" required class="form-input shadow-sm"></div>
@@ -381,7 +377,6 @@
                                 <span v-if="totalEquipmentPrice > 0" class="text-orange-500"> +設備 ${{ totalEquipmentPrice }}</span>
                                 <span v-if="leaveDeduction > 0" class="text-blue-500"> -請假 ${{ leaveDeduction }}</span>
                             </span>
-                            <!-- ★ 修改1：底部金額顯示「免費活動」 -->
                             <span v-if="calculatedTotal == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
                             <span v-else class="text-2xl font-black text-[#06C755] leading-none">${{ calculatedTotal }}</span>
                         </div>
@@ -399,7 +394,6 @@
 
                 <div v-if="isOrdersLoading" class="text-center py-16">
                     <div class="loader mx-auto mb-3 border-t-blue-500 w-8 h-8 border-4"></div>
-                    <!-- ★ 修改2：載入文字改為「讀取紀錄中.....」 -->
                     <p class="text-sm font-bold text-gray-400 tracking-widest">讀取紀錄中.....</p>
                 </div>
 
@@ -422,12 +416,10 @@
                         <div class="border-t border-gray-100 my-3 ml-2"></div>
                         <div class="flex justify-between items-center mb-4 pl-2">
                             <span class="text-sm text-gray-500">學員: <b class="text-gray-800">{{ o.name }}</b></span>
-                            <!-- 金額顯示 -->
                             <span v-if="o.amount == 0" class="font-black text-[#06C755] text-2xl">$0</span>
                             <span v-else class="font-black text-[#06C755] text-2xl">${{ o.amount }}</span>
                         </div>
                         <div class="pl-2 space-y-3 mt-2">
-                            <!-- ★ 修改1：金額為0時不顯示「填寫匯款後五碼」按鈕 -->
                             <button v-if="o.status === 'PENDING' && !o.remittance && o.amount > 0" @click="openOrderDetail(o)" class="text-[15px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold w-full shadow-md active:scale-95 transition flex justify-center items-center gap-2 tracking-wide">
                                 <i class="fas fa-edit"></i> 填寫匯款後五碼
                             </button>
@@ -502,7 +494,7 @@
                             <i class="fas fa-headset text-gray-400 text-2xl mb-2"></i>
                             <p class="text-sm font-bold text-gray-700 mb-1">訂單已鎖定處理中</p>
                             <p class="text-xs text-gray-500 mb-3">為保障您的權益，如需退費或變更內容，請直接聯繫客服人員為您服務。</p>
-                            <a href="https://lin.ee/xypNcJS" target="_blank" class="inline-block bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold transition hover:bg-indigo-100"><i class="fab fa-line mr-1"></i> 聯繫客服小幫手</a>
+                            <a :href="merchantServiceLink" target="_blank" class="inline-block bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold transition hover:bg-indigo-100"><i class="fab fa-line mr-1"></i> 聯繫客服小幫手</a>
                         </div>
                     </div>
                     
@@ -517,7 +509,7 @@
                             <span class="text-[11px] text-gray-500 font-bold mb-0.5 whitespace-nowrap">重新計算應收額</span>
                             <span class="text-2xl font-black text-[#06C755] leading-none">${{ editOrderTotal }}</span>
                         </div>
-                        <button v-if="remittanceConfirmed" type="button" @click="view='my_orders'" class="btn-primary w-[45%] shadow-md text-lg">返回紀錄</button>
+                        <button v-if="remittanceConfirmed" type="button" @click="view='my_orders'" class="btn-secondary w-[45%] shadow-md text-lg border-gray-300">返回紀錄</button>
                         <button v-else type="submit" :disabled="isSubmitting || tempExcludedDates.length > 1" class="btn-primary w-[45%] shadow-md text-lg">{{ isSubmitting ? '處理中...' : '確認儲存' }}</button>
                     </div>
                 </form>
@@ -571,7 +563,7 @@
                         <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 text-center shadow-sm">
                             <p class="text-sm font-bold text-indigo-900 mb-2">如需辦理退款或變更課程</p>
                             <p class="text-xs text-indigo-700 leading-relaxed mb-4">為避免退費流程錯誤及保障您的名額權益，已繳費的訂單不開放線上直接取消。<br>請點擊下方按鈕聯繫客服人員，我們將專人為您處理。</p>
-                            <a href="https://lin.ee/xypNcJS" target="_blank" class="inline-flex items-center justify-center w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow-md active:scale-95 transition gap-2 text-[15px] tracking-wide">
+                            <a :href="merchantServiceLink" target="_blank" class="inline-flex items-center justify-center w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow-md active:scale-95 transition gap-2 text-[15px] tracking-wide">
                                 <i class="fab fa-line text-lg"></i> 聯繫客服小幫手
                             </a>
                         </div>
@@ -581,7 +573,6 @@
                 <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 z-30 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
                     <div class="flex flex-col">
                         <span class="text-xs text-gray-500">已確認繳費金額</span>
-                        <!-- ★ 修改1：詳情頁金額為0顯示「免費活動」 -->
                         <span v-if="editingOrder && editingOrder.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
                         <span v-else class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span>
                     </div>
@@ -609,7 +600,7 @@
                     <form @submit.prevent="saveFamilyMember" class="space-y-4">
                         <div><label class="form-label text-xs">真實姓名</label><input v-model="tempFamily.name" required class="form-input shadow-sm"></div>
                         <div><label class="form-label text-gray-700 text-xs">身分證字號 <span class="text-red-500 font-normal text-[10px] ml-1">(此欄位選填)</span></label><input v-model="tempFamily.nationalId" class="form-input uppercase shadow-sm" :readonly="editingFamilyIndex!==-1"></div>
-                        <div><label class="form-label text-xs">出生年月日 <span class="text-red-500 font-normal text-[10px] ml-1">(此欄位選填)</span></label><input v-model="tempFamily.birthday" type="date" class="form-input shadow-sm"></div>
+                        <div><label class="form-label text-gray-700 text-xs">出生年月日 <span class="text-red-500 font-normal text-[10px] ml-1">(此欄位選填)</span></label><input v-model="tempFamily.birthday" type="date" class="form-input shadow-sm"></div>
                         <div><label class="form-label text-xs">關係</label><input v-model="tempFamily.relation" required class="form-input shadow-sm" placeholder="例：長男、次女"></div>
                         <div><label class="form-label text-xs">性別</label><select v-model="tempFamily.gender" required class="form-input shadow-sm"><option value="男">男</option><option value="女">女</option></select></div>
                         <div><label class="form-label text-xs">就讀學校 <span class="font-normal text-[10px]">(選填)</span></label><input v-model="tempFamily.school" class="form-input shadow-sm" placeholder="例如：竹北國小"></div>
@@ -659,6 +650,46 @@
 
         createApp({
             setup() {
+                // 🌟 1. 深度暴力解析網址參數，解決 LINE 跳轉深層編碼導致洗掉參數的問題
+                const getAccountId = () => {
+                    let acc = '';
+                    let urlToParse = window.location.href;
+                    
+                    try {
+                        // 嘗試 URL 解碼 (LINE liff.state 會進行 URL Encode)
+                        urlToParse = decodeURIComponent(window.location.href);
+                    } catch (e) {}
+
+                    // 暴力抓取
+                    const match = urlToParse.match(/accountId=([^&/#\?]+)/);
+                    if (match && match[1]) {
+                        acc = match[1].trim();
+                    }
+
+                    // 備用方案：如果還是沒有，嘗試用 URLSearchParams 解析 liff.state
+                    if (!acc) {
+                        try {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const stateStr = urlParams.get('liff.state');
+                            if (stateStr) {
+                                const stateParams = new URLSearchParams(stateStr.startsWith('?') ? stateStr.substring(1) : stateStr);
+                                acc = stateParams.get('accountId') || '';
+                            }
+                        } catch(e) {}
+                    }
+
+                    // 儲存至 localStorage 防呆
+                    if (acc) {
+                        localStorage.setItem('si_accountId', acc);
+                    } else {
+                        acc = localStorage.getItem('si_accountId') || '';
+                    }
+                    
+                    return acc;
+                };
+
+                const accountId = getAccountId();
+
                 const view = ref('course_list');
                 const error = ref('');
                 const isSubmitting = ref(false);
@@ -673,6 +704,8 @@
                 const myOrders = ref([]);
                 const campSelections = ref({});
                 const expandedDesc = ref({}); 
+
+                const merchantServiceLink = ref('https://lin.ee/xypNcJS');
 
                 const regForm = ref({ name: '', nationalId: '', birthday: '', phone: '', address: '', identity: '家長', gender: '男', familyMembers: [] });
                 const selectedCourse = ref(null);
@@ -701,7 +734,8 @@
                 ];
 
                 const callApi = async (act, pl = {}) => {
-                    const res = await fetch(API_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: act, userProfile: { userId: userProfile.value ? userProfile.value.userId : '' }, payload: pl }) });
+                    const requestPayload = { ...pl, accountId: accountId };
+                    const res = await fetch(API_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: act, userProfile: { userId: userProfile.value ? userProfile.value.userId : '' }, payload: requestPayload }) });
                     const json = await res.json();
                     if (json.status !== 'success') throw new Error(json.message);
                     return json.data;
@@ -710,7 +744,10 @@
                 const loadCourses = async () => {
                     isCoursesLoading.value = true;
                     try {
-                        const fetchedCourses = await callApi('SI_GET_COURSES');
+                        const fetchedData = await callApi('SI_GET_COURSES');
+                        merchantServiceLink.value = fetchedData.serviceLink || 'https://lin.ee/xypNcJS';
+                        const fetchedCourses = fetchedData.courses || [];
+                        
                         const newSelections = { ...campSelections.value };
                         fetchedCourses.filter(c => c.type === '梯次活動').forEach(c => {
                             const parts = c.name.split(/\s*-\s*/);
@@ -730,9 +767,20 @@
                 };
 
                 const init = async () => {
+                    // 🌟 阻擋未帶參數的進入
+                    if (!accountId) {
+                        error.value = '無法識別店家資訊！\n\n請確認您是點擊專屬的活動連結進入。\n(如果是在 LINE 裡面點擊，請嘗試重新點擊一次連結)';
+                        isAuthLoading.value = false;
+                        return;
+                    }
+
                     try {
                         await liff.init({ liffId: LIFF_ID });
-                        if (!liff.isLoggedIn()) { liff.login(); return; }
+                        if (!liff.isLoggedIn()) { 
+                            // 🌟 強制 LINE 在登入回來後，保留當前網址的所有內容與參數
+                            liff.login({ redirectUri: window.location.href }); 
+                            return; 
+                        }
                         userProfile.value = await liff.getProfile();
                         const data = await callApi('SI_CHECK_USER');
                         if (data && data.registered) {
@@ -748,7 +796,7 @@
                         if (err.message && err.message.includes('code_verifier')) {
                             const newUrl = window.location.href.split('?')[0];
                             window.history.replaceState({}, document.title, newUrl);
-                            liff.login(); return;
+                            liff.login({ redirectUri: window.location.href }); return;
                         }
                         error.value = '系統初始化失敗：' + err.message;
                         isAuthLoading.value = false;
@@ -962,11 +1010,12 @@
                 const isAdmin = computed(() => userInfo.value && userInfo.value.adminMark && String(userInfo.value.adminMark).toUpperCase() === 'OK');
                 const goToAdmin = () => { try { localStorage.setItem('sportIsland_sso_uid', userProfile.value ? userProfile.value.userId : ''); } catch(e) {} window.location.href = 'admin.html'; };
 
-                onMounted(() => { try { const ssoUid = localStorage.getItem('sportIsland_sso_uid'); } catch(e) {} init(); });
+                onMounted(() => { init(); });
 
                 return {
                     view, error, isSubmitting, isLoading, isAuthLoading, isCoursesLoading, isOrdersLoading,
                     userProfile, userInfo, courses, myOrders, isAdmin,
+                    merchantServiceLink,
                     regForm, selectedCourse, selectedAttendee, excludedDates, selectedEquipments, registrationNote,
                     showDetailModal, detailCourse, showFamilyModal, tempFamily, editingFamilyIndex,
                     showEditOrderModal, editingOrder, tempRemittance, tempExcludedDates, tempSelectedEquipments,
