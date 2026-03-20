@@ -35,6 +35,7 @@
     <div class="flex-1 py-3 overflow-y-auto">
       <button class="res-nav-item" id="res-nav-dashboard" onclick="window.ReservationModule.setTab('dashboard')"><i class="fas fa-chart-pie w-4 text-center"></i> 營運統計</button>
       <button class="res-nav-item" id="res-nav-orders"    onclick="window.ReservationModule.setTab('orders')">  <i class="fas fa-receipt w-4 text-center"></i>    訂單管理</button>
+      <button class="res-nav-item" id="res-nav-add"       onclick="window.ReservationModule.setTab('add')">    <i class="fas fa-plus-circle w-4 text-center"></i> 新增報名</button>
       <button class="res-nav-item" id="res-nav-courses"   onclick="window.ReservationModule.setTab('courses')"><i class="fas fa-calendar-check w-4 text-center"></i> 活動管理</button>
       <button class="res-nav-item" id="res-nav-members"   onclick="window.ReservationModule.setTab('members')"><i class="fas fa-users w-4 text-center"></i>        會員管理</button>
       <button class="res-nav-item" id="res-nav-attend"    onclick="window.ReservationModule.setTab('attend')"> <i class="fas fa-user-check w-4 text-center"></i>   簽到管理</button>
@@ -70,6 +71,7 @@
       <div class="flex gap-2 text-sm min-w-max">
         <button id="res-tab-dashboard" onclick="window.ReservationModule.setTab('dashboard')" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">統計</button>
         <button id="res-tab-orders"    onclick="window.ReservationModule.setTab('orders')"    class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">訂單</button>
+        <button id="res-tab-add"       onclick="window.ReservationModule.setTab('add')"       class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">新增</button>
         <button id="res-tab-courses"   onclick="window.ReservationModule.setTab('courses')"   class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">活動</button>
         <button id="res-tab-members"   onclick="window.ReservationModule.setTab('members')"   class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">會員</button>
         <button id="res-tab-attend"    onclick="window.ReservationModule.setTab('attend')"    class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 font-medium">簽到</button>
@@ -142,6 +144,52 @@
             </tr></thead>
             <tbody id="res-order-list"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- ===== 新增報名 ===== -->
+      <div id="res-panel-add" class="hidden">
+        <div class="max-w-2xl mx-auto space-y-4">
+          <div class="res-card">
+            <div class="px-6 py-4 border-b flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-bold text-base">1</div>
+              <div class="font-bold text-slate-800 text-lg">選擇活動 <span class="text-red-400">*</span></div>
+            </div>
+            <div class="p-4">
+              <select id="add-course-sel" class="res-input text-base" onchange="window.ReservationModule.onCourseChange()">
+                <option value="">-- 請選擇活動 --</option>
+              </select>
+              <div id="add-course-info" class="hidden mt-3 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-800 font-medium space-y-1.5"></div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="px-6 py-4 border-b flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-bold text-base">2</div>
+              <div class="font-bold text-slate-800 text-lg">學員資料 <span class="text-red-400">*</span></div>
+            </div>
+            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div><label class="res-label">學員姓名 *</label><input id="add-name" class="res-input text-base" placeholder="真實姓名"></div>
+              <div><label class="res-label">身分證字號 *</label><input id="add-nid" class="res-input text-base uppercase" placeholder="A123456789"></div>
+              <div><label class="res-label">聯絡電話 *</label><input id="add-phone" class="res-input text-base" type="tel" placeholder="0912345678"></div>
+              <div><label class="res-label">LINE userId（選填）</label><input id="add-uid" class="res-input text-base font-mono" placeholder="U開頭的LINE userId"></div>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="px-6 py-4 border-b flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-[#06C755] text-white flex items-center justify-center font-bold text-base">3</div>
+              <div class="font-bold text-slate-800 text-lg">備註 / 確認金額</div>
+            </div>
+            <div class="p-4 space-y-3">
+              <textarea id="add-note" rows="3" placeholder="特殊狀況或備注..." class="res-input text-base resize-none"></textarea>
+              <div class="flex items-center justify-between bg-slate-50 rounded-xl px-5 py-4 border">
+                <span class="text-base font-medium text-slate-600">應繳金額</span>
+                <span id="add-amount" class="text-2xl font-bold text-[#06C755]">$0</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="window.ReservationModule.submitAdd()" class="res-btn-g w-full py-4 text-lg justify-center">
+            <i class="fas fa-check"></i> 確認建立報名訂單
+          </button>
         </div>
       </div>
 
@@ -229,10 +277,17 @@
             
             <h3 class="font-bold text-xl mb-4 text-slate-800 flex items-center gap-2"><i class="fab fa-telegram text-blue-500"></i> Telegram 推播通知設定</h3>
             <p class="text-sm text-slate-500 mb-4">綁定後，每當有新預約或取消報名，您的 Telegram 就會即時收到通知。</p>
+            
+            <!-- 🌟 轉換 Chat ID 的 UI 區塊 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="res-label">Bot Token (機器人金鑰)</label>
-                    <input id="setting-tg-token" type="text" class="res-input text-sm font-mono" placeholder="例如: 8740621450:AAHRax...">
+                    <div class="flex gap-2">
+                        <input id="setting-tg-token" type="text" class="res-input text-sm font-mono flex-1" placeholder="例如: 8740621450:AAHRax...">
+                        <button type="button" onclick="window.ReservationModule.fetchTgChatId()" class="res-btn-w shrink-0 px-3 bg-white text-sm whitespace-nowrap" style="color: #3b82f6; border-color: #93c5fd; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" title="自動獲取最近傳送訊息的 Chat ID">
+                            <i class="fas fa-sync-alt mr-1"></i>轉換
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <label class="res-label">Chat ID (接收者ID)</label>
@@ -326,7 +381,6 @@
           <div><label class="res-label">早鳥截止日</label><input id="cm-ebdate" type="date" class="res-input text-base"></div>
           <div><label class="res-label">總堂數</label><input id="cm-sessions" type="number" value="1" class="res-input text-base"></div>
           
-          <!-- 🌟 修正：前端自動壓縮轉 Base64 上傳 -->
           <div class="col-span-2 md:col-span-1">
             <label class="res-label">圖片網址 / 上傳圖片</label>
             <div class="flex gap-2">
@@ -341,7 +395,7 @@
         <div><label class="res-label">活動說明</label><textarea id="cm-desc" rows="4" class="res-input text-base resize-none"></textarea></div>
       </div>
 
-      <!-- 梯次活動專屬欄位 -->
+      <!-- 梯次活動大主題欄位 -->
       <div id="cm-camp-fields" class="hidden space-y-4">
         <div class="bg-green-50 border border-green-200 rounded-xl p-5">
           <label class="res-label text-green-800"><i class="fas fa-flag mr-1"></i> 活動大主題 *</label>
@@ -355,7 +409,6 @@
           <div><label class="res-label">教練/老師</label><input id="cm-camp-instructor" class="res-input text-base"></div>
           <div><label class="res-label">總堂數</label><input id="cm-camp-sessions" type="number" value="5" class="res-input text-base"></div>
           
-          <!-- 🌟 修正：前端自動壓縮轉 Base64 上傳 -->
           <div class="col-span-2">
             <label class="res-label">主題圖片網址 / 上傳圖片</label>
             <div class="flex gap-2">
@@ -606,6 +659,58 @@ window.ReservationModule = (function () {
     reader.readAsDataURL(file);
   }
 
+  // 🌟 新增：透過 Telegram API 提取 Chat ID
+  function fetchTgChatId() {
+    var token = document.getElementById('setting-tg-token').value.trim();
+    if (!token) {
+        alert('請先輸入 Bot Token！');
+        return;
+    }
+
+    if (typeof toggleLoader === 'function') toggleLoader(true);
+    fetch('https://api.telegram.org/bot' + token + '/getUpdates')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (typeof toggleLoader === 'function') toggleLoader(false);
+        if (!data.ok) {
+            alert('Token 無效或連線失敗：' + data.description);
+            return;
+        }
+        if (!data.result || data.result.length === 0) {
+            alert('目前找不到任何對話紀錄！\n\n請先到 Telegram 中：\n1. 尋找您的機器人並按下 Start 或隨便傳送一句話\n2. 若要推播到群組，請先將機器人加入該群組\n\n完成後再按一次轉換按鈕！');
+            return;
+        }
+
+        var chatId = null;
+        // 反向尋找最近的訊息，取得對應的 chat id
+        for (var i = data.result.length - 1; i >= 0; i--) {
+            var update = data.result[i];
+            if (update.message && update.message.chat && update.message.chat.id) {
+                chatId = update.message.chat.id;
+                break;
+            } else if (update.my_chat_member && update.my_chat_member.chat && update.my_chat_member.chat.id) {
+                chatId = update.my_chat_member.chat.id;
+                break;
+            } else if (update.channel_post && update.channel_post.chat && update.channel_post.chat.id) {
+                chatId = update.channel_post.chat.id;
+                break;
+            }
+        }
+
+        if (chatId) {
+            document.getElementById('setting-tg-chatid').value = chatId;
+            if (typeof showToast === 'function') showToast('成功獲取 Chat ID！');
+            else alert('成功獲取 Chat ID：' + chatId);
+        } else {
+            alert('無法從最近的紀錄中解析出 Chat ID，請再傳送一次訊息給機器人試試看。');
+        }
+    })
+    .catch(function(err) {
+        if (typeof toggleLoader === 'function') toggleLoader(false);
+        alert('網路連線發生錯誤：' + err.message);
+    });
+  }
+
   function renderDashboard() {
     var totalPaid=0, totalPending=0, validOrders=0;
     orders.forEach(function(o) {
@@ -728,7 +833,6 @@ window.ReservationModule = (function () {
   function getPaidCount(courseId) { return orders.filter(function(o){ return o.courseId===courseId && o.status==='PAID'; }).length; }
   function getPendingCount(courseId) { return orders.filter(function(o){ return o.courseId===courseId && o.status==='PENDING'; }).length; }
 
-  // ★ 複製單筆一般活動
   function copyCourse(courseId) {
     var c = courses.find(function(x){ return x.id===courseId; });
     if (!c) return;
@@ -740,7 +844,6 @@ window.ReservationModule = (function () {
     document.getElementById('cm-name').value = c.name + ' (複製)';
   }
 
-  // ★ 新增：複製整個梯次主題（所有梯次+項目）
   function copyCampTheme(themeName) {
     // 收集該主題所有活動
     var themeItems = courses.filter(function(c) {
@@ -748,10 +851,7 @@ window.ReservationModule = (function () {
     });
     if (!themeItems.length) { alert('找不到此主題的活動資料'); return; }
 
-    // 用第一筆取得公用設定
     var first = themeItems[0];
-
-    // 組成 campBatchData 結構
     var batches = {};
     themeItems.forEach(function(c) {
       var p = parseCampName(c.name);
@@ -761,7 +861,6 @@ window.ReservationModule = (function () {
       batches[p.batch].items.push({ name: p.item, price: String(c.price || 0), capacity: String(c.capacity || 20) });
     });
 
-    // 開啟新增模式
     openCourseModal(null);
     document.getElementById('cm-type').value = '梯次活動';
     document.getElementById('cm-type').disabled = false;
@@ -769,7 +868,6 @@ window.ReservationModule = (function () {
     var title = document.getElementById('res-course-modal-title');
     if (title) title.innerText = '新增活動 (複製主題：' + themeName + ')';
 
-    // 填入大主題名稱 + (複製)
     document.getElementById('cm-camp-theme').value = themeName + ' (複製)';
     document.getElementById('cm-camp-stime').value = first.startTime || '';
     document.getElementById('cm-camp-etime').value = first.endTime || '';
@@ -779,7 +877,6 @@ window.ReservationModule = (function () {
     document.getElementById('cm-camp-image').value = first.image || '';
     document.getElementById('cm-camp-desc').value = first.description || '';
 
-    // 填入梯次資料
     campBatchData = Object.values(batches);
     if (!campBatchData.length) campBatchData = [{ name:'', startDate:'', endDate:'', items:[{ name:'', price:'', capacity:'' }] }];
     renderCampBatches();
@@ -790,7 +887,6 @@ window.ReservationModule = (function () {
     var kw = ((document.getElementById('res-course-kw')||{}).value||'').toLowerCase();
     var list = courses.filter(function(c){ return !kw || c.name.toLowerCase().includes(kw); });
 
-    // 一般活動（含「其他梯次活動」）
     var normalList = list.filter(function(c){ return c.type !== '梯次活動' || parseCampName(c.name).theme === '其他梯次活動'; });
     var normalTbody = document.getElementById('res-course-list-normal');
     if (normalTbody) {
@@ -810,7 +906,6 @@ window.ReservationModule = (function () {
       }).join('') || '<tr><td colspan="6" class="text-center py-8 text-slate-400">尚無一般活動資料</td></tr>';
     }
 
-    // 梯次活動群組
     var campList = list.filter(function(c){ return c.type === '梯次活動' && parseCampName(c.name).theme !== '其他梯次活動'; });
     var groups = {};
     campList.forEach(function(c) {
@@ -828,7 +923,6 @@ window.ReservationModule = (function () {
     }
     var html = '';
     Object.keys(groups).forEach(function(theme) {
-      // ★ 主題標題列加上「複製整組」按鈕
       html += '<div class="res-card mb-5 border border-green-200">'
         +'<div class="bg-green-50 px-6 py-4 border-b border-green-200 flex items-center justify-between">'
         +'<span class="font-bold text-green-800 text-lg"><i class="fas fa-flag mr-2 opacity-70"></i>'+esc(theme)+'</span>'
@@ -857,7 +951,6 @@ window.ReservationModule = (function () {
           items.forEach(function(item) {
             var c = item.course;
             var paid = getPaidCount(c.id), pending = getPendingCount(c.id);
-            // ★ 梯次項目列：只保留「簽到」和「編輯」，移除個別複製
             html += '<tr>'
               +'<td><div class="font-medium text-slate-800">'+esc(item.itemName)+'</div><span class="text-sm font-mono text-slate-500">'+esc(c.id)+'</span></td>'
               +'<td class="text-center font-bold text-[#06C755]">$'+esc(c.price)+'</td>'
@@ -1318,7 +1411,7 @@ window.ReservationModule = (function () {
     loadAttendList:loadAttendList, setAttendStatus:setAttendStatus, saveAttendance:saveAttendance,
     goAttend:goAttend, copyFrontLink:copyFrontLink, saveSettings:saveSettings,
     copyCourse:copyCourse, copyCampTheme:copyCampTheme, copyLiffLink:copyLiffLink,
-    compressAndSetImage:compressAndSetImage
+    compressAndSetImage:compressAndSetImage, fetchTgChatId:fetchTgChatId
   };
 })();
 
