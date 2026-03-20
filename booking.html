@@ -66,7 +66,8 @@
                         <span class="text-[10px] font-bold">報名紀錄</span>
                         <div v-if="isAuthLoading" class="absolute inset-0 bg-white/50 rounded-xl cursor-not-allowed"></div>
                     </button>
-                    <a href="https://lin.ee/Y0FKXqD" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
+                    <!-- 🌟 替換為動態客服連結 -->
+                    <a :href="merchantServiceLink" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
                         <i class="fab fa-line text-xl mb-1"></i>
                         <span class="text-[10px] font-bold">客服小幫手</span>
                     </a>
@@ -161,7 +162,7 @@
                                             <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end gap-2 z-30">
                                                 <h3 class="font-black text-[22px] text-white leading-tight drop-shadow-lg flex-1">{{ themeName }}</h3>
                                                 <div class="flex flex-col items-end">
-                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題活動</span>
+                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題營隊</span>
                                                     <span class="text-white font-black text-xl drop-shadow-md leading-none">${{ getCampThemeMinPrice(themeName) }}<span class="text-xs font-medium ml-0.5 opacity-90">起</span></span>
                                                 </div>
                                             </div>
@@ -273,19 +274,14 @@
                     <div class="bg-blue-50 p-5 rounded-xl border border-blue-100 space-y-3 shadow-inner">
                         <h3 class="text-blue-800 font-bold text-sm mb-2"><i class="fas fa-user-circle mr-1"></i> 家長/本人資料 (必填)</h3>
                         <div><label class="form-label">真實姓名</label><input type="text" v-model="regForm.name" required class="form-input shadow-sm"></div>
-                        
-                        <!-- ★ 修改點：身分證字號改為選填並加上紅字標示 -->
                         <div>
                             <label class="form-label text-gray-700">身分證字號 <span class="text-red-500 font-normal text-[12px] ml-1">(此欄位選填)</span></label>
                             <input type="text" v-model="regForm.nationalId" class="form-input uppercase shadow-sm" :readonly="!!(userInfo && userInfo.nationalId)">
                         </div>
-                        
-                        <!-- ★ 修改點：出生年月日改為選填並加上紅字標示 -->
                         <div>
                             <label class="form-label text-gray-700">出生年月日 <span class="text-red-500 font-normal text-[12px] ml-1">(此欄位選填)</span></label>
                             <input type="date" v-model="regForm.birthday" class="form-input shadow-sm">
                         </div>
-                        
                         <div><label class="form-label">聯絡電話</label><input type="tel" v-model="regForm.phone" required class="form-input shadow-sm"></div>
                         <div><label class="form-label">居住地址 <span class="text-gray-500 font-normal text-[11px] ml-1">(寄送發票或聯絡用)</span></label><input type="text" v-model="regForm.address" required class="form-input shadow-sm" placeholder="請填寫完整居住地址"></div>
                         <div><label class="form-label">性別</label><select v-model="regForm.gender" required class="form-input shadow-sm"><option value="男">男</option><option value="女">女</option></select></div>
@@ -492,7 +488,8 @@
                             <i class="fas fa-headset text-gray-400 text-2xl mb-2"></i>
                             <p class="text-sm font-bold text-gray-700 mb-1">訂單已鎖定處理中</p>
                             <p class="text-xs text-gray-500 mb-3">為保障您的權益，如需退費或變更內容，請直接聯繫客服人員為您服務。</p>
-                            <a href="https://lin.ee/Y0FKXqD" target="_blank" class="inline-block bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold transition hover:bg-indigo-100"><i class="fab fa-line mr-1"></i> 聯繫客服小幫手</a>
+                            <!-- 🌟 替換為動態客服連結 -->
+                            <a :href="merchantServiceLink" target="_blank" class="inline-block bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold transition hover:bg-indigo-100"><i class="fab fa-line mr-1"></i> 聯繫客服小幫手</a>
                         </div>
                     </div>
                     
@@ -561,7 +558,8 @@
                         <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 text-center shadow-sm">
                             <p class="text-sm font-bold text-indigo-900 mb-2">如需辦理退款或變更課程</p>
                             <p class="text-xs text-indigo-700 leading-relaxed mb-4">為避免退費流程錯誤及保障您的名額權益，已繳費的訂單不開放線上直接取消。<br>請點擊下方按鈕聯繫客服人員，我們將專人為您處理。</p>
-                            <a href="https://lin.ee/Y0FKXqD" target="_blank" class="inline-flex items-center justify-center w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow-md active:scale-95 transition gap-2 text-[15px] tracking-wide">
+                            <!-- 🌟 替換為動態客服連結 -->
+                            <a :href="merchantServiceLink" target="_blank" class="inline-flex items-center justify-center w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow-md active:scale-95 transition gap-2 text-[15px] tracking-wide">
                                 <i class="fab fa-line text-lg"></i> 聯繫客服小幫手
                             </a>
                         </div>
@@ -644,6 +642,10 @@
 
         createApp({
             setup() {
+                // 🌟 1. 從網址取得 accountId 參數
+                const urlParams = new URLSearchParams(window.location.search);
+                const accountId = urlParams.get('accountId') || '';
+
                 const view = ref('course_list');
                 const error = ref('');
                 const isSubmitting = ref(false);
@@ -658,6 +660,9 @@
                 const myOrders = ref([]);
                 const campSelections = ref({});
                 const expandedDesc = ref({}); 
+
+                // 🌟 新增：存放該商家的專屬客服連結
+                const merchantServiceLink = ref('https://lin.ee/xypNcJS');
 
                 const regForm = ref({ name: '', nationalId: '', birthday: '', phone: '', address: '', identity: '家長', gender: '男', familyMembers: [] });
                 const selectedCourse = ref(null);
@@ -686,7 +691,9 @@
                 ];
 
                 const callApi = async (act, pl = {}) => {
-                    const res = await fetch(API_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: act, userProfile: { userId: userProfile.value ? userProfile.value.userId : '' }, payload: pl }) });
+                    // 🌟 2. 在每次呼叫 API 時，強制將 accountId 帶入 payload 中
+                    const requestPayload = { ...pl, accountId: accountId };
+                    const res = await fetch(API_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: act, userProfile: { userId: userProfile.value ? userProfile.value.userId : '' }, payload: requestPayload }) });
                     const json = await res.json();
                     if (json.status !== 'success') throw new Error(json.message);
                     return json.data;
@@ -695,7 +702,11 @@
                 const loadCourses = async () => {
                     isCoursesLoading.value = true;
                     try {
-                        const fetchedCourses = await callApi('SI_GET_COURSES');
+                        const fetchedData = await callApi('SI_GET_COURSES');
+                        // 🌟 接收後端傳來的客服連結
+                        merchantServiceLink.value = fetchedData.serviceLink || 'https://lin.ee/xypNcJS';
+                        const fetchedCourses = fetchedData.courses || [];
+                        
                         const newSelections = { ...campSelections.value };
                         fetchedCourses.filter(c => c.type === '梯次活動').forEach(c => {
                             const parts = c.name.split(/\s*-\s*/);
@@ -715,6 +726,13 @@
                 };
 
                 const init = async () => {
+                    // 🌟 3. 安全檢查：如果網址沒有帶入商家帳號，則阻擋載入並顯示錯誤
+                    if (!accountId) {
+                        error.value = '連線錯誤：請使用專屬的店家活動連結進入。';
+                        isAuthLoading.value = false;
+                        return;
+                    }
+
                     try {
                         await liff.init({ liffId: LIFF_ID });
                         if (!liff.isLoggedIn()) { liff.login(); return; }
@@ -917,7 +935,6 @@
                     return l;
                 };
 
-                // ★ 梯次活動才生成日期列表
                 const generatedDates = computed(() => {
                     if (!selectedCourse.value || selectedCourse.value.type !== '梯次活動') return [];
                     return makeDateList(selectedCourse.value.startDate, selectedCourse.value.endDate);
@@ -953,6 +970,7 @@
                 return {
                     view, error, isSubmitting, isLoading, isAuthLoading, isCoursesLoading, isOrdersLoading,
                     userProfile, userInfo, courses, myOrders, isAdmin,
+                    merchantServiceLink, // 🌟 匯出供模板使用
                     regForm, selectedCourse, selectedAttendee, excludedDates, selectedEquipments, registrationNote,
                     showDetailModal, detailCourse, showFamilyModal, tempFamily, editingFamilyIndex,
                     showEditOrderModal, editingOrder, tempRemittance, tempExcludedDates, tempSelectedEquipments,
@@ -968,8 +986,8 @@
                     isEarlyBird, getActualPrice, getCampBaseInfo, getCampThemeMinPrice,
                     equipmentList, generatedDates, calculatedTotal, baseCoursePrice, totalEquipmentPrice, leaveDeduction,
                     editEquipmentList, editGeneratedDates, editOrderTotal,
-                    getStatusLabel: s => ({ 'PENDING':'尚未繳費','PAID':'已完成繳費','REFUND_REQUESTED':'申請退費中','REFUNDED':'已退款','CANCELLED':'已取消' }[s] || s),
-                    getStatusBadgeClass: s => ({ 'PENDING':'bg-yellow-400 text-white','PAID':'bg-[#06C755] text-white','REFUND_REQUESTED':'bg-orange-500 text-white','REFUNDED':'bg-red-500 text-white','CANCELLED':'bg-gray-400 text-white' }[s]),
+                    getStatusLabel: (s, amount) => { if (s === 'PENDING' && amount == 0) return '免費活動'; return ({ 'PENDING':'尚未繳費','PAID':'已完成繳費','REFUND_REQUESTED':'申請退費中','REFUNDED':'已退款','CANCELLED':'已取消' }[s] || s); },
+                    getStatusBadgeClass: (s, amount) => { if (s === 'PENDING' && amount == 0) return 'bg-[#06C755] text-white'; return ({ 'PENDING':'bg-yellow-400 text-white','PAID':'bg-[#06C755] text-white','REFUND_REQUESTED':'bg-orange-500 text-white','REFUNDED':'bg-red-500 text-white','CANCELLED':'bg-gray-400 text-white' }[s]); },
                     getStatusClass: s => ({ 'PENDING':'bg-yellow-100 text-yellow-800 border border-yellow-200','PAID':'bg-green-100 text-green-800 border border-green-200','REFUND_REQUESTED':'bg-orange-100 text-orange-700 border border-orange-300','REFUNDED':'bg-red-100 text-red-800 border border-red-200','CANCELLED':'bg-gray-100 text-gray-500 border border-gray-200' }[s]),
                     getStatusBorderClass: s => ({ 'PENDING':'bg-yellow-400','PAID':'bg-green-500','REFUND_REQUESTED':'bg-orange-500','REFUNDED':'bg-red-500','CANCELLED':'bg-gray-300' }[s])
                 };
