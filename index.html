@@ -397,9 +397,14 @@
         const el = document.getElementById(menu.id);
         if (el) {
           if (!pStr.includes(menu.val)) {
-            el.classList.add('opacity-30', 'bg-slate-50', 'grayscale');
-            el.style.pointerEvents = 'none';
+            if (menu.id === 'nav-admin') {
+              el.style.display = 'none';
+            } else {
+              el.classList.add('opacity-30', 'bg-slate-50', 'grayscale');
+              el.style.pointerEvents = 'none';
+            }
           } else {
+            el.style.display = '';
             el.classList.remove('opacity-30', 'bg-slate-50', 'grayscale');
             el.style.pointerEvents = 'auto';
           }
