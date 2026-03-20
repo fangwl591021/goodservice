@@ -256,7 +256,7 @@
         </div>
       </div>
 
-      <!-- ===== 🌟 系統設定 ===== -->
+      <!-- ===== 系統設定 ===== -->
       <div id="res-panel-settings" class="hidden">
         <div class="max-w-2xl mx-auto mt-6">
           <div class="res-card p-6 md:p-8">
@@ -266,9 +266,7 @@
               <input id="setting-front-link" type="text" class="res-input font-mono text-sm bg-slate-50 text-slate-500 border-slate-200" readonly>
               <button onclick="window.ReservationModule.copyFrontLink()" class="res-btn-g shrink-0 px-6"><i class="far fa-copy"></i> 複製</button>
             </div>
-            
             <hr class="my-8 border-slate-100">
-            
             <h3 class="font-bold text-xl mb-4 text-slate-800 flex items-center gap-2"><i class="fas fa-headset text-indigo-500"></i> 客服小幫手連結</h3>
             <p class="text-sm text-slate-500 mb-4">當客戶在報名紀錄中點擊聯絡客服，或需要退費時，將會被導向這個網址 (通常是您的 LINE 官方帳號聊天連結)。</p>
             <input id="setting-service-link" type="text" class="res-input text-base font-mono mb-6" placeholder="例如: https://lin.ee/xxxx">
@@ -325,8 +323,6 @@
     </div>
     <div class="flex-1 overflow-y-auto p-6 space-y-4">
       <input type="hidden" id="cm-id">
-
-      <!-- 類型選擇 -->
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="res-label">類型</label>
@@ -343,8 +339,6 @@
           </select>
         </div>
       </div>
-
-      <!-- 一般活動欄位 -->
       <div id="cm-normal-fields">
         <div class="mb-4"><label class="res-label">活動名稱 *</label><input id="cm-name" class="res-input text-base" placeholder="活動名稱"></div>
         <div class="grid grid-cols-2 gap-4 mb-4">
@@ -363,14 +357,11 @@
         </div>
         <div><label class="res-label">活動說明</label><textarea id="cm-desc" rows="4" class="res-input text-base resize-none"></textarea></div>
       </div>
-
-      <!-- 梯次活動專屬欄位 -->
       <div id="cm-camp-fields" class="hidden space-y-4">
         <div class="bg-green-50 border border-green-200 rounded-xl p-5">
           <label class="res-label text-green-800"><i class="fas fa-flag mr-1"></i> 活動大主題 *</label>
           <input id="cm-camp-theme" class="res-input text-base border-green-300" placeholder="如: 2026 運動島夏令營">
         </div>
-
         <div class="grid grid-cols-2 gap-4">
           <div><label class="res-label">開始時間</label><input id="cm-camp-stime" type="time" class="res-input text-base"></div>
           <div><label class="res-label">結束時間</label><input id="cm-camp-etime" type="time" class="res-input text-base"></div>
@@ -378,19 +369,14 @@
           <div><label class="res-label">教練/老師</label><input id="cm-camp-instructor" class="res-input text-base"></div>
           <div><label class="res-label">總堂數</label><input id="cm-camp-sessions" type="number" value="5" class="res-input text-base"></div>
         </div>
-
         <div id="cm-camp-batches"></div>
-
         <button type="button" onclick="window.ReservationModule.addCampBatch()" class="w-full py-4 border border-dashed border-blue-300 text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition text-base">
           <i class="fas fa-plus mr-1"></i> 新增下一梯次
         </button>
-
         <div class="bg-yellow-50 text-yellow-700 text-sm p-4 rounded-xl border border-yellow-200">
           <i class="fas fa-info-circle mr-1"></i> 儲存後系統將自動為每個「梯次 × 項目」建立獨立活動。
         </div>
       </div>
-
-      <!-- 梯次活動單筆編輯模式 -->
       <div id="cm-camp-edit-fields" class="hidden">
         <div class="bg-green-50 border border-green-200 rounded-xl p-5 mb-4">
           <div class="text-base font-medium text-green-800 mb-3"><i class="fas fa-flag mr-1"></i> 單筆梯次活動編輯</div>
@@ -418,7 +404,6 @@
         </div>
       </div>
     </div>
-
     <div class="h-16 border-t px-6 flex justify-between items-center gap-4 shrink-0">
       <div id="cm-progress" class="text-base text-slate-500 font-medium hidden"><i class="fas fa-spinner fa-spin mr-2"></i> 建立中 <span id="cm-progress-text"></span></div>
       <div class="flex gap-4 ml-auto">
@@ -471,7 +456,6 @@ window.ReservationModule = (function () {
   function callAPI(action, payload, userProfile) {
     var acc = window.currentUser ? window.currentUser.username : '';
     var body = { action: action, payload: Object.assign({}, payload || {}, { accountId: acc }) };
-    
     return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
       .then(function(r){ return r.json(); })
       .then(function(d){
@@ -526,26 +510,15 @@ window.ReservationModule = (function () {
   function syncAll() {
     var linkBtn = document.getElementById('res-front-link');
     var acc = window.currentUser ? window.currentUser.username : '';
-    // 🌟 將系統設定中的專屬網址強制綁定為 LIFF ID
     var liffUrl = "https://liff.line.me/2009524128-bJMVabyM?accountId=" + encodeURIComponent(acc);
-
     if (linkBtn && acc) {
-        linkBtn.onclick = function(e) {
-            e.preventDefault();
-            window.open(liffUrl, '_blank');
-        };
+      linkBtn.onclick = function(e) { e.preventDefault(); window.open(liffUrl, '_blank'); };
     }
-
     var settingsInput = document.getElementById('setting-front-link');
-    if (settingsInput && acc) {
-        settingsInput.value = liffUrl;
-    }
-    
+    if (settingsInput && acc) settingsInput.value = liffUrl;
     var dashLiffInput = document.getElementById('dash-liff-link');
-    if (dashLiffInput && acc) {
-        dashLiffInput.value = liffUrl;
-    }
-    
+    if (dashLiffInput && acc) dashLiffInput.value = liffUrl;
+
     if (typeof toggleLoader === 'function') toggleLoader(true);
     callAPI('SI_ADMIN_GET_DATA').then(function(data) {
       courses = data.courses || [];
@@ -555,12 +528,7 @@ window.ReservationModule = (function () {
       if (sLink && data.serviceLink) sLink.value = data.serviceLink;
       var dashSLink = document.getElementById('dash-service-link');
       if (dashSLink && data.serviceLink) dashSLink.value = data.serviceLink;
-      
-      renderDashboard();
-      renderOrders();
-      renderCourses();
-      renderMembers();
-      refreshCourseFilter();
+      renderDashboard(); renderOrders(); renderCourses(); renderMembers(); refreshCourseFilter();
       if (typeof toggleLoader === 'function') toggleLoader(false);
     }).catch(function(e) {
       if (typeof toggleLoader === 'function') toggleLoader(false);
@@ -582,23 +550,16 @@ window.ReservationModule = (function () {
   }
 
   function copyLiffLink() {
-    var copyText = document.getElementById("dash-liff-link");
-    if (!copyText || !copyText.value) return;
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-    if (typeof showToast === 'function') showToast("網址已複製！");
-    else alert("網址已複製！");
+    var el = document.getElementById("dash-liff-link");
+    if (!el || !el.value) return;
+    el.select(); el.setSelectionRange(0, 99999); document.execCommand("copy");
+    if (typeof showToast === 'function') showToast("網址已複製！"); else alert("網址已複製！");
   }
-
   function copyFrontLink() {
-    var copyText = document.getElementById("setting-front-link");
-    if (!copyText || !copyText.value) return;
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-    if (typeof showToast === 'function') showToast("網址已複製！");
-    else alert("網址已複製！");
+    var el = document.getElementById("setting-front-link");
+    if (!el || !el.value) return;
+    el.select(); el.setSelectionRange(0, 99999); document.execCommand("copy");
+    if (typeof showToast === 'function') showToast("網址已複製！"); else alert("網址已複製！");
   }
 
   function renderDashboard() {
@@ -696,12 +657,10 @@ window.ReservationModule = (function () {
     var m = document.getElementById('res-order-modal');
     if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
   }
-
   function closeOrderModal() {
     var m = document.getElementById('res-order-modal');
     if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
   }
-
   function saveOrder() {
     if (!editingOrder) return;
     if (typeof toggleLoader === 'function') toggleLoader(true);
@@ -725,36 +684,67 @@ window.ReservationModule = (function () {
   function getPaidCount(courseId) { return orders.filter(function(o){ return o.courseId===courseId && o.status==='PAID'; }).length; }
   function getPendingCount(courseId) { return orders.filter(function(o){ return o.courseId===courseId && o.status==='PENDING'; }).length; }
 
-  // 🌟 新增：複製活動功能
+  // ★ 複製單筆一般活動
   function copyCourse(courseId) {
     var c = courses.find(function(x){ return x.id===courseId; });
     if (!c) return;
-    
-    // 開啟並填寫表單
     openCourseModal(courseId);
-    
-    // 覆寫為「新增」狀態
     editingCourseId = null;
     var title = document.getElementById('res-course-modal-title');
     if (title) title.innerText = '新增活動 (複製)';
     document.getElementById('cm-id').value = '';
-    
-    // 修改名稱以區分
-    if (c.type === '梯次活動') {
+    document.getElementById('cm-name').value = c.name + ' (複製)';
+  }
+
+  // ★ 新增：複製整個梯次主題（所有梯次+項目）
+  function copyCampTheme(themeName) {
+    // 收集該主題所有活動
+    var themeItems = courses.filter(function(c) {
+      return c.type === '梯次活動' && parseCampName(c.name).theme === themeName;
+    });
+    if (!themeItems.length) { alert('找不到此主題的活動資料'); return; }
+
+    // 用第一筆取得公用設定
+    var first = themeItems[0];
+
+    // 組成 campBatchData 結構
+    var batches = {};
+    themeItems.forEach(function(c) {
       var p = parseCampName(c.name);
-      document.getElementById('cm-camp-edit-theme').value = p.theme !== '其他梯次活動' ? p.theme : '';
-      document.getElementById('cm-camp-edit-batch').value = p.batch;
-      document.getElementById('cm-camp-edit-item').value = p.item + ' (複製)';
-      updateCampEditPreview();
-    } else {
-      document.getElementById('cm-name').value = c.name + ' (複製)';
-    }
+      if (!batches[p.batch]) {
+        batches[p.batch] = { name: p.batch, startDate: fmtDate(c.startDate), endDate: fmtDate(c.endDate), items: [] };
+      }
+      batches[p.batch].items.push({ name: p.item, price: String(c.price || 0), capacity: String(c.capacity || 20) });
+    });
+
+    // 開啟新增模式
+    openCourseModal(null);
+    document.getElementById('cm-type').value = '梯次活動';
+    document.getElementById('cm-type').disabled = false;
+
+    var title = document.getElementById('res-course-modal-title');
+    if (title) title.innerText = '新增活動 (複製主題：' + themeName + ')';
+
+    // 填入大主題名稱 + (複製)
+    document.getElementById('cm-camp-theme').value = themeName + ' (複製)';
+    document.getElementById('cm-camp-stime').value = first.startTime || '';
+    document.getElementById('cm-camp-etime').value = first.endTime || '';
+    document.getElementById('cm-camp-location').value = first.location || '';
+    document.getElementById('cm-camp-instructor').value = first.instructor || '';
+    document.getElementById('cm-camp-sessions').value = first.totalSessions || 5;
+
+    // 填入梯次資料
+    campBatchData = Object.values(batches);
+    if (!campBatchData.length) campBatchData = [{ name:'', startDate:'', endDate:'', items:[{ name:'', price:'', capacity:'' }] }];
+    renderCampBatches();
+    onCmTypeChange();
   }
 
   function renderCourses() {
     var kw = ((document.getElementById('res-course-kw')||{}).value||'').toLowerCase();
     var list = courses.filter(function(c){ return !kw || c.name.toLowerCase().includes(kw); });
 
+    // 一般活動（含「其他梯次活動」）
     var normalList = list.filter(function(c){ return c.type !== '梯次活動' || parseCampName(c.name).theme === '其他梯次活動'; });
     var normalTbody = document.getElementById('res-course-list-normal');
     if (normalTbody) {
@@ -774,6 +764,7 @@ window.ReservationModule = (function () {
       }).join('') || '<tr><td colspan="6" class="text-center py-8 text-slate-400">尚無一般活動資料</td></tr>';
     }
 
+    // 梯次活動群組
     var campList = list.filter(function(c){ return c.type === '梯次活動' && parseCampName(c.name).theme !== '其他梯次活動'; });
     var groups = {};
     campList.forEach(function(c) {
@@ -791,10 +782,18 @@ window.ReservationModule = (function () {
     }
     var html = '';
     Object.keys(groups).forEach(function(theme) {
+      // ★ 主題標題列加上「複製整組」按鈕
       html += '<div class="res-card mb-5 border border-green-200">'
-        +'<div class="bg-green-50 px-6 py-4 border-b border-green-200">'
-        +'<span class="font-bold text-green-800 text-lg"><i class="fas fa-flag mr-2 opacity-70"></i>'+esc(theme)+'</span></div>'
+        +'<div class="bg-green-50 px-6 py-4 border-b border-green-200 flex items-center justify-between">'
+        +'<span class="font-bold text-green-800 text-lg"><i class="fas fa-flag mr-2 opacity-70"></i>'+esc(theme)+'</span>'
+        +'<button onclick="window.ReservationModule.copyCampTheme(\''+esc(theme)+'\')" '
+        +'style="background:#fff;border:1px solid #86efac;color:#16a34a;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s;" '
+        +'onmouseover="this.style.background=\'#f0fdf4\'" onmouseout="this.style.background=\'#fff\'">'
+        +'<i class="far fa-copy"></i> 複製整組梯次'
+        +'</button>'
+        +'</div>'
         +'<div class="p-4 space-y-3">';
+
       Object.keys(groups[theme]).forEach(function(batch) {
         var bkey = theme + '_' + batch;
         var items = groups[theme][batch];
@@ -812,6 +811,7 @@ window.ReservationModule = (function () {
           items.forEach(function(item) {
             var c = item.course;
             var paid = getPaidCount(c.id), pending = getPendingCount(c.id);
+            // ★ 梯次項目列：只保留「簽到」和「編輯」，移除個別複製
             html += '<tr>'
               +'<td><div class="font-medium text-slate-800">'+esc(item.itemName)+'</div><span class="text-sm font-mono text-slate-500">'+esc(c.id)+'</span></td>'
               +'<td class="text-center font-bold text-[#06C755]">$'+esc(c.price)+'</td>'
@@ -819,7 +819,6 @@ window.ReservationModule = (function () {
               +'<td class="text-center text-sm"><span class="text-green-600 font-medium">付:'+paid+'</span> <span class="text-amber-500 font-medium ml-1">待:'+pending+'</span></td>'
               +'<td class="text-right space-x-3">'
               +'<button onclick="window.ReservationModule.goAttend(\''+esc(c.id)+'\')" class="text-green-600 hover:underline text-sm font-medium">簽到</button>'
-              +'<button onclick="window.ReservationModule.copyCourse(\''+esc(c.id)+'\')" class="text-slate-500 hover:text-slate-800 text-sm font-medium transition"><i class="far fa-copy mr-1"></i>複製</button>'
               +'<button onclick="window.ReservationModule.openCourseModal(\''+esc(c.id)+'\')" class="res-btn-w text-sm py-1.5 px-3">編輯</button>'
               +'</td></tr>';
           });
@@ -832,10 +831,7 @@ window.ReservationModule = (function () {
     campEl.innerHTML = html;
   }
 
-  function toggleBatch(key) {
-    expandedBatches[key] = !expandedBatches[key];
-    renderCourses();
-  }
+  function toggleBatch(key) { expandedBatches[key] = !expandedBatches[key]; renderCourses(); }
 
   function onCmTypeChange() {
     var type = document.getElementById('cm-type').value;
@@ -890,7 +886,7 @@ window.ReservationModule = (function () {
     if (title) title.innerText = c ? '編輯活動' : '新增活動';
     document.getElementById('cm-id').value = c ? c.id : '';
     document.getElementById('cm-type').value = c ? (c.type || '單日活動') : '單日活動';
-    document.getElementById('cm-type').disabled = !!c; 
+    document.getElementById('cm-type').disabled = !!c;
 
     if (c && c.type === '梯次活動') {
       var p = parseCampName(c.name);
@@ -1110,6 +1106,7 @@ window.ReservationModule = (function () {
         +'</tr>';
     }).join('') || '<tr><td colspan="5" class="text-center py-10 text-slate-400">尚無會員資料</td></tr>';
   }
+
   function openMemberModal(userId) {
     var m = members.find(function(x){ return x.userId===userId; });
     if (!m) return;
@@ -1260,10 +1257,7 @@ window.ReservationModule = (function () {
         +'</td></tr>';
     }).join('');
   }
-  function setAttendStatus(idx, status) {
-    attendList[idx].status = status;
-    renderAttendList();
-  }
+  function setAttendStatus(idx, status) { attendList[idx].status = status; renderAttendList(); }
   function saveAttendance() {
     var courseId = (document.getElementById('attend-course-sel')||{}).value||'';
     var date = (document.getElementById('attend-date')||{}).value||'';
@@ -1301,37 +1295,14 @@ window.ReservationModule = (function () {
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
   }
 
-  function copyFrontLink() {
-    var copyText = document.getElementById("dash-liff-link");
-    if (!copyText || !copyText.value) return;
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    document.execCommand("copy");
-    if (typeof showToast === 'function') showToast("網址已複製！");
-    else alert("網址已複製！");
-  }
-
-  function saveSettings() {
-    var sLink = document.getElementById('dash-service-link') ? document.getElementById('dash-service-link').value.trim() : document.getElementById('setting-service-link').value.trim();
-    if (typeof toggleLoader === 'function') toggleLoader(true);
-    callAPI('SI_UPDATE_MERCHANT_SETTINGS', { serviceLink: sLink }).then(function() {
-      if (typeof toggleLoader === 'function') toggleLoader(false);
-      if (typeof showToast === 'function') showToast('客服連結設定已儲存！');
-      else alert('設定已儲存！');
-    }).catch(function(e) {
-      if (typeof toggleLoader === 'function') toggleLoader(false);
-      alert('儲存失敗：' + e.message);
-    });
-  }
-
   function init() {
     var linkBtn = document.getElementById('res-front-link');
     var acc = window.currentUser ? window.currentUser.username : '';
     if (linkBtn && acc) {
-        linkBtn.onclick = function(e) {
-            e.preventDefault();
-            window.open("https://liff.line.me/2009524128-bJMVabyM?accountId=" + encodeURIComponent(acc), '_blank');
-        };
+      linkBtn.onclick = function(e) {
+        e.preventDefault();
+        window.open("https://liff.line.me/2009524128-bJMVabyM?accountId=" + encodeURIComponent(acc), '_blank');
+      };
     }
     setTab('dashboard');
     syncAll();
@@ -1350,7 +1321,8 @@ window.ReservationModule = (function () {
     onCourseChange:onCourseChange, submitAdd:submitAdd, exportCsv:exportCsv,
     refreshAttendCourseSelect:refreshAttendCourseSelect, onAttendCourseChange:onAttendCourseChange,
     loadAttendList:loadAttendList, setAttendStatus:setAttendStatus, saveAttendance:saveAttendance,
-    goAttend:goAttend, copyFrontLink:copyFrontLink, saveSettings:saveSettings, copyCourse:copyCourse
+    goAttend:goAttend, copyFrontLink:copyFrontLink, saveSettings:saveSettings,
+    copyCourse:copyCourse, copyCampTheme:copyCampTheme, copyLiffLink:copyLiffLink
   };
 })();
 
