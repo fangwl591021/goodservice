@@ -508,8 +508,7 @@
                             <span class="text-[11px] text-gray-500 font-bold mb-0.5 whitespace-nowrap">重新計算應收額</span>
                             <span class="text-2xl font-black text-[#06C755] leading-none">${{ editOrderTotal }}</span>
                         </div>
-                        <!-- ★ 修正：返回紀錄改為 btn-primary (綠色)，與整體風格一致 -->
-                        <button v-if="remittanceConfirmed" type="button" @click="view='my_orders'" class="btn-primary w-[45%] shadow-md text-lg">返回紀錄</button>
+                        <button v-if="remittanceConfirmed" type="button" @click="view='my_orders'" class="btn-secondary w-[45%] shadow-md text-lg border-gray-300">返回紀錄</button>
                         <button v-else type="submit" :disabled="isSubmitting || tempExcludedDates.length > 1" class="btn-primary w-[45%] shadow-md text-lg">{{ isSubmitting ? '處理中...' : '確認儲存' }}</button>
                     </div>
                 </form>
@@ -571,12 +570,10 @@
                 </div>
 
                 <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 z-30 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                    <div class="flex flex-col">
-                        <span class="text-xs text-gray-500">已確認繳費金額</span>
+                    <div class="flex flex-col"><span class="text-xs text-gray-500">已確認繳費金額</span>
                         <span v-if="editingOrder && editingOrder.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
                         <span v-else class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span>
                     </div>
-                    <!-- ★ 修正：返回紀錄改為 btn-primary (綠色) -->
                     <button @click="view='my_orders'" type="button" class="btn-primary w-[60%] shadow-md text-lg">返回紀錄</button>
                 </div>
             </div>
@@ -590,6 +587,8 @@
                 <button @click="goToMyOrders" class="btn-secondary w-full py-3 text-lg border-gray-300">前往回填五碼</button>
             </div>
         </main>
+
+        <!-- --- MODALS (全域彈窗) --- -->
 
         <!-- 子女編輯彈窗 -->
         <transition name="fade">
@@ -649,7 +648,7 @@
 
         createApp({
             setup() {
-                // 🌟 深度解析網址參數，解決 LINE 跳轉後 accountId 消失問題
+                // 🌟 1. 深度暴力解析網址參數，解決 LINE 跳轉深層編碼導致洗掉參數的問題
                 const getAccountId = () => {
                     let acc = '';
                     let urlToParse = window.location.href;
@@ -770,12 +769,9 @@
 
                     try {
                         await liff.init({ liffId: LIFF_ID });
-                        if (!liff.isLoggedIn()) {
-                            // ★ 關鍵修正：login 跳轉前先把 accountId 存進 localStorage
-                            // LIFF login() 跳轉後網址參數會消失，靠 localStorage 備援取回
-                            try { localStorage.setItem('si_accountId', accountId); } catch(e) {}
-                            liff.login();
-                            return;
+                        if (!liff.isLoggedIn()) { 
+                            liff.login({ redirectUri: window.location.href }); 
+                            return; 
                         }
                         userProfile.value = await liff.getProfile();
                         const data = await callApi('SI_CHECK_USER');
@@ -789,19 +785,23 @@
                             view.value = 'register';
                         }
                     } catch (err) {
-                        if (err.message && err.message.includes('code_verifier')) {
+                        const errMsg = (err instanceof Error) ? err.message : String(err);
+                        
+                        if (errMsg.includes('code_verifier')) {
                             const newUrl = window.location.href.split('?')[0];
                             window.history.replaceState({}, document.title, newUrl);
-                            liff.login(); return;
+                            liff.login({ redirectUri: window.location.href }); return;
                         }
-                        // ★ 修正：access token 過期時自動重新登入
-                        if (err.message && (err.message.includes('access token expired') || err.message.includes('access_token') || err.message.toLowerCase().includes('expired'))) {
-                            try { localStorage.setItem('si_accountId', accountId); } catch(e) {}
+                        
+                        // 🌟 處理 token 過期問題
+                        if (errMsg.toLowerCase().includes('expired') || errMsg.toLowerCase().includes('access token')) {
+                            if (accountId) localStorage.setItem('si_accountId', accountId);
                             liff.logout();
-                            liff.login();
+                            liff.login({ redirectUri: window.location.href });
                             return;
                         }
-                        error.value = '系統初始化失敗：' + err.message;
+
+                        error.value = '系統初始化失敗：' + errMsg;
                         isAuthLoading.value = false;
                     }
                 };
