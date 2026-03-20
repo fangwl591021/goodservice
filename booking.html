@@ -47,8 +47,8 @@
             <div v-if="error" class="p-6">
                 <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm">
                     <p class="font-bold mb-1">系統提示</p>
-                    <p class="text-sm">{{ error }}</p>
-                    <button @click="window.location.reload()" class="mt-4 text-xs bg-red-100 px-3 py-1.5 rounded-full font-bold">重新啟動</button>
+                    <p class="text-sm whitespace-pre-wrap">{{ error }}</p>
+                    <button @click="window.location.reload()" class="mt-4 text-xs bg-red-100 px-3 py-1.5 rounded-full font-bold hover:bg-red-200 transition">重新啟動</button>
                 </div>
             </div>
 
@@ -66,7 +66,6 @@
                         <span class="text-[10px] font-bold">報名紀錄</span>
                         <div v-if="isAuthLoading" class="absolute inset-0 bg-white/50 rounded-xl cursor-not-allowed"></div>
                     </button>
-                    <!-- 🌟 替換為動態客服連結 -->
                     <a :href="merchantServiceLink" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
                         <i class="fab fa-line text-xl mb-1"></i>
                         <span class="text-[10px] font-bold">客服小幫手</span>
@@ -82,7 +81,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <h2 class="text-lg font-black text-gray-800 border-l-4 border-[#06C755] pl-2 leading-none">選擇活動類型</h2>
                         <button @click="loadCourses" :disabled="isCoursesLoading" class="flex items-center text-[11px] text-gray-600 bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm hover:bg-gray-50 active:scale-95 transition font-bold">
-                            <i class="fas fa-sync-alt mr-1.5 text-[#06C755]" :class="{'fa-spin': isCoursesLoading}"></i> {{ isCoursesLoading ? '同步中' : '更新課程' }}
+                            <i class="fas fa-sync-alt mr-1.5 text-[#06C755]" :class="{'fa-spin': isCoursesLoading}"></i> {{ isCoursesLoading ? '同步中' : '更新活動' }}
                         </button>
                     </div>
 
@@ -103,12 +102,12 @@
                             
                             <div v-if="isCoursesLoading || isAuthLoading" class="text-center py-8">
                                 <div class="loader mx-auto mb-3 border-t-[#06C755] w-8 h-8 border-4"></div>
-                                <p class="text-sm font-bold text-gray-400 tracking-widest">載入課程中...</p>
+                                <p class="text-sm font-bold text-gray-400 tracking-widest">載入活動中...</p>
                             </div>
 
                             <div v-else-if="filteredCourses.length === 0 && Object.keys(groupedCampCourses).length === 0" class="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300 shadow-sm">
                                 <i class="fas fa-box-open text-4xl text-gray-200 mb-3 block"></i>
-                                <p class="text-sm text-gray-500 font-bold">目前沒有開放此類型的課程</p>
+                                <p class="text-sm text-gray-500 font-bold">目前沒有開放此類型的活動</p>
                             </div>
 
                             <template v-else>
@@ -126,7 +125,8 @@
                                             </div>
                                             <div class="flex flex-col items-end shrink-0">
                                                 <span v-if="isEarlyBird(c)" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ c.price }}</span>
-                                                <span class="text-[#06C755] font-black text-xl">
+                                                <span v-if="getActualPrice(c) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                <span v-else class="text-[#06C755] font-black text-xl">
                                                     <span v-if="isEarlyBird(c)" class="text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded mr-1 align-middle shadow-sm">早鳥</span>${{ getActualPrice(c) }}
                                                 </span>
                                             </div>
@@ -152,7 +152,7 @@
                                     <div v-for="(themeData, themeName) in groupedCampCourses" :key="themeName" class="bg-white border rounded-2xl shadow-sm hover:shadow-md transition relative overflow-hidden mb-6">
                                         <div class="relative h-40 bg-[#e6f4ea] overflow-hidden">
                                             <div class="absolute inset-0 flex items-center justify-center z-0">
-                                                <i class="fas fa-campground text-5xl text-[#06C755]/30"></i>
+                                                <i class="fas fa-flag text-5xl text-[#06C755]/30"></i>
                                             </div>
                                             <img v-if="getCampBaseInfo(themeName) && getCampBaseInfo(themeName).image" 
                                                  :src="getCampBaseInfo(themeName).image" 
@@ -162,8 +162,9 @@
                                             <div class="absolute bottom-3 left-4 right-4 flex justify-between items-end gap-2 z-30">
                                                 <h3 class="font-black text-[22px] text-white leading-tight drop-shadow-lg flex-1">{{ themeName }}</h3>
                                                 <div class="flex flex-col items-end">
-                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題營隊</span>
-                                                    <span class="text-white font-black text-xl drop-shadow-md leading-none">${{ getCampThemeMinPrice(themeName) }}<span class="text-xs font-medium ml-0.5 opacity-90">起</span></span>
+                                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-[#06C755] text-white shadow-sm shrink-0 mb-1 inline-block">主題活動</span>
+                                                    <span v-if="getCampThemeMinPrice(themeName) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                    <span v-else class="text-white font-black text-xl drop-shadow-md leading-none">${{ getCampThemeMinPrice(themeName) }}<span class="text-xs font-medium ml-0.5 opacity-90">起</span></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -210,7 +211,8 @@
                                                     </div>
                                                     <div class="flex flex-col items-end">
                                                         <span v-if="isEarlyBird(getCampSelectedCourse(themeName))" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ getCampSelectedCourse(themeName).price }}</span>
-                                                        <span class="text-[#06C755] font-black text-2xl leading-none">
+                                                        <span v-if="getActualPrice(getCampSelectedCourse(themeName)) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                        <span v-else class="text-[#06C755] font-black text-2xl leading-none">
                                                             <span v-if="isEarlyBird(getCampSelectedCourse(themeName))" class="text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded mr-1 align-middle shadow-sm relative -top-1">早鳥</span>${{ getActualPrice(getCampSelectedCourse(themeName)) }}
                                                         </span>
                                                     </div>
@@ -238,7 +240,8 @@
                                             </div>
                                             <div class="flex flex-col items-end shrink-0">
                                                 <span v-if="isEarlyBird(c)" class="text-[11px] text-gray-400 line-through mb-0.5">原價 ${{ c.price }}</span>
-                                                <span class="text-[#06C755] font-black text-xl">
+                                                <span v-if="getActualPrice(c) == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm">免費活動</span>
+                                                <span v-else class="text-[#06C755] font-black text-xl">
                                                     <span v-if="isEarlyBird(c)" class="text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded mr-1 align-middle shadow-sm">早鳥</span>${{ getActualPrice(c) }}
                                                 </span>
                                             </div>
@@ -373,7 +376,8 @@
                                 <span v-if="totalEquipmentPrice > 0" class="text-orange-500"> +設備 ${{ totalEquipmentPrice }}</span>
                                 <span v-if="leaveDeduction > 0" class="text-blue-500"> -請假 ${{ leaveDeduction }}</span>
                             </span>
-                            <span class="text-2xl font-black text-[#06C755] leading-none">${{ calculatedTotal }}</span>
+                            <span v-if="calculatedTotal == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
+                            <span v-else class="text-2xl font-black text-[#06C755] leading-none">${{ calculatedTotal }}</span>
                         </div>
                         <button type="submit" :disabled="isSubmitting || excludedDates.length > 1" class="btn-primary w-[45%] shadow-md text-lg">{{ isSubmitting ? '處理中...' : '確認結帳' }}</button>
                     </div>
@@ -389,7 +393,7 @@
 
                 <div v-if="isOrdersLoading" class="text-center py-16">
                     <div class="loader mx-auto mb-3 border-t-blue-500 w-8 h-8 border-4"></div>
-                    <p class="text-sm font-bold text-gray-400 tracking-widest">載入訂單中...</p>
+                    <p class="text-sm font-bold text-gray-400 tracking-widest">讀取紀錄中.....</p>
                 </div>
 
                 <template v-else>
@@ -406,15 +410,16 @@
                                 <div class="text-[11px] text-gray-400 mt-1.5 font-medium">{{ o.courseDate }}</div>
                             </div>
                             
-                            <span class="px-3 py-1.5 rounded-md text-xs font-bold shadow-sm shrink-0 tracking-wide" :class="getStatusBadgeClass(o.status)">{{ getStatusLabel(o.status) }}</span>
+                            <span class="px-3 py-1.5 rounded-md text-xs font-bold shadow-sm shrink-0 tracking-wide" :class="getStatusBadgeClass(o.status, o.amount)">{{ getStatusLabel(o.status, o.amount) }}</span>
                         </div>
                         <div class="border-t border-gray-100 my-3 ml-2"></div>
                         <div class="flex justify-between items-center mb-4 pl-2">
                             <span class="text-sm text-gray-500">學員: <b class="text-gray-800">{{ o.name }}</b></span>
-                            <span class="font-black text-[#06C755] text-2xl">${{ o.amount }}</span>
+                            <span v-if="o.amount == 0" class="font-black text-[#06C755] text-2xl">$0</span>
+                            <span v-else class="font-black text-[#06C755] text-2xl">${{ o.amount }}</span>
                         </div>
                         <div class="pl-2 space-y-3 mt-2">
-                            <button v-if="o.status === 'PENDING' && !o.remittance" @click="openOrderDetail(o)" class="text-[15px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold w-full shadow-md active:scale-95 transition flex justify-center items-center gap-2 tracking-wide">
+                            <button v-if="o.status === 'PENDING' && !o.remittance && o.amount > 0" @click="openOrderDetail(o)" class="text-[15px] bg-blue-500 hover:bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold w-full shadow-md active:scale-95 transition flex justify-center items-center gap-2 tracking-wide">
                                 <i class="fas fa-edit"></i> 填寫匯款後五碼
                             </button>
                             
@@ -488,7 +493,6 @@
                             <i class="fas fa-headset text-gray-400 text-2xl mb-2"></i>
                             <p class="text-sm font-bold text-gray-700 mb-1">訂單已鎖定處理中</p>
                             <p class="text-xs text-gray-500 mb-3">為保障您的權益，如需退費或變更內容，請直接聯繫客服人員為您服務。</p>
-                            <!-- 🌟 替換為動態客服連結 -->
                             <a :href="merchantServiceLink" target="_blank" class="inline-block bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-bold transition hover:bg-indigo-100"><i class="fab fa-line mr-1"></i> 聯繫客服小幫手</a>
                         </div>
                     </div>
@@ -558,7 +562,6 @@
                         <div class="bg-indigo-50 rounded-xl p-5 border border-indigo-100 text-center shadow-sm">
                             <p class="text-sm font-bold text-indigo-900 mb-2">如需辦理退款或變更課程</p>
                             <p class="text-xs text-indigo-700 leading-relaxed mb-4">為避免退費流程錯誤及保障您的名額權益，已繳費的訂單不開放線上直接取消。<br>請點擊下方按鈕聯繫客服人員，我們將專人為您處理。</p>
-                            <!-- 🌟 替換為動態客服連結 -->
                             <a :href="merchantServiceLink" target="_blank" class="inline-flex items-center justify-center w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl shadow-md active:scale-95 transition gap-2 text-[15px] tracking-wide">
                                 <i class="fab fa-line text-lg"></i> 聯繫客服小幫手
                             </a>
@@ -567,8 +570,12 @@
                 </div>
 
                 <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 z-30 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                    <div class="flex flex-col"><span class="text-xs text-gray-500">已確認繳費金額</span><span class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span></div>
-                    <button @click="view='my_orders'" type="button" class="btn-secondary w-[60%] shadow-md text-lg border-gray-300">返回紀錄</button>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500">已確認繳費金額</span>
+                        <span v-if="editingOrder && editingOrder.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
+                        <span v-else class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span>
+                    </div>
+                    <button @click="view='my_orders'" type="button" class="btn-primary w-[60%] shadow-md text-lg">返回紀錄</button>
                 </div>
             </div>
 
@@ -642,9 +649,28 @@
 
         createApp({
             setup() {
-                // 🌟 1. 從網址取得 accountId 參數
+                // 🌟 1. 深度解析網址參數，解決 LINE 跳轉洗掉參數的問題
+                let acc = '';
                 const urlParams = new URLSearchParams(window.location.search);
-                const accountId = urlParams.get('accountId') || '';
+                
+                if (urlParams.has('accountId')) {
+                    acc = urlParams.get('accountId');
+                } else {
+                    // 嘗試從 liff.state 解析
+                    let stateStr = urlParams.get('liff.state');
+                    if (stateStr) {
+                        if (stateStr.startsWith('?')) stateStr = stateStr.substring(1);
+                        acc = new URLSearchParams(stateStr).get('accountId') || '';
+                    }
+                }
+
+                // 將 accountId 存入 localStorage 保險
+                if (acc) {
+                    localStorage.setItem('si_accountId', acc);
+                } else {
+                    acc = localStorage.getItem('si_accountId') || '';
+                }
+                const accountId = acc;
 
                 const view = ref('course_list');
                 const error = ref('');
@@ -661,7 +687,6 @@
                 const campSelections = ref({});
                 const expandedDesc = ref({}); 
 
-                // 🌟 新增：存放該商家的專屬客服連結
                 const merchantServiceLink = ref('https://lin.ee/xypNcJS');
 
                 const regForm = ref({ name: '', nationalId: '', birthday: '', phone: '', address: '', identity: '家長', gender: '男', familyMembers: [] });
@@ -691,7 +716,6 @@
                 ];
 
                 const callApi = async (act, pl = {}) => {
-                    // 🌟 2. 在每次呼叫 API 時，強制將 accountId 帶入 payload 中
                     const requestPayload = { ...pl, accountId: accountId };
                     const res = await fetch(API_ENDPOINT, { method: 'POST', body: JSON.stringify({ action: act, userProfile: { userId: userProfile.value ? userProfile.value.userId : '' }, payload: requestPayload }) });
                     const json = await res.json();
@@ -703,7 +727,6 @@
                     isCoursesLoading.value = true;
                     try {
                         const fetchedData = await callApi('SI_GET_COURSES');
-                        // 🌟 接收後端傳來的客服連結
                         merchantServiceLink.value = fetchedData.serviceLink || 'https://lin.ee/xypNcJS';
                         const fetchedCourses = fetchedData.courses || [];
                         
@@ -726,9 +749,9 @@
                 };
 
                 const init = async () => {
-                    // 🌟 3. 安全檢查：如果網址沒有帶入商家帳號，則阻擋載入並顯示錯誤
+                    // 🌟 阻擋未帶參數的進入
                     if (!accountId) {
-                        error.value = '連線錯誤：請使用專屬的店家活動連結進入。';
+                        error.value = '請使用帶有帳號參數的專屬網址進入系統。\n(例如: https://liff.line.me/2009524128-bJMVabyM?accountId=您的帳號)';
                         isAuthLoading.value = false;
                         return;
                     }
@@ -965,12 +988,12 @@
                 const isAdmin = computed(() => userInfo.value && userInfo.value.adminMark && String(userInfo.value.adminMark).toUpperCase() === 'OK');
                 const goToAdmin = () => { try { localStorage.setItem('sportIsland_sso_uid', userProfile.value ? userProfile.value.userId : ''); } catch(e) {} window.location.href = 'admin.html'; };
 
-                onMounted(() => { try { const ssoUid = localStorage.getItem('sportIsland_sso_uid'); } catch(e) {} init(); });
+                onMounted(() => { init(); });
 
                 return {
                     view, error, isSubmitting, isLoading, isAuthLoading, isCoursesLoading, isOrdersLoading,
                     userProfile, userInfo, courses, myOrders, isAdmin,
-                    merchantServiceLink, // 🌟 匯出供模板使用
+                    merchantServiceLink,
                     regForm, selectedCourse, selectedAttendee, excludedDates, selectedEquipments, registrationNote,
                     showDetailModal, detailCourse, showFamilyModal, tempFamily, editingFamilyIndex,
                     showEditOrderModal, editingOrder, tempRemittance, tempExcludedDates, tempSelectedEquipments,
