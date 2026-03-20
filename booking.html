@@ -66,7 +66,6 @@
                         <span class="text-[10px] font-bold">報名紀錄</span>
                         <div v-if="isAuthLoading" class="absolute inset-0 bg-white/50 rounded-xl cursor-not-allowed"></div>
                     </button>
-                    <!-- 動態客服連結 -->
                     <a :href="merchantServiceLink" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
                         <i class="fab fa-line text-xl mb-1"></i>
                         <span class="text-[10px] font-bold">客服小幫手</span>
@@ -571,11 +570,12 @@
                 </div>
 
                 <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 z-30 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                    <div class="flex flex-col"><span class="text-xs text-gray-500">已確認繳費金額</span>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-500">已確認繳費金額</span>
                         <span v-if="editingOrder && editingOrder.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
                         <span v-else class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span>
                     </div>
-                    <button @click="view='my_orders'" type="button" class="btn-secondary w-[60%] shadow-md text-lg border-gray-300">返回紀錄</button>
+                    <button @click="view='my_orders'" type="button" class="btn-primary w-[60%] shadow-md text-lg">返回紀錄</button>
                 </div>
             </div>
 
@@ -649,25 +649,41 @@
 
         createApp({
             setup() {
-                // 🌟 1. 深度解析網址參數，解決 LINE 跳轉洗掉參數的問題
+                // 🌟 1. 深度暴力解析網址參數，解決 LINE 跳轉深層編碼導致洗掉參數的問題
                 const getAccountId = () => {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    let acc = urlParams.get('accountId');
+                    let acc = '';
+                    let urlToParse = window.location.href;
                     
-                    if (!acc) {
-                        let stateStr = urlParams.get('liff.state');
-                        if (stateStr) {
-                            if (stateStr.startsWith('?')) stateStr = stateStr.substring(1);
-                            const stateParams = new URLSearchParams(stateStr);
-                            acc = stateParams.get('accountId');
-                        }
+                    try {
+                        // 嘗試 URL 解碼 (LINE liff.state 會進行 URL Encode)
+                        urlToParse = decodeURIComponent(window.location.href);
+                    } catch (e) {}
+
+                    // 暴力抓取
+                    const match = urlToParse.match(/accountId=([^&/#\?]+)/);
+                    if (match && match[1]) {
+                        acc = match[1].trim();
                     }
 
+                    // 備用方案：如果還是沒有，嘗試用 URLSearchParams 解析 liff.state
+                    if (!acc) {
+                        try {
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const stateStr = urlParams.get('liff.state');
+                            if (stateStr) {
+                                const stateParams = new URLSearchParams(stateStr.startsWith('?') ? stateStr.substring(1) : stateStr);
+                                acc = stateParams.get('accountId') || '';
+                            }
+                        } catch(e) {}
+                    }
+
+                    // 儲存至 localStorage 防呆
                     if (acc) {
                         localStorage.setItem('si_accountId', acc);
                     } else {
                         acc = localStorage.getItem('si_accountId') || '';
                     }
+                    
                     return acc;
                 };
 
@@ -750,9 +766,9 @@
                 };
 
                 const init = async () => {
-                    // 🌟 安全檢查
+                    // 🌟 阻擋未帶參數的進入
                     if (!accountId) {
-                        error.value = '連線錯誤：請使用專屬的店家活動連結進入系統。\n\n如為店家測試，請確認網址帶有 ?accountId=您的帳號';
+                        error.value = '無法識別店家資訊！\n\n請確認您是點擊專屬的活動連結進入。\n(如果是在 LINE 裡面點擊，請嘗試重新點擊一次連結)';
                         isAuthLoading.value = false;
                         return;
                     }
