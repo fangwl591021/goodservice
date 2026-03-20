@@ -368,7 +368,9 @@
           <div><label class="res-label">活動地點</label><input id="cm-camp-location" class="res-input text-base"></div>
           <div><label class="res-label">教練/老師</label><input id="cm-camp-instructor" class="res-input text-base"></div>
           <div><label class="res-label">總堂數</label><input id="cm-camp-sessions" type="number" value="5" class="res-input text-base"></div>
+          <div class="col-span-2"><label class="res-label">主題圖片網址</label><input id="cm-camp-image" class="res-input text-base" placeholder="https://... (建議尺寸 800×400)"></div>
         </div>
+        <div><label class="res-label">活動說明 <span class="text-slate-400 font-normal text-xs ml-1">(顯示於前台梯次卡片)</span></label><textarea id="cm-camp-desc" rows="4" class="res-input text-base resize-none" placeholder="活動內容介紹、注意事項..."></textarea></div>
         <div id="cm-camp-batches"></div>
         <button type="button" onclick="window.ReservationModule.addCampBatch()" class="w-full py-4 border border-dashed border-blue-300 text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition text-base">
           <i class="fas fa-plus mr-1"></i> 新增下一梯次
@@ -732,6 +734,8 @@ window.ReservationModule = (function () {
     document.getElementById('cm-camp-location').value = first.location || '';
     document.getElementById('cm-camp-instructor').value = first.instructor || '';
     document.getElementById('cm-camp-sessions').value = first.totalSessions || 5;
+    document.getElementById('cm-camp-image').value = first.image || '';
+    document.getElementById('cm-camp-desc').value = first.description || '';
 
     // 填入梯次資料
     campBatchData = Object.values(batches);
@@ -922,7 +926,7 @@ window.ReservationModule = (function () {
       document.getElementById('cm-desc').value = c.description || '';
       document.getElementById('cm-timeslot').value = c.timeSlotType || '全日';
     } else {
-      ['cm-name','cm-sdate','cm-edate','cm-stime','cm-etime','cm-location','cm-instructor','cm-image','cm-desc','cm-camp-theme'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+      ['cm-name','cm-sdate','cm-edate','cm-stime','cm-etime','cm-location','cm-instructor','cm-image','cm-desc','cm-camp-theme','cm-camp-image','cm-camp-desc'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
       document.getElementById('cm-price').value = 0;
       document.getElementById('cm-capacity').value = 20;
       document.getElementById('cm-ebprice').value = 0;
@@ -1031,6 +1035,8 @@ window.ReservationModule = (function () {
               location: campLoc, instructor: campInstr,
               price: item.price, capacity: item.capacity,
               totalSessions: campSess,
+              image: document.getElementById('cm-camp-image').value,
+              description: document.getElementById('cm-camp-desc').value,
               earlyBirdPrice: 0, earlyBirdDate: '', equipmentJson: '[]'
             };
             return callAPI('SI_ADMIN_ADD_COURSE', payload).then(function() {
