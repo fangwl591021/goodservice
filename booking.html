@@ -66,6 +66,7 @@
                         <span class="text-[10px] font-bold">報名紀錄</span>
                         <div v-if="isAuthLoading" class="absolute inset-0 bg-white/50 rounded-xl cursor-not-allowed"></div>
                     </button>
+                    <!-- 動態客服連結 -->
                     <a :href="merchantServiceLink" target="_blank" class="bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl py-2.5 flex flex-col items-center justify-center active:scale-95 transition shadow-sm">
                         <i class="fab fa-line text-xl mb-1"></i>
                         <span class="text-[10px] font-bold">客服小幫手</span>
@@ -570,12 +571,11 @@
                 </div>
 
                 <div class="fixed bottom-0 left-0 w-full bg-white border-t p-4 z-30 flex justify-between items-center shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                    <div class="flex flex-col">
-                        <span class="text-xs text-gray-500">已確認繳費金額</span>
+                    <div class="flex flex-col"><span class="text-xs text-gray-500">已確認繳費金額</span>
                         <span v-if="editingOrder && editingOrder.amount == 0" class="text-[10px] bg-emerald-100 text-emerald-700 font-black px-2 py-1 rounded-md border border-emerald-200 shadow-sm inline-block mt-0.5">免費活動</span>
                         <span v-else class="text-2xl font-black text-[#06C755]">${{ editingOrder ? editingOrder.amount : '' }}</span>
                     </div>
-                    <button @click="view='my_orders'" type="button" class="btn-primary w-[60%] shadow-md text-lg">返回紀錄</button>
+                    <button @click="view='my_orders'" type="button" class="btn-secondary w-[60%] shadow-md text-lg border-gray-300">返回紀錄</button>
                 </div>
             </div>
 
@@ -650,27 +650,28 @@
         createApp({
             setup() {
                 // 🌟 1. 深度解析網址參數，解決 LINE 跳轉洗掉參數的問題
-                let acc = '';
-                const urlParams = new URLSearchParams(window.location.search);
-                
-                if (urlParams.has('accountId')) {
-                    acc = urlParams.get('accountId');
-                } else {
-                    // 嘗試從 liff.state 解析
-                    let stateStr = urlParams.get('liff.state');
-                    if (stateStr) {
-                        if (stateStr.startsWith('?')) stateStr = stateStr.substring(1);
-                        acc = new URLSearchParams(stateStr).get('accountId') || '';
+                const getAccountId = () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    let acc = urlParams.get('accountId');
+                    
+                    if (!acc) {
+                        let stateStr = urlParams.get('liff.state');
+                        if (stateStr) {
+                            if (stateStr.startsWith('?')) stateStr = stateStr.substring(1);
+                            const stateParams = new URLSearchParams(stateStr);
+                            acc = stateParams.get('accountId');
+                        }
                     }
-                }
 
-                // 將 accountId 存入 localStorage 保險
-                if (acc) {
-                    localStorage.setItem('si_accountId', acc);
-                } else {
-                    acc = localStorage.getItem('si_accountId') || '';
-                }
-                const accountId = acc;
+                    if (acc) {
+                        localStorage.setItem('si_accountId', acc);
+                    } else {
+                        acc = localStorage.getItem('si_accountId') || '';
+                    }
+                    return acc;
+                };
+
+                const accountId = getAccountId();
 
                 const view = ref('course_list');
                 const error = ref('');
@@ -749,9 +750,9 @@
                 };
 
                 const init = async () => {
-                    // 🌟 阻擋未帶參數的進入
+                    // 🌟 安全檢查
                     if (!accountId) {
-                        error.value = '請使用帶有帳號參數的專屬網址進入系統。\n(例如: https://liff.line.me/2009524128-bJMVabyM?accountId=您的帳號)';
+                        error.value = '連線錯誤：請使用專屬的店家活動連結進入系統。\n\n如為店家測試，請確認網址帶有 ?accountId=您的帳號';
                         isAuthLoading.value = false;
                         return;
                     }
