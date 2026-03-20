@@ -58,10 +58,10 @@
         <button onclick="window.ReservationModule.syncAll()" class="res-btn-w text-xs">
           <i class="fas fa-sync-alt mr-1"></i> 同步
         </button>
-        <!-- 🌟 加入專屬的動態前台連結 -->
+        <!-- 🌟 動態生成您的專屬前台連結 -->
         <a id="res-front-link" href="#" target="_blank"
             class="res-btn-g text-xs shadow-sm bg-blue-500 hover:bg-blue-600 ml-2">
-            <i class="fas fa-up-right-from-square"></i> 前台頁
+            <i class="fas fa-up-right-from-square"></i> 專屬前台頁
         </a>
       </div>
     </header>
@@ -431,7 +431,7 @@ window.ReservationModule = (function () {
   var titles = { dashboard:'營運統計', orders:'訂單管理', add:'新增報名', courses:'活動管理', members:'會員管理', attend:'簽到管理' };
 
   // ── API ──
-  function callAPI(action, payload) {
+  function callAPI(action, payload, userProfile) {
     // 從 window.currentUser 取得帳號以隔離資料
     var acc = window.currentUser ? window.currentUser.username : '';
     var body = { action: action, payload: Object.assign({}, payload || {}, { accountId: acc }) };
@@ -491,6 +491,11 @@ window.ReservationModule = (function () {
 
   // ── 同步 ──
   function syncAll() {
+    var link = document.getElementById('res-front-link');
+    if (link && window.currentUser) {
+        link.href = "booking.html?accountId=" + encodeURIComponent(window.currentUser.username);
+    }
+    
     if (typeof toggleLoader === 'function') toggleLoader(true);
     callAPI('SI_ADMIN_GET_DATA').then(function(data) {
       courses = data.courses || [];
