@@ -362,8 +362,13 @@
                     <div v-if="selectedCourse && selectedCourse.type === '梯次活動'" class="border-t border-gray-200 pt-5">
                         <h3 class="font-bold text-gray-800 mb-2 flex items-center"><i class="far fa-calendar-times mr-2 text-red-500 text-lg"></i> 請假扣款 (最多 1 天)</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 max-h-56 overflow-y-auto pr-2 pb-2">
-                            <div v-for="d in generatedDates" :key="d.val" class="checkbox-wrapper text-sm mb-0 shadow-sm" :class="{'active': excludedDates.includes(d.val)}" @click="toggleDate(d.val)">
-                                <span class="flex-1 text-xs text-center font-bold" :class="excludedDates.includes(d.val) ? 'text-green-800' : 'text-gray-600'">{{ d.display }}</span>
+                            <div v-for="d in generatedDates" :key="d.val"
+                                @click="toggleDate(d.val)"
+                                class="cursor-pointer rounded-xl border-2 py-2.5 px-1 text-center text-xs font-bold transition-all duration-150 select-none"
+                                :class="excludedDates.includes(d.val)
+                                    ? 'border-[#06C755] bg-green-100 text-green-800 shadow-md scale-[1.03]'
+                                    : 'border-gray-200 bg-white text-gray-600 hover:border-green-300 hover:bg-green-50'">
+                                {{ d.display }}
                             </div>
                         </div>
                         <p v-if="generatedDates.length > 9" class="text-[10px] text-gray-400 mt-2 text-center"><i class="fas fa-hand-pointer mr-1"></i>上下滑動查看更多日期</p>
@@ -461,8 +466,13 @@
                     <div v-if="editingOrder && editingOrder.courseType === '梯次活動'" class="border-t border-gray-200 pt-5">
                         <h3 class="font-bold text-gray-800 mb-3 flex items-center"><i class="far fa-calendar-times mr-2 text-red-500 text-lg"></i> 請假扣款修改 (最多 1 天)</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-2 pb-2 mt-3">
-                            <div v-for="d in editGeneratedDates" :key="d.val" class="checkbox-wrapper text-sm cursor-pointer transition mb-0 shadow-sm" :class="{'active': tempExcludedDates.includes(d.val)}" @click="toggleEditDate(d.val)">
-                                <span class="flex-1 text-xs text-center font-bold" :class="tempExcludedDates.includes(d.val) ? 'text-green-800' : 'text-gray-600'">{{ d.display }}</span>
+                            <div v-for="d in editGeneratedDates" :key="d.val"
+                                @click="toggleEditDate(d.val)"
+                                class="cursor-pointer rounded-xl border-2 py-2.5 px-1 text-center text-xs font-bold transition-all duration-150 select-none"
+                                :class="tempExcludedDates.includes(d.val)
+                                    ? 'border-[#06C755] bg-green-100 text-green-800 shadow-md scale-[1.03]'
+                                    : 'border-gray-200 bg-white text-gray-600 hover:border-green-300 hover:bg-green-50'">
+                                {{ d.display }}
                             </div>
                         </div>
                         <p v-if="editGeneratedDates.length > 9" class="text-[10px] text-gray-400 mt-2 text-center"><i class="fas fa-hand-pointer mr-1"></i>上下滑動查看更多日期</p>
@@ -540,8 +550,13 @@
                     <div v-if="editingOrder && editingOrder.courseType === '梯次活動'" class="border-t border-gray-200 pt-5">
                         <h3 class="font-bold text-gray-800 mb-3 flex items-center"><i class="far fa-calendar-times mr-2 text-red-500 text-lg"></i> 請假與退費 (最多 1 天)</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-2 pb-2">
-                            <div v-for="d in editGeneratedDates" :key="d.val" class="checkbox-wrapper text-sm cursor-pointer transition mb-0 shadow-sm" :class="{'active': tempExcludedDates.includes(d.val)}" @click="toggleEditDate(d.val)">
-                                <span class="flex-1 text-xs text-center font-bold" :class="tempExcludedDates.includes(d.val) ? 'text-green-800' : 'text-gray-600'">{{ d.display }}</span>
+                            <div v-for="d in editGeneratedDates" :key="d.val"
+                                @click="toggleEditDate(d.val)"
+                                class="cursor-pointer rounded-xl border-2 py-2.5 px-1 text-center text-xs font-bold transition-all duration-150 select-none"
+                                :class="tempExcludedDates.includes(d.val)
+                                    ? 'border-[#06C755] bg-green-100 text-green-800 shadow-md scale-[1.03]'
+                                    : 'border-gray-200 bg-white text-gray-600 hover:border-green-300 hover:bg-green-50'">
+                                {{ d.display }}
                             </div>
                         </div>
                         <p v-if="editGeneratedDates.length > 9" class="text-[10px] text-gray-400 mt-2 text-center"><i class="fas fa-hand-pointer mr-1"></i>上下滑動查看更多日期</p>
