@@ -794,6 +794,13 @@
                             window.history.replaceState({}, document.title, newUrl);
                             liff.login(); return;
                         }
+                        // ★ 修正：access token 過期時自動重新登入
+                        if (err.message && (err.message.includes('access token expired') || err.message.includes('access_token') || err.message.toLowerCase().includes('expired'))) {
+                            try { localStorage.setItem('si_accountId', accountId); } catch(e) {}
+                            liff.logout();
+                            liff.login();
+                            return;
+                        }
                         error.value = '系統初始化失敗：' + err.message;
                         isAuthLoading.value = false;
                     }
